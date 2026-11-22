@@ -30,6 +30,15 @@
           "defaultValue": "Normal",
           "validation": { "options": ["Normal", "Eingeschränkte Karte", "Kein à la carte", "Geschlossene Gesellschaft"] }
         },
+        {
+          "slug": "art",
+          "label": "Art (Symbol auf der Karte)",
+          "type": "select",
+          "defaultValue": "Automatisch",
+          "validation": {
+            "options": ["Automatisch", "Brunch", "Buffet & Menü", "Silvester", "Advent", "Burger", "Wein", "Fisch & Meer", "Wild & Herbst", "Grill", "Musik", "Lesung & Bühne", "Watt & Natur", "Veranstaltung"]
+          }
+        },
         { "slug": "startseite", "label": "Auf der Startseite zeigen", "type": "boolean", "defaultValue": true },
         { "slug": "privat", "label": "Nicht öffentlich (nur Kalender sperren)", "type": "boolean", "defaultValue": false },
         {

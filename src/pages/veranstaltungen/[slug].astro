@@ -37,8 +37,20 @@ const typeNote =
     </a>
     <div class="bs-evd__grid">
       <div class="bs-evd__head">
-        <p class="bs-kicker" data-reveal>
-          {when}
+        <p class="bs-kicker bs-evd__kind" data-reveal style={`--k:${e.kind.color}`}>
+          <span class="bs-evd__badge" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d={e.kind.icon}></path>
+            </svg>
+          </span>
+          {e.kind.label} · {when}
         </p>
         <h1 class="bs-evd__h bs-lines">
           <span class="bs-line">
@@ -395,5 +407,24 @@ const typeNote =
     .bs-signup__form {
       grid-template-columns: minmax(0, 1fr);
     }
+  }
+  .bs-evd__kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bs-evd__badge {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: var(--k);
+    background: color-mix(in srgb, var(--k) 12%, #fff);
+    border: 1.5px dashed color-mix(in srgb, var(--k) 55%, #fff);
+  }
+  .bs-evd__badge svg {
+    width: 24px;
+    height: 24px;
   }
 </style>

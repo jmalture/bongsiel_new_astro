@@ -1,3 +1,4 @@
+import { eventKind, type EventKind } from './eventKind';
 /**
  * Everything the templates read from EmDash goes through here and comes out normalised, with real defaults:
  * an empty or half-filled database still gives a complete, correct site (editors can delete entries).
@@ -195,6 +196,7 @@ export interface EventItem {
   type: DayType | 'none';
   home: boolean;
   isPrivate: boolean;
+  kind: EventKind;
   occurrenceOf?: string; // set on repeated dates
 }
 
@@ -247,6 +249,7 @@ export async function getEvents(): Promise<EventItem[]> {
       type: TYPE[d.auswirkung] ?? 'none',
       home: d.startseite !== false,
       isPrivate: d.privat === true,
+      kind: eventKind(d.art, String(d.title), tidy(d.kurztext)),
     };
     out.push(...expand(base, d.wiederholung, berlin(d.wiederholung_bis)?.date ?? null));
   }

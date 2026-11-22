@@ -16,16 +16,31 @@ const share = e.seats ? free / e.seats : 0;
 const href = `/veranstaltungen/${e.occurrenceOf ?? e.slug}/${e.occurrenceOf ? `?datum=${e.date}` : ''}`;
 ---
 
-<a class="bs-ev" href={href} data-reveal style={`--i:${i}`}>
-  <span class="bs-ev__date" aria-hidden="true">
-    <span class="bs-ev__day">{day}</span>
-    <span class="bs-ev__mon">{month}</span>
+<a class="bs-ev" href={href} data-reveal style={`--i:${i};--k:${e.kind.color}`}>
+  <span class="bs-ev__top">
+    <span class="bs-ev__date" aria-hidden="true">
+      <span class="bs-ev__day">{day}</span>
+      <span class="bs-ev__mon">{month}</span>
+    </span>
+    <span class="bs-ev__badge" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d={e.kind.icon}></path>
+      </svg>
+    </span>
   </span>
   <span class="bs-ev__body">
     <span class="bs-ev__meta">
       {weekday}
       {e.start && ` · ${e.start} Uhr`}
     </span>
+    <span class="bs-ev__kind">{e.kind.label}</span>
     <span class="bs-ev__title">{e.title}</span>
     {e.teaser && <span class="bs-ev__teaser">{e.teaser}</span>}
     {e.price && <span class="bs-ev__price">{e.price}</span>}
@@ -84,6 +99,44 @@ const href = `/veranstaltungen/${e.occurrenceOf ?? e.slug}/${e.occurrenceOf ? `?
     }
     .bs-ev:hover .bs-ev__go svg {
       transform: translateX(3px);
+    }
+  }
+  .bs-ev {
+    border-top: 4px solid var(--k, var(--bs-sage));
+  }
+  .bs-ev__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .bs-ev__badge {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    color: var(--k, var(--bs-sage));
+    background: color-mix(in srgb, var(--k, var(--bs-sage)) 12%, #fff);
+    border: 1.5px dashed color-mix(in srgb, var(--k, var(--bs-sage)) 55%, #fff);
+    transition: transform 500ms var(--bs-ease);
+  }
+  .bs-ev__badge svg {
+    width: 28px;
+    height: 28px;
+  }
+  .bs-ev__kind {
+    justify-self: start;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--k, var(--bs-sage-d));
+  }
+  @media (hover: hover) {
+    .bs-ev:hover .bs-ev__badge {
+      transform: rotate(-10deg) scale(1.08);
     }
   }
   .bs-ev__date {
