@@ -25,6 +25,7 @@ const photos = {
   'gaststube-tag': 'WhatsApp-Image-2025-03-28-at-11.29.47.jpeg',
   'koch-boris': 'local/kuechenchef-boris-schulte-in-den-baeumen.jpg',
   'teich-lounge': '27.jpeg',
+  'haus-tag': 'local/haus-tag.jpg',
 };
 const widths = [640, 1024, 1600, 2000];
 mkdirSync('public/img', { recursive: true });
