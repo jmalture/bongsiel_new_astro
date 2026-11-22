@@ -7,22 +7,22 @@ import Photo from '../components/ui/Photo.astro';
 import type { ActItem } from '../components/ui/ActCards.astro';
 
 const outdoor: ActItem[] = [
-  { t: 'Schach', icon: 'M4 4h16v16H4zM4 12h16M12 4v16' },
-  { t: 'Boule', icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 9h.01M15 8h.01M12 14h.01' },
+  { t: 'Schach', icon: 'schach' },
+  { t: 'Boule', icon: 'boule' },
   {
     t: 'Streichelzoo',
     soon: true,
-    icon: 'M12 20c-3 0-5-1.5-5-3.5S9.5 13 12 13s5 1.5 5 3.5-2 3.5-5 3.5zM6 11h.01M10 7h.01M14 7h.01M18 11h.01',
+    icon: 'zoo',
   },
 ];
 const indoor: ActItem[] = [
-  { t: 'Souvenirshop', icon: 'M5 8h14l-1 12H6L5 8zM9 8V6a3 3 0 0 1 6 0v2' },
-  { t: 'Billard*', icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 14a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
+  { t: 'Souvenirshop', icon: 'shop' },
+  { t: 'Billard*', icon: 'billard' },
   {
     t: 'Darts*',
-    icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 12l7-7',
+    icon: 'darts',
   },
-  { t: 'Tischkicker*', icon: 'M3 8h18v8H3zM8 8v8M12 8v8M16 8v8M6 5v3M18 16v3' },
+  { t: 'Tischkicker*', icon: 'kicker' },
 ];
 ---
 

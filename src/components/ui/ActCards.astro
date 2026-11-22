@@ -1,8 +1,9 @@
 ---
+import ActIcon from './ActIcon.astro';
 /** A grid of small cards: round dashed icon, title, optional facts line, text and an external link. */
 export interface ActItem {
   t: string;
-  icon: string; // SVG path data, 24x24 stroke icon
+  icon: string; // name in ActIcon.astro
   meta?: string;
   text?: string;
   href?: string;
@@ -19,16 +20,7 @@ const { items } = Astro.props;
   {items.map((a, i) => (
     <li class:list={['bs-act__card', { 'is-soon': a.soon }]} data-reveal style={`--i:${i % 3}`}>
       <span class="bs-act__ic" aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d={a.icon}></path>
-        </svg>
+        <ActIcon name={a.icon} />
       </span>
       <h3 class="bs-act__t">{a.t}</h3>
       {a.soon && <span class="bs-act__soon">kommt bald</span>}
@@ -49,7 +41,7 @@ const { items } = Astro.props;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
     gap: 16px;
   }
   .bs-act__card {
@@ -78,8 +70,8 @@ const { items } = Astro.props;
   .bs-act__ic {
     display: grid;
     place-items: center;
-    width: 56px;
-    height: 56px;
+    width: 68px;
+    height: 68px;
     border-radius: 50%;
     color: var(--bs-sage-d);
     background: color-mix(in srgb, var(--bs-sage) 14%, #fff);
@@ -87,8 +79,8 @@ const { items } = Astro.props;
     transition: transform 500ms var(--bs-ease);
   }
   .bs-act__ic svg {
-    width: 28px;
-    height: 28px;
+    width: 42px;
+    height: 42px;
   }
   .bs-act__t {
     font-family: var(--bs-head);

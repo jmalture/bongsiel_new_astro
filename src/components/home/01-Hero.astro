@@ -18,13 +18,6 @@ const slides = [
     alt: 'Das rote Backsteinhaus der Gaststätte mit Giebel und Pferdekopf, davor Terrasse und ein Fass-Saunahaus',
   },
   {
-    name: 'eingang-nacht',
-    pos: '50% 55%',
-    o: '40% 60%',
-    cap: 'Abends, wenn die Lichter angehen',
-    alt: 'Das Gasthaus am Abend, Eingang mit Lichterkette und Pferd',
-  },
-  {
     name: 'deich-schafe',
     pos: '50% 30%',
     o: '62% 38%',
@@ -103,6 +96,19 @@ const slides = [
   </div>
 
   <div class="bs-hero__ctrl bs-wrap" data-hero-ctrl>
+    <button type="button" class="bs-hero__arrow" data-dir="-1" aria-label="Vorheriges Bild">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M15 5l-7 7 7 7"></path>
+      </svg>
+    </button>
     <div class="bs-hero__dots" role="group" aria-label="Bild wählen">
       {slides.map((s, i) => (
         <button
@@ -116,6 +122,19 @@ const slides = [
         </button>
       ))}
     </div>
+    <button type="button" class="bs-hero__arrow" data-dir="1" aria-label="Nächstes Bild">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
     <p class="bs-hero__cap" aria-live="polite" data-hero-cap>
       {slides[0].cap}
     </p>
@@ -196,6 +215,13 @@ const slides = [
     };
 
     dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-dir]')
+      .forEach((b) => b.addEventListener('click', () => show(cur + Number(b.dataset.dir))));
+    hero.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') show(cur + 1);
+      if (e.key === 'ArrowLeft') show(cur - 1);
+    });
     hero.addEventListener('mouseenter', () => setHold(true));
     hero.addEventListener('mouseleave', () => setHold(false));
     hero.addEventListener('focusin', () => setHold(true));
@@ -272,7 +298,7 @@ const slides = [
   }
   .bs-hero__inner {
     padding-top: calc(var(--bs-header-h) + 40px);
-    padding-bottom: clamp(88px, 11vh, 140px);
+    padding-bottom: clamp(124px, 14vh, 172px);
   }
   .bs-hero__kicker {
     display: inline-block;
@@ -322,11 +348,44 @@ const slides = [
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 50px;
+    bottom: 78px;
     display: flex;
     align-items: center;
     gap: 16px;
     pointer-events: none;
+  }
+  .bs-hero__arrow {
+    pointer-events: auto;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(243, 243, 236, 0.45);
+    background: rgba(20, 23, 17, 0.45);
+    color: var(--bs-cream);
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition:
+      background-color 250ms var(--bs-ease),
+      transform 250ms var(--bs-ease);
+  }
+  .bs-hero__arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+  .bs-hero__arrow:hover {
+    background: var(--bs-ember);
+    border-color: var(--bs-ember);
+  }
+  .bs-hero__arrow:active {
+    transform: scale(0.92);
+  }
+  .bs-hero__arrow:focus-visible {
+    outline: 2px solid var(--bs-ember-l);
+    outline-offset: 2px;
   }
   .bs-hero__dots {
     display: flex;
@@ -386,7 +445,7 @@ const slides = [
   .bs-hero__stamp {
     position: absolute;
     right: calc(var(--bs-gutter) + 8px);
-    bottom: clamp(96px, 13vh, 160px);
+    bottom: clamp(124px, 16vh, 190px);
     width: clamp(250px, 21vw, 310px);
     aspect-ratio: 1 / 0.92;
     display: grid;
@@ -529,7 +588,7 @@ const slides = [
       flex: 1 1 100%;
     }
     .bs-hero__inner {
-      padding-bottom: 80px;
+      padding-bottom: 116px;
     }
     .bs-hero__stamp {
       top: calc(var(--bs-header-h) + 52px);

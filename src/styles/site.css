@@ -597,3 +597,147 @@ textarea.bs-input {
 .bs-prose p {
   white-space: pre-line;
 }
+
+/* ---------- Thank-you card after a form is sent ---------- */
+.bs-thanks {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: clamp(40px, 6vw, 64px) clamp(22px, 5vw, 56px);
+  text-align: center;
+  border-radius: var(--bs-r-lg);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(233, 184, 119, 0.28), transparent 62%), var(--bs-linen);
+  border: 2px dashed color-mix(in srgb, var(--bs-sage) 70%, #fff);
+  overflow: hidden;
+  isolation: isolate;
+  animation: bs-thx-in 700ms var(--bs-ease) both;
+}
+.bs-thanks[hidden] {
+  display: none;
+}
+.bs-thanks__badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  border-radius: 58% 42% 53% 47% / 46% 57% 43% 54%;
+  background: var(--bs-sage);
+  color: var(--bs-cream);
+  box-shadow:
+    0 0 0 3px var(--bs-cream),
+    0 18px 34px -14px rgba(27, 29, 21, 0.5);
+  animation: bs-thx-pop 800ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms both;
+}
+.bs-thanks__badge::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  border: 2px solid var(--bs-ember-l);
+  opacity: 0;
+  animation: bs-thx-ring 2.8s var(--bs-ease) 900ms infinite;
+}
+.bs-thanks__badge svg {
+  width: 60px;
+  height: 60px;
+}
+.bs-thanks__badge path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: bs-thx-draw 700ms var(--bs-ease) 650ms forwards;
+}
+.bs-thanks__h {
+  margin: 8px 0 0;
+  font-family: var(--bs-hand);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.4rem, 1.6rem + 3.4vw, 4.2rem);
+  line-height: 1.05;
+  color: var(--bs-sage-d);
+  animation: bs-thx-up 700ms var(--bs-ease) 450ms both;
+}
+.bs-thanks__t {
+  margin: 0;
+  max-width: 32em;
+  font-size: var(--bs-lead);
+  color: var(--bs-ink);
+  animation: bs-thx-up 700ms var(--bs-ease) 600ms both;
+}
+.bs-thanks__spark {
+  position: absolute;
+  bottom: -14px;
+  left: var(--x);
+  z-index: -1;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bs-ember-l);
+  opacity: 0;
+  animation: bs-thx-spark 6s ease-in var(--d) infinite;
+}
+@keyframes bs-thx-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+}
+@keyframes bs-thx-pop {
+  from {
+    transform: scale(0.3) rotate(-18deg);
+    opacity: 0;
+  }
+}
+@keyframes bs-thx-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes bs-thx-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+@keyframes bs-thx-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes bs-thx-spark {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-260px) translateX(14px) scale(1.2);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bs-thanks,
+  .bs-thanks__badge,
+  .bs-thanks__h,
+  .bs-thanks__t {
+    animation: none;
+  }
+  .bs-thanks__badge path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .bs-thanks__badge::after,
+  .bs-thanks__spark {
+    display: none;
+  }
+}

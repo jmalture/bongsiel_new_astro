@@ -12,27 +12,143 @@ const now = nowBerlin();
 const status = statusLine(dayInfo(now.date, ctx.site.week, ctx.exceptions, ctx.days), now);
 const hours = hoursSummary(ctx.site.week);
 const path = Astro.url.pathname;
-const nav = [
-  { href: '/gaststaette/', label: 'Gaststätte' },
-  { href: '/speisen/', label: 'Speisekarte' },
-  { href: '/veranstaltungen/', label: 'Veranstaltungen' },
-  { href: '/eventlocation/', label: 'Feiern' },
-  { href: '/uebernachten/', label: 'Übernachten' },
-  { href: '/erlebniswelt/', label: 'Erleben', also: ['/aktivitaeten/', '/rundgang/'] },
+type Item = { href: string; label: string; desc: string; icon: string };
+const nav: { label: string; href?: string; items?: Item[] }[] = [
+  {
+    label: 'Gaststätte',
+    items: [
+      {
+        href: '/gaststaette/',
+        label: 'Das Haus',
+        desc: 'Kachelstube, Küche und Geschichte',
+        icon: 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5',
+      },
+      {
+        href: '/speisen/',
+        label: 'Speisekarte',
+        desc: 'Regional, frisch gekocht',
+        icon: 'M7 3v8a2 2 0 0 0 2 2M7 3v18M11 3v8a2 2 0 0 1-2 2M17 3c-2 2-3 5-3 8h3v10',
+      },
+      {
+        href: '/speisekarten/',
+        label: 'Weitere Karten',
+        desc: 'Themen- und Eventkarten',
+        icon: 'M6 3h9l4 4v14H6zM9 12h7M9 16h7M14 3v5h5',
+      },
+      {
+        href: '/reservierung/',
+        label: 'Tisch reservieren',
+        desc: 'Online in wenigen Klicks',
+        icon: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M9 15l2 2 4-4',
+      },
+    ],
+  },
+  {
+    label: 'Veranstaltungen',
+    items: [
+      {
+        href: '/veranstaltungen/',
+        label: 'Veranstaltungen',
+        desc: 'Brunch, Buffets und besondere Abende',
+        icon: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4M12 13l1.1 2.2 2.4.3-1.8 1.7.5 2.4-2.2-1.2-2.2 1.2.5-2.4-1.8-1.7 2.4-.3z',
+      },
+      {
+        href: '/eventlocation/',
+        label: 'Feiern bei uns',
+        desc: 'Saal für bis zu 120 Personen',
+        icon: 'M9 3h6l-.5 7a2.5 2.5 0 0 1-5 0L9 3zM12 12.5V19M9 19h6M18 4v3M16.5 5.5h3',
+      },
+    ],
+  },
+  {
+    label: 'Erleben',
+    items: [
+      {
+        href: '/erlebniswelt/',
+        label: 'Erlebniswelt',
+        desc: 'Boule, Schach, Billard und mehr',
+        icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.5 7.5c3 1.5 5 4.5 5.5 9M13 3.8c0 3 1.5 5 4.5 6.5',
+      },
+      {
+        href: '/aktivitaeten/',
+        label: 'Aktivitäten',
+        desc: 'Deich, Watt, Radtouren, Ausflüge',
+        icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',
+      },
+      {
+        href: '/rundgang/',
+        label: '360°-Rundgang',
+        desc: 'Das Haus virtuell erkunden',
+        icon: 'M20 12a8 4 0 1 1-8-4M20 5v3h-3',
+      },
+    ],
+  },
+  { label: 'Übernachten', href: '/uebernachten/' },
 ];
-const active = (n: { href: string; also?: string[] }) =>
-  [n.href, ...(n.also ?? [])].some((h) => path === h || path.startsWith(h));
+const on = (h: string) => path === h || path.startsWith(h);
+const active = (n: (typeof nav)[number]) => (n.href ? on(n.href) : !!n.items?.some((i) => on(i.href)));
 ---
 
 <header class:list={['bs-hd', { 'bs-hd--overlay': overlay }]} data-header>
   <div class="bs-hd__bar bs-wrap">
     <a href="/" class="bs-hd__logo" aria-label="Mein Ziel Bongsiel – Startseite" set:html={logo} />
     <nav class="bs-hd__nav" aria-label="Hauptnavigation">
-      {nav.map((n) => (
-        <a href={n.href} class:list={['bs-hd__link', { 'is-active': active(n) }]}>
-          {n.label}
-        </a>
-      ))}
+      {nav.map((n, gi) =>
+        n.items ? (
+          <div class="bs-hd__grp" data-grp>
+            <button
+              type="button"
+              class:list={['bs-hd__link', 'bs-hd__btn', { 'is-active': active(n) }]}
+              aria-expanded="false"
+              aria-controls={`bs-mm-${gi}`}
+              data-grp-btn
+            >
+              {n.label}
+              <svg
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5"></path>
+              </svg>
+            </button>
+            <div class="bs-mm" id={`bs-mm-${gi}`}>
+              <ul class="bs-mm__list">
+                {n.items.map((it) => (
+                  <li>
+                    <a class:list={['bs-mm__a', { 'is-active': on(it.href) }]} href={it.href}>
+                      <span class="bs-mm__ic" aria-hidden="true">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d={it.icon}></path>
+                        </svg>
+                      </span>
+                      <span class="bs-mm__t">
+                        <b>{it.label}</b>
+                        <small>{it.desc}</small>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <a href={n.href} class:list={['bs-hd__link', { 'is-active': active(n) }]}>
+            {n.label}
+          </a>
+        ),
+      )}
     </nav>
     <div class="bs-hd__end">
       <span class:list={['bs-hd__status', { 'is-open': status.open }]}>
@@ -57,12 +173,16 @@ const active = (n: { href: string; also?: string[] }) =>
   </div>
   <div class="bs-drawer" id="bs-drawer" data-drawer>
     <nav class="bs-drawer__nav bs-wrap" aria-label="Mobile Navigation">
-      {nav.map((n, i) => (
-        <a href={n.href} style={`--i:${i}`}>
-          {n.label}
-        </a>
-      ))}
-      <a href="/reservierung/" style={`--i:${nav.length}`} class="bs-drawer__res">
+      {nav
+        .flatMap((n) =>
+          n.items ? n.items.filter((i) => i.href !== '/reservierung/') : [{ href: n.href!, label: n.label }],
+        )
+        .map((n, i) => (
+          <a href={n.href} style={`--i:${i}`}>
+            {n.label}
+          </a>
+        ))}
+      <a href="/reservierung/" style="--i:12" class="bs-drawer__res">
         Tisch reservieren
       </a>
     </nav>
@@ -82,6 +202,51 @@ const active = (n: { href: string; also?: string[] }) =>
     </div>
   </div>
 </header>
+
+<script>
+  // Mega menu: opens on hover (short delay) and on click/tap; closes on Escape, outside click or focus leaving.
+  const grps = [...document.querySelectorAll<HTMLElement>('[data-grp]')];
+  const set = (g: HTMLElement, open: boolean) => {
+    g.classList.toggle('is-open', open);
+    g.querySelector('[data-grp-btn]')?.setAttribute('aria-expanded', String(open));
+  };
+  const closeAll = (except?: HTMLElement) => grps.forEach((g) => g !== except && set(g, false));
+  grps.forEach((g) => {
+    let timer = 0;
+    const btn = g.querySelector<HTMLButtonElement>('[data-grp-btn]')!;
+    const hover = matchMedia('(hover: hover)');
+    g.addEventListener('mouseenter', () => {
+      if (!hover.matches) return;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        closeAll(g);
+        set(g, true);
+      }, 70);
+    });
+    g.addEventListener('mouseleave', () => {
+      if (!hover.matches) return;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => set(g, false), 180);
+    });
+    btn.addEventListener('click', () => {
+      const open = !g.classList.contains('is-open');
+      closeAll(g);
+      set(g, open);
+    });
+    g.addEventListener('focusout', (e) => {
+      if (!g.contains((e as FocusEvent).relatedTarget as Node)) set(g, false);
+    });
+    g.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Escape') {
+        set(g, false);
+        btn.focus();
+      }
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-grp]')) closeAll();
+  });
+</script>
 
 <style is:global>
   .bs-hd {
@@ -326,6 +491,115 @@ const active = (n: { href: string; also?: string[] }) =>
   }
   @media (max-width: 560px) {
     .bs-hd__cta {
+      display: none;
+    }
+  }
+
+  .bs-hd__grp {
+    position: relative;
+  }
+  .bs-hd__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .bs-hd__btn svg {
+    width: 11px;
+    height: 11px;
+    transition: transform 300ms var(--bs-ease);
+  }
+  .bs-hd__grp.is-open .bs-hd__btn svg {
+    transform: rotate(180deg);
+  }
+  .bs-mm {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    z-index: 5;
+    min-width: 330px;
+    padding-top: 14px;
+    translate: -50% 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 220ms var(--bs-ease),
+      transform 320ms var(--bs-ease),
+      visibility 0s linear 320ms;
+    color: var(--bs-ink);
+  }
+  .bs-hd__grp.is-open .bs-mm {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .bs-mm__list {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+    border-radius: var(--bs-r-lg);
+    background: #fff;
+    border: 1px solid var(--bs-line);
+    box-shadow: var(--bs-shadow-lg);
+  }
+  .bs-mm__a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px 10px 10px;
+    border-radius: var(--bs-r);
+    text-decoration: none;
+    transition: background-color 200ms var(--bs-ease);
+  }
+  .bs-mm__a:hover,
+  .bs-mm__a:focus-visible {
+    background: var(--bs-cream);
+  }
+  .bs-mm__a.is-active {
+    background: color-mix(in srgb, var(--bs-sage) 14%, #fff);
+  }
+  .bs-mm__ic {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: var(--bs-sage-d);
+    background: color-mix(in srgb, var(--bs-sage) 14%, #fff);
+    border: 1.5px dashed color-mix(in srgb, var(--bs-sage) 60%, #fff);
+    transition: transform 400ms var(--bs-ease);
+  }
+  .bs-mm__ic svg {
+    width: 22px;
+    height: 22px;
+  }
+  .bs-mm__a:hover .bs-mm__ic,
+  .bs-mm__a:focus-visible .bs-mm__ic {
+    transform: rotate(-10deg) scale(1.08);
+  }
+  .bs-mm__t {
+    display: grid;
+    gap: 1px;
+  }
+  .bs-mm__t b {
+    font-family: var(--bs-head);
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+  .bs-mm__t small {
+    font-size: 0.82rem;
+    color: var(--bs-grey);
+  }
+  @media (max-width: 1080px) {
+    .bs-mm {
       display: none;
     }
   }

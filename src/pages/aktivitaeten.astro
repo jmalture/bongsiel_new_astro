@@ -5,13 +5,6 @@ import ActCards from '../components/ui/ActCards.astro';
 import MoreLinks from '../components/ui/MoreLinks.astro';
 import type { ActItem } from '../components/ui/ActCards.astro';
 
-const I = {
-  pin: 'M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
-  walk: 'M4 20c4-1 4-6 8-7s4-5 8-6M5 6h.01M9 4h.01',
-  bike: 'M6 18a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM18 18a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM6 14.5l4-7h5l3 7M10 7.5h-2',
-  wave: 'M3 17c3-3 5 3 9 0s6-3 9 0M3 12c3-3 5 3 9 0s6-3 9 0',
-  roof: 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5',
-};
 const MAP = 'Auf der Karte';
 const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = [
   {
@@ -21,21 +14,21 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
     items: [
       {
         t: 'Uthlande Hafen',
-        icon: I.pin,
+        icon: 'hafen',
         href: 'https://maps.app.goo.gl/XRuQ5ucsBZcs34ze6',
         label: MAP,
         text: 'Der Uthlande Hafen in Dagebüll ist nicht nur der drittgrößte Personenhafen Deutschlands, sondern auch das „Tor zu den Inseln“. Jährlich passieren rund 1,7 Millionen Fahrgäste diesen Hafen, um zu den Inseln Föhr und Amrum zu gelangen.',
       },
       {
         t: 'Leuchtturm Dagebüll',
-        icon: I.pin,
+        icon: 'leuchtturm',
         href: 'https://maps.app.goo.gl/D1hnLSYVDcjH5fbE7',
         label: MAP,
         text: 'Erlebe den Charme des mehr als 90 Jahre alten Leuchtturms in Dagebüll. Umgeben von grünen Deichen, weißen Schafen und dem weiten Watt, bietet dieser magische Ort eine einzigartige Auszeit.',
       },
       {
         t: 'Naturkundemuseum Niebüll',
-        icon: I.pin,
+        icon: 'museum',
         href: 'https://maps.app.goo.gl/TvuFVetaXzxf4dLC7',
         label: MAP,
         text: 'Das Naturkundemuseum Niebüll bietet eine interaktive Erlebnisausstellung, die die Natur und Landschaft der deutsch-dänischen Grenze zeigt. Besucher können verschiedene Lebensräume und ihre Bewohner, von Bienen bis Seeadler, entdecken.',
@@ -49,7 +42,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
     items: [
       {
         t: 'Deichwanderweg',
-        icon: I.walk,
+        icon: 'wandern',
         meta: '6 Kilometer · leicht',
         href: 'https://www.dagebuell-tourismus.de/deichwanderweg-dagebuell',
         label: 'Zur Strecke',
@@ -57,7 +50,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
       },
       {
         t: 'Dagebüll-Runde von Fahretoft',
-        icon: I.walk,
+        icon: 'wandern',
         meta: '11,3 Kilometer · mittelschwer',
         href: 'https://www.komoot.com/de-de/smarttour/22552901',
         label: 'Zur Strecke',
@@ -65,7 +58,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
       },
       {
         t: 'Wattwanderungen in Dagebüll',
-        icon: I.wave,
+        icon: 'watt',
         href: 'https://www.wattwanderung.eu/',
         label: 'Zu den Wattführern',
         text: 'Eine Wattwanderung in Dagebüll ist ein absolutes Muss für jeden Besucher. Begleitet von erfahrenen Wattführern kannst du sicher das faszinierende Wattenmeer erkunden. Ob barfuß oder in Gummistiefeln, du entdeckst Wattwürmer, Herzmuscheln und viele weitere Bewohner des Watts. Wichtig: Niemals alleine ins Watt gehen, da es viele versteckte Gefahren gibt.',
@@ -79,7 +72,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
     items: [
       {
         t: 'Warftenroute',
-        icon: I.bike,
+        icon: 'rad',
         meta: '33 Kilometer · 2–3 Stunden',
         href: 'https://www.komoot.com/de-de/smarttour/66698',
         label: 'Zur Strecke',
@@ -87,7 +80,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
       },
       {
         t: 'Hallig-Krog-Runde von Dagebüll Kirche',
-        icon: I.bike,
+        icon: 'rad',
         meta: '46,6 Kilometer · 2–3 Stunden',
         href: 'https://www.komoot.com/de-de/smarttour/1125087',
         label: 'Zur Strecke',
@@ -95,7 +88,7 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
       },
       {
         t: 'Bahnhof-Blocksberg-Runde',
-        icon: I.bike,
+        icon: 'rad',
         meta: '24,8 Kilometer · 1,5 Stunden',
         href: 'https://www.komoot.com/de-de/smarttour/2862755',
         label: 'Zur Strecke',
@@ -110,21 +103,21 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
     items: [
       {
         t: 'Kanufahren',
-        icon: I.wave,
+        icon: 'kanu',
         href: 'http://www.kanu-service.de/Boote/boote.html',
         label: 'Zum Kanu-Service',
         text: 'Erkunde die wunderschöne Nordsee auf eigene Faust mit einem gemieteten Kanu. Beim Kanu-Service Dagebüll findest du verschiedene Kanutypen, die perfekt für ein entspanntes Paddelerlebnis geeignet sind. Ob alleine oder mit der Familie – hier wartet ein unvergessliches Abenteuer auf dich.',
       },
       {
         t: 'Kitesurfen',
-        icon: I.wave,
+        icon: 'kite',
         href: 'https://nws-foehr.de/',
         label: 'Kitekurse auf Föhr',
         text: 'Dagebüll ist ideal für geübte Kitesurfer, die starke Strömungen und viel Nordseewind suchen. Beobachte die beeindruckenden High Jumps der Locals am Fähranleger oder genieße Freeriding vor den bunten Strandhäuschen. Für Anfänger gibt es Kitesurfkurse auf der nahegelegenen Insel Föhr.',
       },
       {
         t: 'Schwimmen am Grünstrand',
-        icon: I.wave,
+        icon: 'schwimmen',
         href: 'https://maps.app.goo.gl/y8e7eS9cY2PRDWtP8',
         label: MAP,
         text: 'Der grüne Strand von Dagebüll ist ideal zum Schwimmen und Sonnenbaden. Das Wasser ist bei Flut perfekt für ein erfrischendes Bad, und die Gezeitenkalender der Tourist-Information helfen dir bei der Planung. Für Kinder gibt es Sandspielplätze direkt am Strand.',
@@ -138,21 +131,21 @@ const groups: { id: string; title: string; hand: string; items: ActItem[] }[] = 
     items: [
       {
         t: 'Fun Center Husum',
-        icon: I.roof,
+        icon: 'trampolin',
         href: 'https://maps.app.goo.gl/Jx1pf8Lsm2o6MfJq7',
         label: MAP,
         text: 'Das Fun Center Husum bietet eine Vielzahl von Aktivitäten für die ganze Familie. Es gibt Trampoline, Kletterwände und zahlreiche Spielgeräte, die sowohl für Kinder als auch für Erwachsene geeignet sind. Das Zentrum ist ideal, um einen verregneten Tag aktiv zu gestalten und bietet zudem eine Cafeteria, in der man sich zwischendurch stärken kann.',
       },
       {
         t: 'AQUAFÖHR',
-        icon: I.roof,
+        icon: 'pool',
         href: 'https://maps.app.goo.gl/gDLf6MYiJgH9KMyc9',
         label: MAP,
         text: 'AQUAFÖHR auf der Insel Föhr ist ein modernes Freizeitbad, das mit verschiedenen Becken, Rutschen und Wellnessangeboten lockt. Neben dem Schwimmbereich gibt es eine Saunalandschaft und ein Fitnessstudio. Das Erlebnisbad ist perfekt für Familien und bietet auch spezielle Kinderbereiche und Kurse an.',
       },
       {
         t: 'Boulderhalle FlensBloc',
-        icon: I.roof,
+        icon: 'klettern',
         href: 'https://maps.app.goo.gl/jxNVBNSizmVpSXqa9',
         label: MAP,
         text: 'Die Boulderhalle FlensBloc in Flensburg ist der perfekte Ort für Kletterfreunde. Hier können Anfänger und Profis an verschiedenen Wänden ihre Kletterfähigkeiten testen und verbessern. Die Halle bietet regelmäßige Kurse und Events sowie einen gemütlichen Bereich zum Entspannen nach dem Klettern.',

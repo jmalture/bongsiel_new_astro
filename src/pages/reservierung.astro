@@ -306,6 +306,8 @@ const max = ctx.site.booking.maxParty;
     e.preventDefault();
     const show = (ok: boolean, text: string) => {
       msg.hidden = false;
+      const thanks = (window as unknown as { bsThanks?: (b: HTMLElement, t: string) => void }).bsThanks;
+      if (ok && thanks) return thanks(msg, text);
       msg.className = `bs-msg ${ok ? 'bs-msg--ok' : 'bs-msg--err'}`;
       msg.textContent = text;
     };

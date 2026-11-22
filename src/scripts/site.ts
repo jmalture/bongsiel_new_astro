@@ -148,6 +148,42 @@ function initProgress() {
   update();
 }
 
+/** Big, cozy thank-you card instead of a plain line: first sentence is the heading. */
+function thanks(box: HTMLElement, text: string) {
+  const cut = text.indexOf('! ');
+  const m = cut > 0 && cut < 60 ? [text, text.slice(0, cut + 1), text.slice(cut + 2)] : null;
+  const head = m ? m[1] : 'Danke!';
+  const body = m ? m[2] : text;
+  box.className = (box.className.replace(/bs-msg[^ ]*/g, '') + ' bs-thanks').trim();
+  box.replaceChildren();
+  const badge = document.createElement('span');
+  badge.className = 'bs-thanks__badge';
+  badge.innerHTML =
+    '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path pathLength="1" d="M13 25l8 8 15-17"></path></svg>';
+  const h = document.createElement('p');
+  h.className = 'bs-thanks__h';
+  h.textContent = head;
+  const p = document.createElement('p');
+  p.className = 'bs-thanks__t';
+  p.textContent = body;
+  box.append(badge, h, p);
+  for (let i = 0; i < 7; i++) {
+    const s = document.createElement('i');
+    s.className = 'bs-thanks__spark';
+    s.setAttribute('aria-hidden', 'true');
+    s.style.setProperty('--x', 8 + i * 13 + '%');
+    s.style.setProperty('--d', i * 0.45 + 's');
+    box.append(s);
+  }
+  box.setAttribute('role', 'status');
+  box.scrollIntoView({
+    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    block: 'center',
+  });
+}
+
+(window as unknown as { bsThanks?: typeof thanks }).bsThanks = thanks;
+
 // 6. Small forms posting JSON: <form data-api="/api/x"> shows the answer in [data-msg].
 function initApiForms() {
   document.querySelectorAll<HTMLFormElement>('form[data-api]').forEach((form) => {
@@ -166,8 +202,11 @@ function initApiForms() {
         const out = await res.json().catch(() => ({}));
         if (msg) {
           msg.hidden = false;
-          msg.className = `bs-msg ${res.ok ? 'bs-msg--ok' : 'bs-msg--err'}`;
-          msg.textContent = out.message || (res.ok ? 'Danke!' : 'Das hat leider nicht geklappt.');
+          if (res.ok) thanks(msg, out.message || 'Danke!');
+          else {
+            msg.className = 'bs-msg bs-msg--err';
+            msg.textContent = out.message || 'Das hat leider nicht geklappt.';
+          }
         }
         if (res.ok) {
           form.reset();
