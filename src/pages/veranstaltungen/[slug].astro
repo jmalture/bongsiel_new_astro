@@ -1,0 +1,399 @@
+---
+import Base from '../../layouts/Base.astro';
+import CmsImage from '../../components/ui/CmsImage.astro';
+import tile from '../../assets/tile.svg?raw';
+import { PortableText } from 'emdash/ui';
+import { getEvents, getSite, hasPT } from '../../lib/cms';
+import { formatDate, isDate, nowBerlin, toMin } from '../../lib/booking';
+import { seatsFree } from '../../lib/service';
+
+const slug = Astro.params.slug!;
+const all = await getEvents();
+const want = Astro.url.searchParams.get('datum');
+const dates = all.filter((e) => (e.occurrenceOf ?? e.slug) === slug && !e.isPrivate);
+if (!dates.length) return Astro.rewrite('/404');
+const now = nowBerlin();
+const future = dates.filter((e) => e.date >= now.date);
+const e = (isDate(want) && dates.find((d) => d.date === want)) || future[0] || dates[dates.length - 1];
+const site = await getSite();
+const started = e.date < now.date || (e.date === now.date && !!e.start && toMin(e.start) <= now.minutes);
+const free = e.seats ? seatsFree(e.seats, e.slug, e.date) : 0;
+const when = formatDate(e.date);
+const typeNote =
+  e.type === 'kein-ala-carte'
+    ? 'An diesem Tag gibt es nur das Event-Menü, keine à-la-carte-Karte.'
+    : e.type === 'eingeschraenkte-karte'
+      ? 'An diesem Tag gibt es eine kleinere Karte.'
+      : '';
+---
+
+<Base
+  title={`${e.title} · ${formatDate(e.date, 'day')}`}
+  description={e.teaser || `${e.title} am ${when} im Dat swarte Peerd, Bongsiel.`}
+>
+  <article class="bs-evd bs-wrap">
+    <a class="bs-link bs-evd__back" href="/veranstaltungen/">
+      ← Alle Veranstaltungen
+    </a>
+    <div class="bs-evd__grid">
+      <div class="bs-evd__head">
+        <p class="bs-kicker" data-reveal>
+          {when}
+        </p>
+        <h1 class="bs-evd__h bs-lines">
+          <span class="bs-line">
+            <span>{e.title}</span>
+          </span>
+        </h1>
+      </div>
+      <div class="bs-evd__media">
+        <figure class="bs-photo bs-evd__img" data-wipe style="--wipe: var(--bs-linen)">
+          <CmsImage
+            image={e.image}
+            fallback="saal-tafel"
+            alt={`Plakat: ${e.title}`}
+            sizes="(max-width: 1000px) 92vw, 520px"
+            eager
+          />
+        </figure>
+      </div>
+      <div class="bs-evd__text">
+        <dl class="bs-evd__facts" data-reveal style="--i:2">
+          <div>
+            <dt>Datum</dt>
+            <dd>{formatDate(e.date, 'day')}</dd>
+          </div>
+          {e.start && (
+            <div>
+              <dt>Uhrzeit</dt>
+              <dd>
+                {e.start}
+                {e.end && ` – ${e.end}`} Uhr
+              </dd>
+            </div>
+          )}
+          {e.price && (
+            <div class="bs-evd__wide">
+              <dt>Preis</dt>
+              <dd>{e.price}</dd>
+            </div>
+          )}
+          {e.seats > 0 && (
+            <div>
+              <dt>Plätze</dt>
+              <dd>{free > 0 ? `${free} von ${e.seats} frei` : 'Ausgebucht'}</dd>
+            </div>
+          )}
+        </dl>
+        {typeNote && (
+          <p class="bs-evd__note" data-reveal style="--i:3">
+            {typeNote}
+          </p>
+        )}
+        {hasPT(e.body) ? (
+          <div class="bs-prose bs-evd__body" data-reveal style="--i:3">
+            <PortableText value={e.body as never} />
+          </div>
+        ) : (
+          e.teaser && (
+            <p class="bs-evd__body" data-reveal style="--i:3">
+              {e.teaser}
+            </p>
+          )
+        )}
+        {future.length > 1 && (
+          <nav class="bs-evd__dates" aria-label="Weitere Termine" data-reveal style="--i:4">
+            <p>Weitere Termine:</p>
+            {future.map((d) => (
+              <a
+                href={`/veranstaltungen/${slug}/?datum=${d.date}`}
+                aria-current={d.date === e.date ? 'true' : undefined}
+              >
+                {formatDate(d.date, 'day')}
+              </a>
+            ))}
+          </nav>
+        )}
+
+        <section class="bs-signup" id="anmeldung" aria-labelledby="bs-signup-h" data-reveal style="--i:5">
+          <span class="bs-tile bs-signup__tile" data-draw set:html={tile} />
+          {e.seats > 0 && !started && free > 0 ? (
+            <>
+              <h2 id="bs-signup-h" class="bs-signup__h">
+                Jetzt anmelden
+              </h2>
+              <p class="bs-signup__seats">
+                <span class="bs-signup__bar" style={`--s:${(free / e.seats).toFixed(3)}`} aria-hidden="true">
+                  <i />
+                </span>
+                <span data-free>{free}</span>&nbsp;von {e.seats} Plätzen frei
+              </p>
+              <form class="bs-signup__form" data-api="/api/anmeldung" data-signup>
+                <input type="hidden" name="event" value={slug} />
+                <input type="hidden" name="datum" value={e.date} />
+                <label class="bs-field">
+                  <span>Vorname *</span>
+                  <input class="bs-input" name="vorname" required autocomplete="given-name" maxlength="80" />
+                </label>
+                <label class="bs-field">
+                  <span>Nachname *</span>
+                  <input class="bs-input" name="nachname" required autocomplete="family-name" maxlength="80" />
+                </label>
+                <label class="bs-field">
+                  <span>Telefon *</span>
+                  <input class="bs-input" name="telefon" type="tel" required autocomplete="tel" maxlength="40" />
+                </label>
+                <label class="bs-field">
+                  <span>E-Mail *</span>
+                  <input class="bs-input" name="email" type="email" required autocomplete="email" maxlength="160" />
+                </label>
+                <label class="bs-field">
+                  <span>Personen *</span>
+                  <select class="bs-input" name="personen" required>
+                    {Array.from({ length: Math.min(10, free) }, (_, i) => (
+                      <option value={i + 1} selected={i === 1 || (free === 1 && i === 0)}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label class="bs-field bs-signup__wide">
+                  <span>Nachricht (z. B. Kinder, Allergien)</span>
+                  <input class="bs-input" name="notiz" maxlength="600" />
+                </label>
+                <label class="bs-check bs-signup__wide">
+                  <input type="checkbox" name="consent" required />
+                  <span>
+                    Ich habe die <a href="/datenschutz/">Datenschutzerklärung</a> gelesen. Die Daten werden 30 Tage nach
+                    der Veranstaltung gelöscht.
+                  </span>
+                </label>
+                <input class="bs-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <p class="bs-signup__pay bs-signup__wide">{site.payment}</p>
+                <button class="bs-btn bs-btn--ember bs-signup__wide" type="submit">
+                  Verbindlich anmelden
+                </button>
+                <p class="bs-signup__wide" data-msg hidden role="status"></p>
+              </form>
+              <p class="bs-signup__noshow">{site.noShow}</p>
+            </>
+          ) : e.seats > 0 ? (
+            <>
+              <h2 id="bs-signup-h" class="bs-signup__h">
+                {started ? 'Anmeldung geschlossen' : 'Ausgebucht'}
+              </h2>
+              <p>
+                Fragt gern telefonisch nach freien Plätzen: <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 id="bs-signup-h" class="bs-signup__h">
+                Einfach vorbeikommen
+              </h2>
+              <p>Für diese Veranstaltung braucht ihr keine Anmeldung – reserviert euch am besten einen Tisch.</p>
+              <a class="bs-btn bs-btn--ember" href={`/reservierung/?datum=${e.date}`}>
+                Tisch reservieren
+              </a>
+            </>
+          )}
+        </section>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<script>
+  document.querySelector('[data-signup]')?.addEventListener('sent', (ev) => {
+    const free = (ev as CustomEvent<{ free?: number }>).detail?.free;
+    const el = document.querySelector('[data-free]');
+    if (el && typeof free === 'number') el.textContent = String(free);
+  });
+</script>
+
+<style is:global>
+  .bs-evd {
+    padding-top: calc(var(--bs-header-h) + 40px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-evd__back {
+    margin-bottom: 24px;
+    font-size: 0.92rem;
+  }
+  .bs-evd__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-areas: 'media head' 'media text';
+    gap: clamp(32px, 6vw, 96px);
+    row-gap: 22px;
+    align-items: start;
+    grid-template-rows: auto 1fr;
+  }
+  .bs-evd__head {
+    grid-area: head;
+    display: grid;
+    gap: 16px;
+  }
+  .bs-evd__text {
+    grid-area: text;
+  }
+  .bs-evd__media {
+    grid-area: media;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--bs-header-h) + 24px);
+  }
+  .bs-evd__img {
+    border-radius: var(--bs-r-lg);
+    box-shadow: var(--bs-shadow-lg);
+  }
+  .bs-evd__img img {
+    height: auto;
+  }
+  .bs-evd__text {
+    display: grid;
+    gap: 22px;
+    min-width: 0;
+  }
+  .bs-evd__h {
+    font-size: clamp(1.6rem, 0.9rem + 3.4vw, 4rem);
+  }
+  .bs-evd__facts {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--bs-line);
+    border-radius: var(--bs-r);
+    overflow: hidden;
+    background: var(--bs-line);
+  }
+  .bs-evd__facts div {
+    padding: 14px 18px;
+    background: #fff;
+  }
+  .bs-evd__wide {
+    grid-column: 1 / -1;
+  }
+  .bs-evd__facts dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bs-grey);
+    font-weight: 600;
+  }
+  .bs-evd__facts dd {
+    margin: 2px 0 0;
+    font-weight: 600;
+  }
+  .bs-evd__note {
+    padding: 12px 16px;
+    border-left: 3px solid var(--bs-ember);
+    background: rgba(201, 131, 63, 0.1);
+    font-weight: 500;
+  }
+  .bs-evd__body {
+    color: var(--bs-grey);
+  }
+  .bs-evd__dates {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+  }
+  .bs-evd__dates a {
+    padding: 6px 12px;
+    border: 1px solid var(--bs-line);
+    border-radius: var(--bs-pill);
+    text-decoration: none;
+  }
+  .bs-evd__dates a[aria-current] {
+    background: var(--bs-olive);
+    color: var(--bs-cream);
+  }
+  .bs-signup {
+    position: relative;
+    margin-top: 12px;
+    padding: clamp(24px, 3vw, 36px);
+    border-radius: var(--bs-r-lg);
+    background: var(--bs-peat);
+    color: var(--bs-cream);
+    display: grid;
+    gap: 16px;
+  }
+  .bs-signup a {
+    color: inherit;
+  }
+  .bs-signup__tile {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    width: 42px;
+    color: var(--bs-delft-l);
+    opacity: 0.6;
+  }
+  .bs-signup__h {
+    font-size: 1.4rem;
+    padding-right: 56px;
+  }
+  .bs-signup__seats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--bs-sage-l);
+  }
+  .bs-signup__bar {
+    width: 120px;
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(243, 243, 236, 0.15);
+    overflow: hidden;
+  }
+  .bs-signup__bar i {
+    display: block;
+    height: 100%;
+    background: var(--bs-sage-l);
+    transform-origin: left;
+    transform: scaleX(var(--s));
+  }
+  .bs-signup__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .bs-signup__form .bs-field > span,
+  .bs-signup__form .bs-check {
+    color: rgba(243, 243, 236, 0.8);
+  }
+  .bs-signup__wide {
+    grid-column: 1 / -1;
+  }
+  .bs-signup__form .bs-btn {
+    justify-self: start;
+  }
+  .bs-signup__pay {
+    font-weight: 600;
+    color: var(--bs-ember-l);
+  }
+  .bs-signup__noshow {
+    font-size: 0.8rem;
+    color: rgba(243, 243, 236, 0.66);
+  }
+  @media (max-width: 1000px) {
+    .bs-evd__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'head' 'media' 'text';
+    }
+    .bs-evd__media {
+      position: static;
+      max-width: 520px;
+    }
+  }
+  @media (max-width: 560px) {
+    .bs-signup__form {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+/** Plain text page (Impressum, Datenschutz) from the "Seitentexte" collection. */
+import Base from '../../layouts/Base.astro';
+import PageHead from './PageHead.astro';
+import { PortableText } from 'emdash/ui';
+import { getPageText, hasPT } from '../../lib/cms';
+
+interface Props {
+  slug: string;
+  fallbackTitle: string;
+}
+const { slug, fallbackTitle } = Astro.props;
+const page = await getPageText(slug);
+---
+
+<Base title={page?.title || fallbackTitle} description={`${page?.title || fallbackTitle} – Mein Ziel Bongsiel`}>
+  <PageHead kicker="Rechtliches" title={page?.title || fallbackTitle} />
+  <article class="bs-text bs-wrap bs-prose">
+    {hasPT(page?.body) ? <PortableText value={page!.body as never} /> : <p>Dieser Text wird gerade überarbeitet.</p>}
+  </article>
+</Base>
+
+<style is:global>
+  .bs-text > * {
+    max-width: 760px;
+  }
+  .bs-text {
+    padding-bottom: clamp(80px, 10vw, 140px);
+    color: var(--bs-grey);
+  }
+  .bs-text h2,
+  .bs-text h3 {
+    font-family: var(--bs-body);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--bs-ink);
+    margin: 1.6em 0 0.5em;
+    font-size: 1.15rem;
+  }
+  .bs-text p + p {
+    margin-top: 0.8em;
+  }
+</style>

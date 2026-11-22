@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/ui/PageHead.astro';
+Astro.response.status = 404;
+---
+
+<Base title="Seite nicht gefunden" description="Diese Seite gibt es nicht (mehr)." noindex>
+  <PageHead
+    kicker="404"
+    title="Hier ist"
+    hand="nur Deich."
+    lead="Diese Seite gibt es nicht (mehr). Vielleicht sucht ihr eine davon:"
+  >
+    <p class="bs-404" data-reveal style="--i:4">
+      <a class="bs-btn bs-btn--ember" href="/reservierung/">
+        Tisch reservieren
+      </a>
+      <a class="bs-btn bs-btn--ghost" href="/speisen/">
+        Speisekarte
+      </a>
+      <a class="bs-btn bs-btn--ghost" href="/veranstaltungen/">
+        Veranstaltungen
+      </a>
+    </p>
+  </PageHead>
+  <div style="height: 80px"></div>
+</Base>
+
+<style is:global>
+  .bs-404 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+</style>

@@ -1,0 +1,203 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/ui/PageHead.astro';
+import CmsImage from '../components/ui/CmsImage.astro';
+import Photo from '../components/ui/Photo.astro';
+import EnquiryForm from '../components/ui/EnquiryForm.astro';
+import { getPageText, getRooms } from '../lib/cms';
+
+const [page, rooms] = await Promise.all([getPageText('uebernachten'), getRooms()]);
+const fallbacks = ['zimmer-doppel', 'reetdachhaus', 'fewo-wohnen', 'zimmer-einzel'] as const;
+---
+
+<Base
+  title="Übernachten"
+  description="Zimmer im Gasthaus und Reetdach-Ferienhäuser zwischen Bongsieler Kanal und Fischteichen in Ockholm."
+>
+  <PageHead
+    kicker="Übernachten"
+    title="Bleibt doch"
+    hand="über Nacht"
+    lead={page?.intro || 'Neben Tradition bieten wir in Bongsiel auch noch ein modernes Leben an.'}
+    photo="reetdachhaus"
+    photoAlt="Reetgedecktes Gästehaus aus rotem Backstein mit Rosen"
+  />
+  <section class="bs-ue bs-wrap">
+    <div class="bs-ue__rooms">
+      {rooms.map((r, i) => (
+        <article class="bs-ue__room" data-reveal style={`--i:${i}`}>
+          <figure class="bs-photo bs-ue__ph">
+            <CmsImage
+              image={r.image}
+              fallback={fallbacks[i % fallbacks.length]}
+              alt={r.title}
+              sizes="(max-width: 900px) 92vw, 420px"
+            />
+          </figure>
+          <div class="bs-ue__body">
+            <h2 class="bs-ue__t">{r.title}</h2>
+            {r.text && <p class="bs-ue__d">{r.text}</p>}
+            {r.features.length > 0 && (
+              <ul class="bs-ue__f">
+                {r.features.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+            )}
+            <div class="bs-ue__foot">
+              {r.price && <span class="bs-ue__price">{r.price}</span>}
+              {r.link ? (
+                <a class="bs-btn" href={r.link} target="_blank" rel="noopener">
+                  Verfügbarkeit ansehen ↗
+                </a>
+              ) : (
+                <a class="bs-btn" href="#anfrage">
+                  Anfragen
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="bs-ue__out">
+      <figure class="bs-photo bs-ue__big" data-wipe style="--wipe: var(--bs-linen)">
+        <Photo
+          name="teich-boot"
+          alt="Fischteich mit Sandstrand und grünem Ruderboot"
+          sizes="(max-width: 900px) 92vw, 60vw"
+        />
+      </figure>
+      <div class="bs-ue__outtext">
+        <p class="bs-kicker" data-reveal>
+          Draußen
+        </p>
+        <h2 class="bs-h2 bs-lines">
+          <span class="bs-line">
+            <span>Zwischen Kanal</span>
+          </span>
+          <span class="bs-line" style="--l:1">
+            <span class="bs-hand">und Fischteichen</span>
+          </span>
+        </h2>
+        <p class="bs-lead" data-reveal style="--i:2">
+          Idyllisch zwischen Kanal und Fischteichen gelegen, bietet ein großzügiges Grundstück für Erholung und
+          Freizeit. Spielgeräte im Garten sorgen für Abwechslung bei Kindern. Vor Ort besteht die Möglichkeit, ein
+          Stand-up-Paddleboard auszuleihen und auf dem Bongsieler Kanal zu paddeln.
+        </p>
+      </div>
+    </div>
+
+    <div class="bs-ue__ask" id="anfrage">
+      <div>
+        <p class="bs-kicker" data-reveal>
+          Anfrage
+        </p>
+        <h2 class="bs-h2" data-reveal style="--i:1">
+          Zimmer anfragen
+        </h2>
+        <p class="bs-lead" data-reveal style="--i:2">
+          Sagt uns, wann ihr kommen wollt – wir melden uns mit Verfügbarkeit und Preis.
+        </p>
+      </div>
+      <div data-reveal style="--i:2">
+        <EnquiryForm kind="zimmer" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .bs-ue {
+    display: grid;
+    gap: clamp(64px, 9vw, 120px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-ue__rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
+  }
+  .bs-ue__room {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: var(--bs-r-lg);
+    overflow: clip;
+    background: #fff;
+    border: 1px solid var(--bs-line);
+  }
+  .bs-ue__ph {
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+  }
+  .bs-ue__body {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 24px;
+  }
+  .bs-ue__t {
+    font-size: 1.1rem;
+  }
+  .bs-ue__d {
+    color: var(--bs-grey);
+    font-size: 0.95rem;
+  }
+  .bs-ue__f {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .bs-ue__f li {
+    padding: 4px 10px;
+    border-radius: var(--bs-pill);
+    background: var(--bs-cream);
+    font-size: 0.82rem;
+  }
+  .bs-ue__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .bs-ue__price {
+    font-weight: 600;
+    color: var(--bs-sage-d);
+  }
+  .bs-ue__out {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
+  }
+  .bs-ue__big {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--bs-r-lg);
+  }
+  .bs-ue__outtext .bs-lead {
+    margin-top: 18px;
+  }
+  .bs-ue__ask {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 6vw, 96px);
+    padding: clamp(28px, 5vw, 64px);
+    border-radius: var(--bs-r-lg);
+    background: var(--bs-cream);
+  }
+  .bs-ue__ask .bs-lead {
+    margin-top: 14px;
+  }
+  @media (max-width: 900px) {
+    .bs-ue__out,
+    .bs-ue__ask {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

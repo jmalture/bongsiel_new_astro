@@ -1,0 +1,83 @@
+---
+/** Enquiry for a celebration (feier) or a room stay (zimmer); posts to /api/anfrage. */
+interface Props {
+  kind: 'feier' | 'zimmer';
+  topics?: string[];
+}
+const { kind, topics = [] } = Astro.props;
+const zimmer = kind === 'zimmer';
+---
+
+<form class="bs-enq" data-api="/api/anfrage">
+  <input type="hidden" name="art" value={kind} />
+  <label class="bs-field">
+    <span>Name *</span>
+    <input class="bs-input" name="name" required autocomplete="name" maxlength="120" />
+  </label>
+  <label class="bs-field">
+    <span>E-Mail *</span>
+    <input class="bs-input" name="email" type="email" required autocomplete="email" maxlength="160" />
+  </label>
+  <label class="bs-field">
+    <span>Telefon</span>
+    <input class="bs-input" name="telefon" type="tel" autocomplete="tel" maxlength="40" />
+  </label>
+  <label class="bs-field">
+    <span>Personen</span>
+    <input class="bs-input" name="personen" type="number" min="1" max="500" inputmode="numeric" />
+  </label>
+  <label class="bs-field">
+    <span>{zimmer ? 'Anreise *' : 'Datum der Feier *'}</span>
+    <input class="bs-input" name="von" type="date" required />
+  </label>
+  {zimmer ? (
+    <label class="bs-field">
+      <span>Abreise *</span>
+      <input class="bs-input" name="bis" type="date" required />
+    </label>
+  ) : (
+    <label class="bs-field">
+      <span>Anlass</span>
+      <select class="bs-input" name="thema">
+        <option value="">Bitte wählen</option>
+        {topics.map((t) => (
+          <option>{t}</option>
+        ))}
+      </select>
+    </label>
+  )}
+  <label class="bs-field bs-enq__wide">
+    <span>Nachricht</span>
+    <textarea class="bs-input" name="nachricht" maxlength="2000" rows="4"></textarea>
+  </label>
+  <label class="bs-check bs-enq__wide">
+    <input type="checkbox" name="consent" required />
+    <span>
+      Ich habe die <a href="/datenschutz/">Datenschutzerklärung</a> gelesen.
+    </span>
+  </label>
+  <input class="bs-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <button class="bs-btn bs-btn--ember bs-enq__wide" type="submit">
+    Anfrage senden
+  </button>
+  <p class="bs-enq__wide" data-msg hidden role="status"></p>
+</form>
+
+<style is:global>
+  .bs-enq {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .bs-enq__wide {
+    grid-column: 1 / -1;
+  }
+  .bs-enq .bs-btn {
+    justify-self: start;
+  }
+  @media (max-width: 560px) {
+    .bs-enq {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

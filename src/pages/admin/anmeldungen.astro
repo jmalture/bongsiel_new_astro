@@ -1,0 +1,285 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { loginUrl, staff } from '../../lib/auth';
+import { getDb } from '../../lib/db';
+import { getEvents } from '../../lib/cms';
+import { formatDate, nowBerlin } from '../../lib/booking';
+import { seatsTaken } from '../../lib/service';
+
+if (!staff(Astro.locals)) return Astro.redirect(loginUrl('/admin/anmeldungen/'));
+const today = nowBerlin().date;
+const all = (await getEvents()).filter((e) => e.seats > 0);
+const upcoming = all.filter((e) => e.date >= today);
+const past = all.filter((e) => e.date < today).slice(-5);
+const qs = Astro.url.searchParams;
+const ev =
+  all.find((e) => e.slug === qs.get('event') && e.date === qs.get('datum')) ?? upcoming[0] ?? past[past.length - 1];
+type Row = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  email: string;
+  persons: number;
+  note: string;
+  status: string;
+  source: string;
+  created_at: string;
+};
+const rows = ev
+  ? (getDb()
+      .prepare(`SELECT * FROM signups WHERE event_slug = ? AND event_date = ? ORDER BY status, last_name, first_name`)
+      .all(ev.slug, ev.date) as unknown as Row[])
+  : [];
+const taken = ev ? seatsTaken(ev.slug, ev.date) : 0;
+const act = (o: object) => JSON.stringify(o);
+const key = (e: { slug: string; date: string }) => `?event=${e.slug}&datum=${e.date}`;
+---
+
+<Admin title="Anmeldungen">
+  <div class="ad-top">
+    <div>
+      <h1 class="ad-h1">Anmeldungen</h1>
+      <p class="ad-sub">Veranstaltungen mit begrenzten Plätzen. Plätze stellt ihr bei der Veranstaltung ein.</p>
+    </div>
+    {ev && (
+      <div class="ad-row ad-noprint">
+        <a class="ad-btn" href={`/api/admin?export=signups&event=${ev.slug}&datum=${ev.date}`}>
+          CSV (Excel)
+        </a>
+        <button class="ad-btn" type="button" onclick="print()">
+          Drucken
+        </button>
+      </div>
+    )}
+  </div>
+
+  {all.length === 0 ? (
+    <div class="ad-card ad-empty">
+      Keine Veranstaltung mit Anmeldung. Bei einer Veranstaltung „Plätze für Anmeldung“ eintragen.
+      <br />
+      <a class="ad-btn" href="/_emdash/admin/content/veranstaltungen" style="margin-top:14px">
+        Zu den Veranstaltungen
+      </a>
+    </div>
+  ) : (
+    <>
+      <nav class="ad-evs ad-noprint" aria-label="Veranstaltung wählen">
+        {[...upcoming, ...past.reverse()].map((e) => {
+          const t = seatsTaken(e.slug, e.date);
+          return (
+            <a
+              href={key(e)}
+              class:list={{ 'is-on': ev && e.slug === ev.slug && e.date === ev.date, 'is-past': e.date < today }}
+            >
+              <b>{e.title}</b>
+              <span>
+                {formatDate(e.date, 'day')} · {t}/{e.seats}
+              </span>
+              <i style={`--s:${Math.min(1, t / e.seats).toFixed(3)}`} />
+            </a>
+          );
+        })}
+      </nav>
+
+      {ev && (
+        <div data-live-list="signups">
+          <div class="ad-kpis">
+            <div class="ad-card ad-kpi">
+              <b>{taken}</b>
+              <span>angemeldet</span>
+            </div>
+            <div class="ad-card ad-kpi">
+              <b>{Math.max(0, ev.seats - taken)}</b>
+              <span>frei von {ev.seats}</span>
+            </div>
+            <div class="ad-card ad-kpi">
+              <b>{rows.filter((r) => r.status !== 'storniert').length}</b>
+              <span>Buchungen</span>
+            </div>
+          </div>
+          {rows.length === 0 ? (
+            <div class="ad-card ad-empty">Noch keine Anmeldungen.</div>
+          ) : (
+            <div class="ad-card">
+              <table class="ad-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Pers.</th>
+                    <th>Kontakt</th>
+                    <th>Nachricht</th>
+                    <th class="ad-noprint" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr class:list={{ 'is-off': r.status === 'storniert' }}>
+                      <td>
+                        <b>
+                          {r.last_name}, {r.first_name}
+                        </b>
+                        {r.source === 'telefon' && <span class="ad-pill">Telefon</span>}
+                        {r.status === 'storniert' && <span class="ad-pill ad-pill--off">Storniert</span>}
+                      </td>
+                      <td class="ad-num">{r.persons}</td>
+                      <td>
+                        {r.phone && <a href={`tel:${r.phone}`}>{r.phone}</a>}
+                        {r.email && <span class="ad-small">{r.email}</span>}
+                      </td>
+                      <td class="ad-small">{r.note}</td>
+                      <td class="ad-noprint ad-right">
+                        {r.status === 'storniert' ? (
+                          <button
+                            class="ad-btn ad-btn--sm"
+                            data-act={act({ action: 'sign.status', id: r.id, status: 'angemeldet' })}
+                            data-done="Wiederhergestellt"
+                          >
+                            Zurück
+                          </button>
+                        ) : (
+                          <button
+                            class="ad-btn ad-btn--sm"
+                            data-act={act({ action: 'sign.status', id: r.id, status: 'storniert' })}
+                            data-confirm="Wirklich?"
+                            data-done="Storniert"
+                          >
+                            Storno
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {ev && (
+        <details class="ad-card ad-new ad-noprint">
+          <summary>+ Telefonische Anmeldung</summary>
+          <form class="ad-form" data-act-form="sign.create" data-done="Anmeldung eingetragen">
+            <input type="hidden" name="event" value={ev.slug} />
+            <input type="hidden" name="datum" value={ev.date} />
+            <label>
+              Name
+              <input class="ad-input" name="name" required maxlength="160" />
+            </label>
+            <label>
+              Personen
+              <input class="ad-input" type="number" name="personen" min="1" max="50" value="2" required />
+            </label>
+            <label>
+              Telefon
+              <input class="ad-input" name="telefon" type="tel" maxlength="40" />
+            </label>
+            <label class="ad-wide">
+              Nachricht
+              <input class="ad-input" name="notiz" maxlength="600" />
+            </label>
+            <div class="ad-wide">
+              <button class="ad-btn ad-btn--main" type="submit">
+                Eintragen
+              </button>
+            </div>
+          </form>
+        </details>
+      )}
+    </>
+  )}
+</Admin>
+
+<style is:global>
+  .ad-evs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .ad-evs a {
+    position: relative;
+    display: grid;
+    gap: 2px;
+    padding: 12px 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--ad-line);
+    background: var(--ad-card);
+    text-decoration: none;
+    overflow: hidden;
+  }
+  .ad-evs a.is-on {
+    border-color: var(--ad-olive);
+    box-shadow: inset 0 0 0 1px var(--ad-olive);
+  }
+  .ad-evs a.is-past {
+    opacity: 0.55;
+  }
+  .ad-evs span {
+    font-size: 0.85rem;
+    color: var(--ad-grey);
+  }
+  .ad-evs i {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 100%;
+    background: var(--ad-sage);
+    transform-origin: left;
+    transform: scaleX(var(--s));
+  }
+  .ad-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .ad-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ad-grey);
+    border-bottom: 1px solid var(--ad-line);
+  }
+  .ad-table td {
+    padding: 12px 16px;
+    border-top: 1px solid var(--ad-line);
+    vertical-align: top;
+  }
+  .ad-table tr.is-off td {
+    opacity: 0.5;
+  }
+  .ad-table td b {
+    margin-right: 6px;
+  }
+  .ad-num {
+    font-weight: 600;
+  }
+  .ad-small {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--ad-grey);
+  }
+  .ad-right {
+    text-align: right;
+  }
+  .ad-new {
+    margin-top: 18px;
+  }
+  @media (max-width: 760px) {
+    .ad-table thead {
+      display: none;
+    }
+    .ad-table tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      border-top: 1px solid var(--ad-line);
+      padding: 10px 6px;
+    }
+    .ad-table td {
+      border: 0;
+      padding: 4px 10px;
+    }
+  }
+</style>

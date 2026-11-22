@@ -1,0 +1,422 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { loginUrl, staff } from '../../lib/auth';
+import { getDb } from '../../lib/db';
+import { getBookingContext } from '../../lib/cms';
+import { ROOMS, addDays, dayInfo, formatDate, isDate, nowBerlin } from '../../lib/booking';
+import { seatsTaken } from '../../lib/service';
+
+if (!staff(Astro.locals)) return Astro.redirect(loginUrl('/admin/'));
+const now = nowBerlin();
+const q = Astro.url.searchParams.get('datum');
+const date = isDate(q) ? q : now.date;
+const ctx = await getBookingContext();
+const info = dayInfo(date, ctx.site.week, ctx.exceptions, ctx.days);
+type Row = {
+  id: number;
+  time: string;
+  party: number;
+  name: string;
+  phone: string;
+  email: string;
+  room: string;
+  note: string;
+  table_no: string;
+  status: string;
+  source: string;
+};
+const rows = getDb()
+  .prepare(`SELECT * FROM reservations WHERE date = ? ORDER BY time, id`)
+  .all(date) as unknown as Row[];
+const active = rows.filter((r) => !['storniert', 'no-show'].includes(r.status));
+const guests = active.reduce((s, r) => s + r.party, 0);
+const open = rows.filter((r) => r.status === 'angefragt').length;
+const dayEvents = ctx.events.filter((e) => e.date === date && e.seats > 0);
+const strip = Array.from({ length: 7 }, (_, i) => addDays(date, i - 3));
+const counts = new Map(
+  (
+    getDb()
+      .prepare(
+        `SELECT date, COUNT(*) n, SUM(party) g FROM reservations WHERE date BETWEEN ? AND ? AND status NOT IN ('storniert','no-show') GROUP BY date`,
+      )
+      .all(strip[0], strip[6]) as { date: string; n: number; g: number }[]
+  ).map((r) => [r.date, r]),
+);
+const ALERT = /allerg|unverträg|laktose|gluten|nuss|vegan|vegetar|rollstuhl|kinderstuhl|geburtstag/i;
+const statusPill: Record<string, [string, string]> = {
+  angefragt: ['Anfrage', 'warn'],
+  bestaetigt: ['Bestätigt', 'blue'],
+  angekommen: ['Da', 'ok'],
+  storniert: ['Storniert', 'off'],
+  'no-show': ['No-Show', 'off'],
+};
+const act = (o: object) => JSON.stringify(o);
+---
+
+<Admin title="Reservierungen">
+  <div class="ad-top">
+    <div>
+      <h1 class="ad-h1">{date === now.date ? 'Heute' : formatDate(date, 'day')}</h1>
+      <p class="ad-sub">
+        {formatDate(date)}
+        {info.open
+          ? ` · geöffnet ${info.windows.map((w) => `${w.from}–${w.to}`).join(', ')}`
+          : ` · ${info.note || 'geschlossen'}`}
+      </p>
+    </div>
+    <div class="ad-row ad-noprint">
+      <a class="ad-btn" href={`?datum=${addDays(date, -1)}`} aria-label="Vorheriger Tag">
+        ‹
+      </a>
+      <input class="ad-input" type="date" value={date} data-date-nav aria-label="Datum wählen" />
+      <a class="ad-btn" href={`?datum=${addDays(date, 1)}`} aria-label="Nächster Tag">
+        ›
+      </a>
+      {date !== now.date && (
+        <a class="ad-btn" href="/admin/">
+          Heute
+        </a>
+      )}
+      <button class="ad-btn" type="button" onclick="print()">
+        Drucken
+      </button>
+    </div>
+  </div>
+
+  <nav class="ad-strip ad-noprint" aria-label="Woche">
+    {strip.map((d) => {
+      const c = counts.get(d);
+      const di = dayInfo(d, ctx.site.week, ctx.exceptions, ctx.days);
+      return (
+        <a href={`?datum=${d}`} class:list={{ 'is-on': d === date, 'is-closed': !di.open }}>
+          <span>{formatDate(d, 'day')}</span>
+          <b>{c ? `${c.g} Gäste` : di.open ? '–' : 'zu'}</b>
+        </a>
+      );
+    })}
+  </nav>
+
+  <div data-live-list="day" data-autorefresh>
+    <div class="ad-kpis">
+      <div class="ad-card ad-kpi">
+        <b>{active.length}</b>
+        <span>Reservierungen</span>
+      </div>
+      <div class="ad-card ad-kpi">
+        <b>{guests}</b>
+        <span>Gäste</span>
+      </div>
+      <div class="ad-card ad-kpi">
+        <b>{active.filter((r) => r.status === 'angekommen').length}</b>
+        <span>schon da</span>
+      </div>
+      {open > 0 && (
+        <div class="ad-card ad-kpi ad-kpi--warn">
+          <b>{open}</b>
+          <span>offene Anfragen</span>
+        </div>
+      )}
+      {dayEvents.map((e) => (
+        <a class="ad-card ad-kpi ad-kpi--ev" href={`/admin/anmeldungen/?event=${e.slug}&datum=${e.date}`}>
+          <b>
+            {seatsTaken(e.slug, e.date)} / {e.seats}
+          </b>
+          <span>
+            {e.title} ({e.start})
+          </span>
+        </a>
+      ))}
+    </div>
+
+    {rows.length === 0 ? (
+      <div class="ad-card ad-empty">Keine Reservierungen an diesem Tag.</div>
+    ) : (
+      <div class="ad-card ad-list">
+        {rows.map((r) => {
+          const [label, tone] = statusPill[r.status] ?? [r.status, ''];
+          const off = r.status === 'storniert' || r.status === 'no-show';
+          return (
+            <article class:list={['ad-res', { 'is-off': off, 'is-here': r.status === 'angekommen' }]}>
+              <div class="ad-res__time">{r.time}</div>
+              <div class="ad-res__party">
+                <b>{r.party}</b>
+                <span>Pers.</span>
+              </div>
+              <div class="ad-res__who">
+                <p class="ad-res__name">
+                  {r.name} <span class={`ad-pill ad-pill--${tone}`}>{label}</span>
+                  {r.source === 'telefon' && <span class="ad-pill">Telefon</span>}
+                </p>
+                <p class="ad-res__meta">
+                  {r.phone && <a href={`tel:${r.phone}`}>{r.phone}</a>}
+                  {r.room && r.room !== 'ohne Präferenz' && <span>· {r.room}</span>}
+                </p>
+                {r.note && <p class:list={['ad-res__note', { 'is-alert': ALERT.test(r.note) }]}>{r.note}</p>}
+              </div>
+              <label class="ad-res__table">
+                <span>Tisch</span>
+                <input class="ad-input" value={r.table_no ?? ''} data-table={r.id} maxlength="20" inputmode="numeric" />
+              </label>
+              <div class="ad-res__acts ad-noprint">
+                {r.status === 'angefragt' && (
+                  <button
+                    class="ad-btn ad-btn--sm ad-btn--main"
+                    data-act={act({ action: 'res.status', id: r.id, status: 'bestaetigt' })}
+                    data-done="Bestätigt"
+                  >
+                    Bestätigen
+                  </button>
+                )}
+                {!off && r.status !== 'angekommen' && (
+                  <button
+                    class="ad-btn ad-btn--sm"
+                    data-act={act({ action: 'res.status', id: r.id, status: 'angekommen' })}
+                    data-done="Als da markiert"
+                  >
+                    Da
+                  </button>
+                )}
+                {!off && (
+                  <button
+                    class="ad-btn ad-btn--sm"
+                    data-act={act({ action: 'res.status', id: r.id, status: 'storniert' })}
+                    data-confirm="Wirklich?"
+                    data-done="Storniert"
+                  >
+                    Storno
+                  </button>
+                )}
+                {!off && r.status !== 'angekommen' && (
+                  <button
+                    class="ad-btn ad-btn--sm"
+                    data-act={act({ action: 'res.status', id: r.id, status: 'no-show' })}
+                    data-confirm="Wirklich?"
+                    data-done="No-Show"
+                  >
+                    No-Show
+                  </button>
+                )}
+                {off && (
+                  <button
+                    class="ad-btn ad-btn--sm"
+                    data-act={act({ action: 'res.status', id: r.id, status: 'bestaetigt' })}
+                    data-done="Wiederhergestellt"
+                  >
+                    Zurück
+                  </button>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    )}
+  </div>
+
+  <details class="ad-card ad-new ad-noprint">
+    <summary>+ Telefonische Reservierung</summary>
+    <form class="ad-form" data-act-form="res.create" data-done="Reservierung eingetragen">
+      <label>
+        Datum
+        <input class="ad-input" type="date" name="datum" value={date} required />
+      </label>
+      <label>
+        Uhrzeit
+        <input class="ad-input" type="time" name="zeit" step="900" required />
+      </label>
+      <label>
+        Personen
+        <input class="ad-input" type="number" name="personen" min="1" max="200" value="2" required />
+      </label>
+      <label>
+        Name
+        <input class="ad-input" name="name" required maxlength="120" />
+      </label>
+      <label>
+        Telefon
+        <input class="ad-input" name="telefon" type="tel" maxlength="40" />
+      </label>
+      <label>
+        Tisch
+        <input class="ad-input" name="tisch" maxlength="20" />
+      </label>
+      <label>
+        Platz
+        <select class="ad-input" name="raum">
+          {ROOMS.map((r) => (
+            <option>{r}</option>
+          ))}
+        </select>
+      </label>
+      <label class="ad-wide">
+        Notiz
+        <input class="ad-input" name="notiz" maxlength="1000" />
+      </label>
+      <div class="ad-wide">
+        <button class="ad-btn ad-btn--main" type="submit">
+          Eintragen
+        </button>
+      </div>
+    </form>
+  </details>
+</Admin>
+
+<style is:global>
+  .ad-strip {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .ad-strip a {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--ad-line);
+    background: var(--ad-card);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: border-color 150ms var(--ad-ease);
+  }
+  .ad-strip a:hover {
+    border-color: var(--ad-sage);
+  }
+  .ad-strip a.is-on {
+    background: var(--ad-olive);
+    border-color: var(--ad-olive);
+    color: #f3f3ec;
+  }
+  .ad-strip a.is-closed:not(.is-on) {
+    opacity: 0.5;
+  }
+  .ad-strip span {
+    color: inherit;
+    opacity: 0.75;
+  }
+  .ad-kpi--warn b {
+    color: #8a4a12;
+  }
+  .ad-kpi--ev {
+    text-decoration: none;
+    border-color: #c9d5e6;
+  }
+  .ad-kpi--ev b {
+    color: var(--ad-blue);
+  }
+  .ad-list {
+    overflow: hidden;
+  }
+  .ad-res {
+    display: grid;
+    grid-template-columns: 64px 54px minmax(0, 1fr) 90px auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--ad-line);
+    transition: background-color 200ms var(--ad-ease);
+  }
+  .ad-res:first-child {
+    border-top: 0;
+  }
+  .ad-res.is-here {
+    background: #f4f8ef;
+  }
+  .ad-res.is-off {
+    opacity: 0.5;
+  }
+  .ad-res.is-off .ad-res__name {
+    text-decoration: line-through;
+  }
+  .ad-res__time {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .ad-res__party {
+    display: grid;
+    justify-items: center;
+    padding: 6px 0;
+    border-radius: 10px;
+    background: var(--ad-bg);
+    line-height: 1.1;
+  }
+  .ad-res__party b {
+    font-size: 1.15rem;
+  }
+  .ad-res__party span {
+    font-size: 0.72rem;
+    color: var(--ad-grey);
+  }
+  .ad-res__name {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .ad-res__meta {
+    margin: 2px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: var(--ad-grey);
+  }
+  .ad-res__note {
+    margin: 6px 0 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--ad-bg);
+    font-size: 0.88rem;
+  }
+  .ad-res__note.is-alert {
+    background: #fbe9d8;
+    color: #6e3a0d;
+    font-weight: 500;
+  }
+  .ad-res__table {
+    display: grid;
+    gap: 2px;
+    font-size: 0.72rem;
+    color: var(--ad-grey);
+  }
+  .ad-res__table .ad-input {
+    width: 100%;
+    min-height: 36px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .ad-res__acts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .ad-btn.is-armed {
+    background: var(--ad-red);
+    border-color: var(--ad-red);
+    color: #fff;
+  }
+  .ad-new {
+    margin-top: 18px;
+  }
+  @media (max-width: 760px) {
+    .ad-res {
+      grid-template-columns: 56px 48px minmax(0, 1fr);
+    }
+    .ad-res__table {
+      grid-column: 2 / span 1;
+    }
+    .ad-res__acts {
+      grid-column: 3;
+      justify-content: flex-start;
+    }
+    .ad-strip {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .ad-strip a:nth-child(n + 5) {
+      display: none;
+    }
+  }
+</style>

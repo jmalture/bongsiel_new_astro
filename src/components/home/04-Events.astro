@@ -1,0 +1,46 @@
+---
+import EventCard from '../events/EventCard.astro';
+import type { EventItem } from '../../lib/cms';
+
+interface Props {
+  events: EventItem[];
+}
+const { events } = Astro.props;
+---
+
+<section class="bs-hev bs-section bs-cream" aria-labelledby="bs-hev-h">
+  <div class="bs-wrap">
+    <div class="bs-head">
+      <div>
+        <p class="bs-kicker" data-reveal>
+          Veranstaltungen
+        </p>
+        <h2 id="bs-hev-h" class="bs-h2 bs-lines">
+          <span class="bs-line" style="--l:0">
+            <span>Was bei uns</span>
+          </span>
+          <span class="bs-line" style="--l:1">
+            <span>
+              <span class="bs-hand">als Nächstes</span> los ist
+            </span>
+          </span>
+        </h2>
+      </div>
+      <a href="/veranstaltungen/" class="bs-btn bs-btn--ghost" data-reveal style="--i:2">
+        Alle Veranstaltungen
+      </a>
+    </div>
+    {events.length ? (
+      <div class="bs-hev__grid">
+        {events.map((e, i) => (
+          <EventCard event={e} i={i} />
+        ))}
+      </div>
+    ) : (
+      <p class="bs-lead" data-reveal>
+        Gerade ist nichts geplant – die nächsten Termine stehen bald hier. Ein Tisch ist trotzdem frei:{' '}
+        <a href="/reservierung/">jetzt reservieren</a>.
+      </p>
+    )}
+  </div>
+</section>

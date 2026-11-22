@@ -1,0 +1,164 @@
+---
+import Photo from '../ui/Photo.astro';
+import tile from '../../assets/tile.svg?raw';
+import type { MenuCard } from '../../lib/cms';
+
+interface Props {
+  menu?: MenuCard;
+}
+const { menu } = Astro.props;
+// A short taste of the current card: the first dish of each section with a price, up to five.
+const picks =
+  menu?.sections
+    .map((s) => s.dishes.find((d) => d.price))
+    .filter((d): d is NonNullable<typeof d> => !!d)
+    .slice(0, 5) ?? [];
+---
+
+<section class="bs-hmenu bs-section" aria-labelledby="bs-hmenu-h">
+  <div class="bs-hmenu__grid bs-wrap">
+    <figure class="bs-photo bs-hmenu__photo" data-wipe style="--wipe: var(--bs-linen)">
+      <Photo
+        name="lammhaxe"
+        alt="Geschmorte Lammhaxe mit grünen Bohnen und Rotweinsauce"
+        sizes="(max-width: 900px) 92vw, 110vw"
+        position="40% 50%"
+      />
+    </figure>
+    <div class="bs-hmenu__card">
+      <span class="bs-tile bs-hmenu__tile" data-draw set:html={tile} />
+      <p class="bs-kicker" data-reveal>
+        Aus der Küche
+      </p>
+      <h2 id="bs-hmenu-h" class="bs-h2 bs-lines">
+        <span class="bs-line" style="--l:0">
+          <span>Regional,</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span>
+            <span class="bs-hand">frisch gekocht</span>
+          </span>
+        </span>
+      </h2>
+      {menu && (
+        <p class="bs-hmenu__sub" data-reveal style="--i:2">
+          {menu.subtitle || menu.title}
+        </p>
+      )}
+      {picks.length > 0 && (
+        <ul class="bs-hmenu__list">
+          {picks.map((d, i) => (
+            <li data-reveal style={`--i:${i + 2}`}>
+              <span class="bs-hmenu__name">{d.name}</span>
+              <span class="bs-hmenu__dots" aria-hidden="true" />
+              <span class="bs-hmenu__price">{d.price.includes('€') ? d.price : `${d.price} €`}</span>
+              {d.text && <span class="bs-hmenu__desc">{d.text}</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div class="bs-hmenu__cta" data-reveal style="--i:7">
+        <a class="bs-btn" href="/speisen/">
+          Ganze Speisekarte
+        </a>
+        <a class="bs-link" href="/speisekarten/">
+          Alle Karten &amp; Buffets
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .bs-hmenu {
+    background: var(--bs-linen);
+  }
+  .bs-hmenu__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 80px);
+    align-items: stretch;
+  }
+  .bs-hmenu__photo {
+    min-height: 560px;
+    border-radius: var(--bs-r-lg);
+  }
+  .bs-hmenu__photo img {
+    position: absolute;
+    inset: 0;
+  }
+  .bs-hmenu__card {
+    position: relative;
+    padding: clamp(28px, 4vw, 56px);
+    border-radius: var(--bs-r-lg);
+    background: #fff;
+    border: 1px solid var(--bs-line);
+  }
+  .bs-hmenu__tile {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 44px;
+  }
+  .bs-hmenu__card .bs-h2 {
+    margin-top: 14px;
+  }
+  .bs-hmenu__sub {
+    margin-top: 10px;
+    color: var(--bs-grey);
+    font-weight: 500;
+  }
+  .bs-hmenu__list {
+    list-style: none;
+    margin: 28px 0 32px;
+    padding: 0;
+    display: grid;
+    gap: 18px;
+  }
+  .bs-hmenu__list li {
+    display: grid;
+    grid-template-columns: auto minmax(16px, 1fr) auto;
+    align-items: baseline;
+    gap: 2px 10px;
+  }
+  .bs-hmenu__name {
+    font-weight: 600;
+  }
+  .bs-hmenu__dots {
+    border-bottom: 1px dotted rgba(20, 23, 17, 0.35);
+    transform: translateY(-4px);
+  }
+  .bs-hmenu__price {
+    font-weight: 600;
+    color: var(--bs-sage-d);
+    white-space: nowrap;
+  }
+  .bs-hmenu__desc {
+    grid-column: 1 / -1;
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+  }
+  .bs-hmenu__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 22px;
+  }
+  @media (max-width: 900px) {
+    .bs-hmenu__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-hmenu__photo {
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+    }
+  }
+  @media (max-width: 520px) {
+    .bs-hmenu__list li {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .bs-hmenu__dots {
+      display: none;
+    }
+  }
+</style>

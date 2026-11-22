@@ -1,0 +1,176 @@
+---
+import Photo from '../ui/Photo.astro';
+import { addDays, dayInfo, nowBerlin, WEEKDAYS, type DayEvent, type Exception, type WeekRule } from '../../lib/booking';
+
+interface Props {
+  week: WeekRule[];
+  exceptions: Exception[];
+  days: DayEvent[];
+}
+const { week, exceptions, days } = Astro.props;
+const today = nowBerlin().date;
+const strip = Array.from({ length: 14 }, (_, i) => dayInfo(addDays(today, i), week, exceptions, days));
+const label = (t: string, open: boolean) =>
+  !open
+    ? 'Geschlossen'
+    : t === 'kein-ala-carte'
+      ? 'Event-Menü'
+      : t === 'eingeschraenkte-karte'
+        ? 'Kleine Karte'
+        : t === 'event'
+          ? 'Veranstaltung'
+          : 'Geöffnet';
+---
+
+<section class="bs-book bs-section bs-dark bs-grain" aria-labelledby="bs-book-h">
+  <div class="bs-book__grid bs-wrap">
+    <div class="bs-book__text">
+      <p class="bs-kicker" data-reveal>
+        Reservierung
+      </p>
+      <h2 id="bs-book-h" class="bs-h2 bs-lines">
+        <span class="bs-line" style="--l:0">
+          <span>Euer Tisch</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span>
+            <span class="bs-hand">wartet schon</span>
+          </span>
+        </span>
+      </h2>
+      <p class="bs-lead" data-reveal style="--i:2">
+        Tag wählen, Uhrzeit wählen, fertig. Bis 10 Personen online, größere Gruppen gern per Telefon.
+      </p>
+      <ol class="bs-book__days" aria-label="Die nächsten 14 Tage">
+        {strip.map((d, i) => {
+          const dt = new Date(d.date + 'T12:00:00Z');
+          const state = !d.open ? 'closed' : d.type === 'none' ? 'open' : d.type;
+          const inner = (
+            <>
+              <span class="bs-book__wd">{i === 0 ? 'Heute' : WEEKDAYS[dt.getUTCDay()]}</span>
+              <span class="bs-book__dn">{dt.getUTCDate()}.</span>
+              <span class="bs-book__st">{label(d.type, d.open)}</span>
+            </>
+          );
+          return (
+            <li data-reveal style={`--i:${Math.min(i, 8) + 2}`}>
+              {d.open ? (
+                <a class={`bs-book__day is-${state}`} href={`/reservierung/?datum=${d.date}`}>
+                  {inner}
+                </a>
+              ) : (
+                <span class={`bs-book__day is-${state}`}>{inner}</span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      <a class="bs-btn bs-btn--ember" href="/reservierung/" data-reveal style="--i:6">
+        Zur Reservierung
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </a>
+    </div>
+    <figure class="bs-photo bs-book__photo" data-wipe style="--wipe: var(--bs-peat)">
+      <Photo
+        name="tisch-kerze"
+        alt="Gedeckter Tisch mit Weihnachtsstern und Teelicht"
+        sizes="(max-width: 900px) 92vw, 80vw"
+      />
+    </figure>
+  </div>
+</section>
+
+<style is:global>
+  .bs-book__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
+  }
+  .bs-book__text .bs-lead {
+    margin-top: 18px;
+  }
+  .bs-book__days {
+    list-style: none;
+    margin: 36px 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .bs-book__days li {
+    display: grid;
+  }
+  .bs-book__day {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: 12px 10px;
+    min-height: 96px;
+    border-radius: 14px;
+    border: 1px solid var(--bs-line-light);
+    text-decoration: none;
+    transition:
+      background-color 300ms var(--bs-ease),
+      border-color 300ms var(--bs-ease),
+      transform 300ms var(--bs-ease);
+  }
+  a.bs-book__day:active {
+    transform: scale(0.96);
+  }
+  @media (hover: hover) {
+    a.bs-book__day:hover {
+      background: rgba(243, 243, 236, 0.08);
+      border-color: var(--bs-ember-l);
+    }
+  }
+  .bs-book__wd {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+  .bs-book__dn {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+  .bs-book__st {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    color: var(--bs-sage-l);
+  }
+  .bs-book__day.is-closed {
+    opacity: 0.42;
+  }
+  .bs-book__day.is-closed .bs-book__st {
+    color: inherit;
+  }
+  .bs-book__day.is-kein-ala-carte .bs-book__st,
+  .bs-book__day.is-event .bs-book__st,
+  .bs-book__day.is-eingeschraenkte-karte .bs-book__st {
+    color: var(--bs-ember-l);
+  }
+  .bs-book__photo {
+    aspect-ratio: 4 / 5;
+    border-radius: 6px 6px 50% 50% / 6px 6px 30% 30%;
+  }
+  @media (max-width: 900px) {
+    .bs-book__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-book__photo {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .bs-book__days {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .bs-book__days li:nth-child(n + 9) {
+      display: none;
+    }
+  }
+</style>

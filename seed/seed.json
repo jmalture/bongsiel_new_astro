@@ -1,0 +1,3616 @@
+{
+ "version": "1",
+ "defaultLocale": "de",
+ "meta": {
+  "name": "Bongsiel",
+  "description": "Dat swarte Peerd – Mein Ziel Bongsiel"
+ },
+ "settings": {
+  "title": "Dat swarte Peerd – Mein Ziel Bongsiel",
+  "tagline": "Gaststätte am Deich in Ockholm",
+  "timezone": "Europe/Berlin",
+  "dateFormat": "dd.MM.yyyy"
+ },
+ "collections": [
+  {
+   "slug": "veranstaltungen",
+   "label": "Veranstaltungen",
+   "labelSingular": "Veranstaltung",
+   "icon": "calendar-star",
+   "sortOrder": 1,
+   "urlPattern": "/veranstaltungen/{slug}/",
+   "supports": [
+    "drafts",
+    "revisions",
+    "search",
+    "seo"
+   ],
+   "dateField": "beginn",
+   "admin": {
+    "listColumns": [
+     "beginn",
+     "auswirkung",
+     "plaetze"
+    ]
+   },
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Titel",
+     "type": "string",
+     "required": true,
+     "searchable": true
+    },
+    {
+     "slug": "beginn",
+     "label": "Beginn",
+     "type": "datetime",
+     "required": true,
+     "indexed": true
+    },
+    {
+     "slug": "ende",
+     "label": "Ende",
+     "type": "datetime"
+    },
+    {
+     "slug": "kurztext",
+     "label": "Kurztext (Liste und Startseite)",
+     "type": "text",
+     "searchable": true
+    },
+    {
+     "slug": "inhalt",
+     "label": "Beschreibung",
+     "type": "portableText",
+     "searchable": true
+    },
+    {
+     "slug": "preis",
+     "label": "Preis",
+     "type": "string"
+    },
+    {
+     "slug": "bild",
+     "label": "Bild oder Plakat",
+     "type": "image"
+    },
+    {
+     "slug": "plaetze",
+     "label": "Plätze für Anmeldung (leer = keine)",
+     "type": "integer",
+     "validation": {
+      "min": 0,
+      "max": 500
+     }
+    },
+    {
+     "slug": "auswirkung",
+     "label": "Reservierungen an dem Tag",
+     "type": "select",
+     "defaultValue": "Normal",
+     "validation": {
+      "options": [
+       "Normal",
+       "Eingeschränkte Karte",
+       "Kein à la carte",
+       "Geschlossene Gesellschaft"
+      ]
+     }
+    },
+    {
+     "slug": "startseite",
+     "label": "Auf der Startseite zeigen",
+     "type": "boolean",
+     "defaultValue": true
+    },
+    {
+     "slug": "privat",
+     "label": "Nicht öffentlich (nur Kalender sperren)",
+     "type": "boolean",
+     "defaultValue": false
+    },
+    {
+     "slug": "wiederholung",
+     "label": "Wiederholung",
+     "type": "select",
+     "defaultValue": "Keine",
+     "validation": {
+      "options": [
+       "Keine",
+       "Wöchentlich",
+       "Alle 2 Wochen",
+       "Monatlich (gleicher Wochentag)"
+      ]
+     }
+    },
+    {
+     "slug": "wiederholung_bis",
+     "label": "Wiederholen bis",
+     "type": "datetime"
+    }
+   ]
+  },
+  {
+   "slug": "speisekarten",
+   "label": "Speisekarten",
+   "labelSingular": "Speisekarte",
+   "icon": "fork-knife",
+   "sortOrder": 2,
+   "urlPattern": "/speisekarten/{slug}/",
+   "supports": [
+    "drafts",
+    "revisions",
+    "search",
+    "seo"
+   ],
+   "admin": {
+    "listColumns": [
+     "hauptkarte",
+     "gueltig"
+    ]
+   },
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Titel",
+     "type": "string",
+     "required": true,
+     "searchable": true
+    },
+    {
+     "slug": "untertitel",
+     "label": "Untertitel",
+     "type": "string"
+    },
+    {
+     "slug": "gueltig",
+     "label": "Gültig (z. B. 27.11. – 04.01.)",
+     "type": "string"
+    },
+    {
+     "slug": "hauptkarte",
+     "label": "Aktuelle Speisekarte (/speisen/)",
+     "type": "boolean",
+     "defaultValue": false
+    },
+    {
+     "slug": "reihenfolge",
+     "label": "Reihenfolge in der Übersicht",
+     "type": "integer",
+     "defaultValue": 10
+    },
+    {
+     "slug": "bild",
+     "label": "Bild",
+     "type": "image"
+    },
+    {
+     "slug": "einleitung",
+     "label": "Einleitung",
+     "type": "text"
+    },
+    {
+     "slug": "gerichte",
+     "label": "Gerichte (Abschnitt nur beim ersten Gericht eines Abschnitts)",
+     "type": "repeater",
+     "validation": {
+      "maxItems": 200,
+      "subFields": [
+       {
+        "slug": "abschnitt",
+        "label": "Abschnitt",
+        "type": "string"
+       },
+       {
+        "slug": "name",
+        "label": "Gericht",
+        "type": "string",
+        "required": true
+       },
+       {
+        "slug": "beschreibung",
+        "label": "Beschreibung",
+        "type": "text"
+       },
+       {
+        "slug": "preis",
+        "label": "Preis",
+        "type": "string"
+       }
+      ]
+     }
+    },
+    {
+     "slug": "hinweis",
+     "label": "Hinweis unter der Karte",
+     "type": "text"
+    }
+   ]
+  },
+  {
+   "slug": "neuigkeiten",
+   "label": "Neuigkeiten",
+   "labelSingular": "Neuigkeit",
+   "icon": "megaphone",
+   "sortOrder": 3,
+   "routable": false,
+   "supports": [
+    "drafts",
+    "revisions"
+   ],
+   "admin": {
+    "listColumns": [
+     "startseite"
+    ]
+   },
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Überschrift",
+     "type": "string",
+     "required": true
+    },
+    {
+     "slug": "text",
+     "label": "Text",
+     "type": "portableText"
+    },
+    {
+     "slug": "bild",
+     "label": "Bild",
+     "type": "image"
+    },
+    {
+     "slug": "button_text",
+     "label": "Button-Text",
+     "type": "string"
+    },
+    {
+     "slug": "button_link",
+     "label": "Button-Link",
+     "type": "string"
+    },
+    {
+     "slug": "gruss",
+     "label": "Gruß",
+     "type": "string",
+     "defaultValue": "Euer Team Bongsiel"
+    },
+    {
+     "slug": "startseite",
+     "label": "Auf der Startseite zeigen",
+     "type": "boolean",
+     "defaultValue": true
+    }
+   ]
+  },
+  {
+   "slug": "schliesstage",
+   "label": "Schließtage & Sonderzeiten",
+   "labelSingular": "Schließtag / Sonderzeit",
+   "icon": "calendar-x",
+   "sortOrder": 4,
+   "routable": false,
+   "supports": [],
+   "dateField": "von",
+   "admin": {
+    "listColumns": [
+     "von",
+     "bis",
+     "art"
+    ]
+   },
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Bezeichnung (z. B. Betriebsferien)",
+     "type": "string",
+     "required": true
+    },
+    {
+     "slug": "von",
+     "label": "Von",
+     "type": "datetime",
+     "required": true,
+     "indexed": true
+    },
+    {
+     "slug": "bis",
+     "label": "Bis (leer = nur ein Tag)",
+     "type": "datetime"
+    },
+    {
+     "slug": "art",
+     "label": "Art",
+     "type": "select",
+     "defaultValue": "Geschlossen",
+     "validation": {
+      "options": [
+       "Geschlossen",
+       "Sonderzeiten"
+      ]
+     }
+    },
+    {
+     "slug": "zeiten",
+     "label": "Sonderzeiten (nur bei Art = Sonderzeiten)",
+     "type": "repeater",
+     "validation": {
+      "maxItems": 4,
+      "subFields": [
+       {
+        "slug": "von",
+        "label": "Öffnet (HH:MM)",
+        "type": "string",
+        "required": true
+       },
+       {
+        "slug": "bis",
+        "label": "Schließt (HH:MM)",
+        "type": "string",
+        "required": true
+       },
+       {
+        "slug": "letzte",
+        "label": "Letzte Reservierung (HH:MM)",
+        "type": "string",
+        "required": true
+       }
+      ]
+     }
+    },
+    {
+     "slug": "hinweis_gaeste",
+     "label": "Hinweis für Gäste",
+     "type": "string"
+    }
+   ]
+  },
+  {
+   "slug": "zimmer",
+   "label": "Zimmer & Ferienwohnungen",
+   "labelSingular": "Zimmer",
+   "icon": "bed",
+   "sortOrder": 5,
+   "routable": false,
+   "supports": [
+    "drafts"
+   ],
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Name",
+     "type": "string",
+     "required": true
+    },
+    {
+     "slug": "kurztext",
+     "label": "Kurztext",
+     "type": "text"
+    },
+    {
+     "slug": "bild",
+     "label": "Bild",
+     "type": "image"
+    },
+    {
+     "slug": "personen",
+     "label": "Personen",
+     "type": "integer"
+    },
+    {
+     "slug": "preis",
+     "label": "Preis (z. B. ab € 89 / Nacht)",
+     "type": "string"
+    },
+    {
+     "slug": "ausstattung",
+     "label": "Ausstattung (eine pro Zeile)",
+     "type": "text"
+    },
+    {
+     "slug": "link",
+     "label": "Externer Buchungslink (leer = Anfrage)",
+     "type": "string"
+    },
+    {
+     "slug": "reihenfolge",
+     "label": "Reihenfolge",
+     "type": "integer",
+     "defaultValue": 10
+    }
+   ]
+  },
+  {
+   "slug": "seiten",
+   "label": "Seitentexte",
+   "labelSingular": "Seitentext",
+   "icon": "article",
+   "sortOrder": 6,
+   "routable": false,
+   "supports": [
+    "drafts",
+    "revisions"
+   ],
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Überschrift",
+     "type": "string",
+     "required": true
+    },
+    {
+     "slug": "einleitung",
+     "label": "Einleitung",
+     "type": "text"
+    },
+    {
+     "slug": "inhalt",
+     "label": "Inhalt",
+     "type": "portableText"
+    },
+    {
+     "slug": "bild",
+     "label": "Bild",
+     "type": "image"
+    }
+   ]
+  },
+  {
+   "slug": "einstellungen",
+   "label": "Öffnungszeiten & Kontakt",
+   "labelSingular": "Einstellungen",
+   "icon": "clock",
+   "sortOrder": 7,
+   "routable": false,
+   "supports": [
+    "revisions"
+   ],
+   "fields": [
+    {
+     "slug": "title",
+     "label": "Name",
+     "type": "string",
+     "required": true
+    },
+    {
+     "slug": "oeffnungszeiten",
+     "label": "Öffnungszeiten (eine Zeile pro Tag und Schicht)",
+     "type": "repeater",
+     "validation": {
+      "maxItems": 21,
+      "subFields": [
+       {
+        "slug": "tag",
+        "label": "Tag",
+        "type": "select",
+        "required": true,
+        "options": [
+         "Montag",
+         "Dienstag",
+         "Mittwoch",
+         "Donnerstag",
+         "Freitag",
+         "Samstag",
+         "Sonntag"
+        ]
+       },
+       {
+        "slug": "von",
+        "label": "Öffnet (HH:MM)",
+        "type": "string",
+        "required": true
+       },
+       {
+        "slug": "bis",
+        "label": "Schließt (HH:MM)",
+        "type": "string",
+        "required": true
+       },
+       {
+        "slug": "letzte",
+        "label": "Letzte Reservierung (HH:MM)",
+        "type": "string",
+        "required": true
+       }
+      ]
+     }
+    },
+    {
+     "slug": "telefon",
+     "label": "Telefon",
+     "type": "string"
+    },
+    {
+     "slug": "email",
+     "label": "E-Mail",
+     "type": "string"
+    },
+    {
+     "slug": "adresse",
+     "label": "Adresse",
+     "type": "text"
+    },
+    {
+     "slug": "max_personen",
+     "label": "Online max. Personen pro Reservierung",
+     "type": "integer",
+     "defaultValue": 10
+    },
+    {
+     "slug": "max_gaeste",
+     "label": "Max. Gäste gleichzeitig",
+     "type": "integer",
+     "defaultValue": 40
+    },
+    {
+     "slug": "max_tische",
+     "label": "Max. Reservierungen gleichzeitig",
+     "type": "integer",
+     "defaultValue": 13
+    },
+    {
+     "slug": "dauer",
+     "label": "Tischdauer in Minuten",
+     "type": "integer",
+     "defaultValue": 105
+    },
+    {
+     "slug": "sofort_bis",
+     "label": "Sofort bestätigt bis Personen",
+     "type": "integer",
+     "defaultValue": 6
+    },
+    {
+     "slug": "storno_text",
+     "label": "Storno- / No-Show-Hinweis",
+     "type": "text"
+    },
+    {
+     "slug": "zahlung_text",
+     "label": "Hinweis Anmeldung (Bezahlung)",
+     "type": "string"
+    },
+    {
+     "slug": "instagram",
+     "label": "Instagram-Link",
+     "type": "string"
+    },
+    {
+     "slug": "facebook",
+     "label": "Facebook-Link",
+     "type": "string"
+    }
+   ]
+  }
+ ],
+ "content": {
+  "einstellungen": [
+   {
+    "id": "settings",
+    "slug": "allgemein",
+    "status": "published",
+    "data": {
+     "title": "Dat swarte Peerd",
+     "oeffnungszeiten": [
+      {
+       "tag": "Donnerstag",
+       "von": "17:00",
+       "bis": "22:00",
+       "letzte": "20:00"
+      },
+      {
+       "tag": "Freitag",
+       "von": "17:00",
+       "bis": "22:00",
+       "letzte": "20:00"
+      },
+      {
+       "tag": "Samstag",
+       "von": "17:00",
+       "bis": "22:00",
+       "letzte": "20:00"
+      },
+      {
+       "tag": "Sonntag",
+       "von": "11:00",
+       "bis": "14:00",
+       "letzte": "13:00"
+      },
+      {
+       "tag": "Sonntag",
+       "von": "17:00",
+       "bis": "22:00",
+       "letzte": "20:00"
+      }
+     ],
+     "telefon": "04674 82 739 82",
+     "email": "kontakt@mein-ziel-bongsiel.de",
+     "adresse": "Dat swarte Peerd\nAm Kanal 2\n25842 Ockholm",
+     "max_personen": 10,
+     "max_gaeste": 40,
+     "max_tische": 13,
+     "dauer": 105,
+     "sofort_bis": 6,
+     "storno_text": "Pläne können sich ändern, kein Problem – bitte sagt uns per Telefon, Email oder WhatsApp spätestens 24 Stunden vor der Buchung Bescheid. Fest gebuchte Plätze im Restaurant, die nicht abgesagt und nicht belegt werden, müssen wir ab sofort mit € 20,00 abrechnen. Das gilt auch, wenn sich die Personenanzahl um mehr als 1 Person verrechnet! Vielen Dank für euer Verständnis!",
+     "zahlung_text": "Die Anmeldung ist kostenlos – bezahlt wird direkt vor Ort."
+    }
+   }
+  ],
+  "veranstaltungen": [
+   {
+    "id": "ev0",
+    "slug": "adventsbrunch-29-11",
+    "status": "published",
+    "data": {
+     "title": "Adventsbrunch",
+     "beginn": "2026-11-29T09:30:00.000Z",
+     "ende": "2026-11-29T13:00:00.000Z",
+     "kurztext": "Adventsbrunch am Sonntag, 29.11.2026 von 10:30 bis 14:00 Uhr – Frühstücksklassiker, Räucherfisch, Fischsalate, warme Gerichte und regionale Spezialitäten. € 29,50 / Kinder bis 12 Jahre € 14,50. Nur 100 Plätze.",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "k1",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2",
+         "text": "Adventszeit ist Genusszeit! Am Sonntag, den 29.11.2026 von 10:30 bis 14:00 Uhr laden wir euch zu unserem Adventsbrunch ein.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4",
+         "text": "Freut euch auf gemütliche Stunden in vorweihnachtlicher Atmosphäre und lasst euch kulinarisch verwöhnen!",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6",
+         "text": "Das erwartet euch: Von herzhaften Frühstücksklassikern über feinen Räucherfisch und köstliche Fischsalate bis hin zu abwechslungsreichen warmen, frisch zubereiteten Gerichten und regionalen Spezialitäten – eine bunte Auswahl für jeden Geschmack!",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k7",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k8",
+         "text": "€ 29,50 pro Person / Kinder bis 12 Jahre € 14,50",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k9",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ka",
+         "text": "Die Plätze sind auf 100 begrenzt. Reserviert euch euren Platz direkt hier über die Anmeldung, bezahlt wird vor Ort.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kb",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "kc",
+         "text": "Oder meldet euch telefonisch bei Martin Blindow – mobil 0171 – 2 678 301.",
+         "marks": []
+        }
+       ]
+      }
+     ],
+     "preis": "€ 29,50 pro Person / Kinder bis 12 Jahre € 14,50",
+     "bild": {
+      "$media": {
+       "url": "https://mein-ziel-bongsiel.de/wp-content/uploads/2026/11/adventsbrunch-29-11-2026.jpg",
+       "alt": "Plakat: Adventsbrunch 29.11."
+      }
+     },
+     "plaetze": 100,
+     "auswirkung": "Kein à la carte",
+     "startseite": true,
+     "privat": false,
+     "wiederholung": "Keine"
+    }
+   },
+   {
+    "id": "ev1",
+    "slug": "silvester-buffet-31-12",
+    "status": "published",
+    "data": {
+     "title": "Großes Silvester-Buffet",
+     "beginn": "2026-12-31T16:30:00.000Z",
+     "ende": "2026-12-31T21:00:00.000Z",
+     "kurztext": "Großes Silvester-Buffet am 31.12.2026 ab 17:30 Uhr – Begrüßung mit einem Glas Champagner, festliches Buffet, Ausklang ab 22:00 Uhr. € 89,50 / Kinder bis 12 Jahre € 29,50. Nur 100 Plätze.",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "kd",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ke",
+         "text": "Genussvoll ins neue Jahr! Freut euch auf einen besonderen Silvesterabend voller kulinarischer Köstlichkeiten! Unser Küchenchef verwöhnt euch mit einem festlichen Buffet, abwechslungsreichen Spezialitäten und vielen kleinen Überraschungen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kf",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "kg",
+         "text": "Das erwartet euch: Um 17:30 Uhr begrüßen wir euch mit einem Glas Champagner. Anschließend dürft ihr euch auf einen genussvollen Abend mit unserem großen Silvester-Buffet freuen. Ab 22:00 Uhr lassen wir den Abend ganz entspannt ausklingen, damit ihr den Jahreswechsel zu Hause oder an eurem Lieblingsplatz feiern könnt.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kh",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ki",
+         "text": "€ 89,50 pro Person / Kinder bis 12 Jahre € 29,50",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kj",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "kk",
+         "text": "Die Plätze sind auf 100 begrenzt. Reserviert euch euren Platz direkt hier über die Anmeldung, bezahlt wird vor Ort.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kl",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "km",
+         "text": "Oder meldet euch telefonisch bei Martin Blindow – mobil 0171 – 2 678 301.",
+         "marks": []
+        }
+       ]
+      }
+     ],
+     "preis": "€ 89,50 pro Person / Kinder bis 12 Jahre € 29,50",
+     "bild": {
+      "$media": {
+       "url": "https://mein-ziel-bongsiel.de/wp-content/uploads/2026/11/silvester-buffet-31-12-2026.jpg",
+       "alt": "Plakat: Großes Silvester-Buffet 31.12."
+      }
+     },
+     "plaetze": 100,
+     "auswirkung": "Kein à la carte",
+     "startseite": true,
+     "privat": false,
+     "wiederholung": "Keine"
+    }
+   }
+  ],
+  "speisekarten": [
+   {
+    "id": "menu0",
+    "slug": "winterkarte",
+    "status": "published",
+    "data": {
+     "title": "Speisekarte",
+     "untertitel": "Winterkarte",
+     "hauptkarte": true,
+     "reihenfolge": 1,
+     "gerichte": [
+      {
+       "abschnitt": "Suppen, Salate & Mee(h)r",
+       "name": "Nordfriesisches Krabbensüppchen (klein|groß)",
+       "beschreibung": "mit frischen Nordsee-Krabben vom Kutter aus Tönning & Sahnehaube (B, G, H)",
+       "preis": "5,80 | 11,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Helgoländer Tomatensuppe",
+       "beschreibung": "mit gebratenem Garnelenspieß & Sahnehaube (B, G, H)",
+       "preis": "10,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Kürbissuppe \"Martin\"",
+       "beschreibung": "abgeschmeckt mit frischem Ingwer, Kürbiskernöl & Sahnehaube (G)",
+       "preis": "9,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Kleiner gemischter Salat",
+       "beschreibung": "mit hausgemachtem Dressing (G, I, J)",
+       "preis": "6,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Großer gemischter Salat",
+       "beschreibung": "mit hausgemachtem Dressing (G, I, J)",
+       "preis": "9,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit gebratenen Hähnchenbruststreifen",
+       "beschreibung": "",
+       "preis": "16,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich gebratenem Norwegischen Lachsfilet (D)",
+       "beschreibung": "",
+       "preis": "15,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Matjesfilet \"Hausfrauen Art\"",
+       "beschreibung": "mit einer leichten Apfel-Sahnesauce und Bio-Schwarzbrot (2,4,8,11,A,C,D, G, I, J)",
+       "preis": "11,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Zu allen Suppen & Salaten reichen wir unser frisches Steinofenbrot (A)",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Fleisch aus \"regionaler Aufzucht\"",
+       "name": "Schnitzel frisch Paniert (vom Schweinerücken)",
+       "beschreibung": "mit frischen Pilzen, Bongsieler Bratkartoffeln & Salatteller (8,I, J, G)",
+       "preis": "22,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit Champignonrahmsauce",
+       "beschreibung": "",
+       "preis": "24,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Tafelspitz nach Omas Hausrezept",
+       "beschreibung": "gekochte Rinderbrust, Meerrettichsauce, Möhren-Lauchgemüse & Petersilienkartoffeln (8, I, J, G)",
+       "preis": "27,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Grillteller \"Á la Chef\"",
+       "beschreibung": "gebratene Medaillions vom Rind, Schwein & Hähnchen\nmit gebratenen Pilzen, Zwiebeln, Bongsieler Bratkartoffeln & selbstgemachter Kräuterbutter (8, G, C)",
+       "preis": "31,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Schweinemedaillions \"Bongsiel\"",
+       "beschreibung": "gebratenes Schweinefiltet mit Champignonrahmsauce, Brokkoliröschen & Kroketten (8, G, C)",
+       "preis": "28,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Rumpsteak von der Deutschen Färse (220g)",
+       "beschreibung": "mit gebratenen Pilzen, Zwiebeln, Bongsieler Bratkartoffeln & selbstgemacheter Kräuterbutter (8)",
+       "preis": "24,90"
+      },
+      {
+       "abschnitt": "Pasta á la Boris\nVegetarisch - Vegan",
+       "name": "Linguine \"al arrabiata\" mit 8 Black Tiger Garnelen (Seawater, ohne Schale)",
+       "beschreibung": "mit leichter Hummerrahmsauce & frischen Dill (A, B, 2, 1)",
+       "preis": "25,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Linguine mit frischem gebratenen \"Norwegischen Lachsfilet\"",
+       "beschreibung": "mit Rahmsauce und Cherry-Tomaten (A, D, G)",
+       "preis": "24,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Gebratene Falaffelbällchen",
+       "beschreibung": "mit Salatbouquet & Kicherererbsendip (G, I, J, H)",
+       "preis": "17,90"
+      },
+      {
+       "abschnitt": "Frischer Fisch vom Kutter aus Tönning",
+       "name": "Im ganzen gebratene Nordseescholle",
+       "beschreibung": "mit Speckdippe, Bongsieler Bratkartoffeln & Salatteller (D)",
+       "preis": "27,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit frischen Nordseekrabben (B)",
+       "beschreibung": "",
+       "preis": "33,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Auf der Haut gebratenes Filet vom Norwegischen Lachs",
+       "beschreibung": "mit Weißweinsauce, sautiertem Blattspinat & Petersilienkartoffeln (D)",
+       "preis": "28,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Fischteller \"Bongsiel\"",
+       "beschreibung": "gebratenes Filet vom Lachs, Kabeljau & Seelachs\nmit hausgemachter Remouladensauce, Bongsieler Bratkartoffeln & Salatbouquet (D, G, I, J, 2, 4, 11)",
+       "preis": "28,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Matjesfilet \"Hausfrauen Art\"",
+       "beschreibung": "mit einer leichten Apfel-Zwiebelsauce, Bongsieler Bratkartoffeln oder Bio-Schwarzbrot (D, G, I, J A, 2)",
+       "preis": "21,90"
+      },
+      {
+       "abschnitt": "Für unsere kleinen Gäste",
+       "name": "Bongsieler Deichfritten mit Ketchup oder Mayonaise (2, 4, 11, G, I, J, C)",
+       "beschreibung": "",
+       "preis": "5,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Hähnchennuggets (6 Stück)",
+       "beschreibung": "mit kleiner Portion Deichfritten und Ketchup oder Mayonaise (2, 4, 11, G, I, J, C)",
+       "preis": "8,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Seeräuber Schnitzel",
+       "beschreibung": "Hähnchenschnitzel mit kleiner Portion Deichfritten & Gemüse (A, C)",
+       "preis": "9,90"
+      },
+      {
+       "abschnitt": "Unsere Winter-Highlights 2026",
+       "name": "Frische \"Halbe Ente\" nach Art des Hauses",
+       "beschreibung": "mit Rotweinjus, Rotkohl, Kartoffeln & gefüllter Birne mit Preiselbeeren (2, 11)",
+       "preis": "29,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "... für 2 Personen",
+       "beschreibung": "",
+       "preis": "49,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Grünkohl nach Art des Hauses",
+       "beschreibung": "mit Kasseler, Schweinebacke, Kohlwurst & Bongsieler Bratkartoffeln ((2, 8, J)",
+       "preis": "24,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Grünkohl \"Satt\" (aus Wunsch bis zur doppelten Fleischmenge)",
+       "beschreibung": "",
+       "preis": "32,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Bei Ente bitten wir um Vorbestellung!",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Bitte beachtet unsere Tageskarte mit saisonalen Angeboten!",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "... etwas Süßes zum Abschluß!",
+       "name": "Unsere hausgemachte Rote Grütze (2, 11, C, G)",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "... mit frischen Früchten und leckerer Vanillesauce",
+       "beschreibung": "",
+       "preis": "6,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "... mit frischen Früchten und einer Kugel Vanilleeis",
+       "beschreibung": ".",
+       "preis": "8,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Schokoküchlein mit flüssigem Kern (2, 4, 11, A, C, G)",
+       "beschreibung": "",
+       "preis": "5,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit frischen Früchten und leckerer Vanillesauce",
+       "beschreibung": "",
+       "preis": "6,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit frischen Früchten und einer Kugel Vanilleeis",
+       "beschreibung": ".",
+       "preis": "8,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Warmer Apfelstrudel mit Vanillesauce (2, 11, A, C, G)",
+       "beschreibung": "",
+       "preis": "5,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit frischen Früchten und leckerer Vanillesauce",
+       "beschreibung": "",
+       "preis": "6,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "... zusätzlich mit frischen Früchten und einer Kugel Vanilleeis",
+       "beschreibung": ".",
+       "preis": "8,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Eis - Bommi",
+       "beschreibung": "mit 4cl Bommerlunder, einer Kugel Vanilleeis und Sprite (2, C, G)",
+       "preis": "6,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Affogato",
+       "beschreibung": "Doppelter Espresso mit 1 Kugel Vanilleeis",
+       "preis": "6,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Allergene und Inhaltsstoffe",
+       "beschreibung": "Bitte fragt unsere Service-Mitarbeiter nach der Übersicht!",
+       "preis": ""
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu1",
+    "slug": "daily-menu",
+    "status": "published",
+    "data": {
+     "title": "Tageskarte",
+     "untertitel": "",
+     "hauptkarte": false,
+     "reihenfolge": 2,
+     "gerichte": [
+      {
+       "abschnitt": "Vorspeisen/kleine Gerichte",
+       "name": "Currywurst",
+       "beschreibung": "mit Grillgemüse & Deichfritten",
+       "preis": "9,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "1 Paar Wiener Würstchen",
+       "beschreibung": "mit Senf und Kartoffelsalat",
+       "preis": "6,80"
+      },
+      {
+       "abschnitt": "Hauptgerichte",
+       "name": "Grünkohl nach Art des Hauses",
+       "beschreibung": "mit Kassler, Kohlwurst, Bauchspeck und Bratkartoffeln",
+       "preis": "21,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Strammer Max",
+       "beschreibung": "mit Süßländerschinken und zwei Spiegeleiern",
+       "preis": "13,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Rehkeule",
+       "beschreibung": "mit Rot- oder Rosenkohl, gefüllte Birne mit Preiselbeeren, Waldpilzen und Kroketten",
+       "preis": "39,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Bongsieler Kanalplatte",
+       "beschreibung": "Räucheraal (100g), Aal in Sauer, Brataal (200g), Nordseekrabben (50g)\nmit Schwarzbrot und Butter, Bratkartoffeln & Rührei auf Wunsch!",
+       "preis": "49,80/Pers."
+      },
+      {
+       "abschnitt": "Nachspeisen",
+       "name": "Obstsalat",
+       "beschreibung": "mit Trollebüller Vanilleeis",
+       "preis": "5,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Trollebüller Eisbecher",
+       "beschreibung": "verschiedene Sorten",
+       "preis": "4,50"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu2",
+    "slug": "weihnachts-menue",
+    "status": "published",
+    "data": {
+     "title": "Weihnachts-Menü",
+     "untertitel": "",
+     "hauptkarte": false,
+     "reihenfolge": 3,
+     "gerichte": [
+      {
+       "abschnitt": "Vorspeise",
+       "name": "Pilzrahmsüppchen",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Bongsieler Krabbensuppe",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Zwischengang",
+       "name": "Flußkrebse in Safran-Sahnesauce",
+       "beschreibung": "mit Penne",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Pilzvariationen in Pfeffer-Sahnesauce",
+       "beschreibung": "mit Penne",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Hauptgang",
+       "name": "Fischteller",
+       "beschreibung": "Lachs, Rotbarsch, Zander, Garnele\nBauerngemüse, Salzkartoffeln/Gemüsereis",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Steakteller",
+       "beschreibung": "Rumpsteak, Scheinefilet, Kikok\nGrillgemüse und Bratkartoffeln",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Frischlingskeule",
+       "beschreibung": "Scheiben von der Keule\nRotkohl, Rosenkohl, Preiselbeere-Birne, Kroketten",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Veggiteller",
+       "beschreibung": "Besonderes für Veggi",
+       "preis": "./. € 5,00"
+      },
+      {
+       "abschnitt": "Dessert",
+       "name": "Spekulatiusmus",
+       "beschreibung": "auf Zimtkirschen",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Hausgemachte Waffeln",
+       "beschreibung": "mit heißen Glühweinkirschen",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Preise: 3 Gang",
+       "beschreibung": "",
+       "preis": "49,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Preise: 4 Gang",
+       "beschreibung": "",
+       "preis": "54,50"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu3",
+    "slug": "sylvester-buffet",
+    "status": "published",
+    "data": {
+     "title": "Silvester-Buffet",
+     "untertitel": "Sylvester Buffet",
+     "hauptkarte": false,
+     "reihenfolge": 4,
+     "gerichte": [
+      {
+       "abschnitt": "Zur Begrüßung",
+       "name": "Sekt",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Föhrer-Manhatten",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Vorspeisen",
+       "name": "Gemischter Salat",
+       "beschreibung": "Tomaten/Gurken\nChampignons/Paprika/Mais\nmit 3x Dressing",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Angemachter Karrottensalat",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Tomate Mozarella",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Vitello Tonato",
+       "beschreibung": "vom Schweinelachs",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Antipasti",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schwedische Lachssuppe",
+       "beschreibung": "mit Lachs-, Lauch- & Kartoffeleinlage",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Hauptgang",
+       "name": "Schweinemedallions",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rindergeschnetzeltes mit Pilzen",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Confit von der Entenkeule",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Hähnchenbrust in Paprikasauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Zander in Kräutersauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Gemüse-Lasagne",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Beilagen",
+       "name": "Speckbohnen",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rotkohl",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Bauerngemüse",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Gestofte Schwarzwurzeln",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Kartoffelgratin",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Salzkartoffeln",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Kroketten",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Pilzrahmsauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Hollandaise",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Paprikasauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Entenjus",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Kräutersauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Klöße",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Butternudeln",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Dessert",
+       "name": "Champagner-Mousse",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schokoladenmousse",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rote Grütze mit V-Sauce",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Friesischer Kaiserschmarren",
+       "beschreibung": "",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Preise:",
+       "beschreibung": "(Kinder bis 12J & Senioren ab 70J nur € 38,00)\nEinlass ab 17:00h - Buffet ab 17:30h (bis ca. 20:30h)",
+       "preis": "58,00"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu4",
+    "slug": "buffet-vorschlaege",
+    "status": "published",
+    "data": {
+     "title": "Buffet-Vorschläge",
+     "untertitel": "",
+     "hauptkarte": false,
+     "reihenfolge": 5,
+     "gerichte": [
+      {
+       "abschnitt": "Hauptgang",
+       "name": "Frikadellen",
+       "beschreibung": "mit Erbsen und Wurzel\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schnitzel",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit gestoftem Weißkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schweinebraten",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit Rotkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schollenfilet",
+       "beschreibung": "Sauce Hollandaise\nmit Spinat und Kartoffel",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Dessert",
+       "name": "Schokoladenpudding",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rote Grütze",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "ab 20 Personen",
+       "beschreibung": "",
+       "preis": "48,00"
+      },
+      {
+       "abschnitt": "Hauptgang",
+       "name": "Frikadellen",
+       "beschreibung": "mit Erbsen und Wurzel\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schnitzel",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit gestoftem Weißkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schweinebraten",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit Rotkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schollenfilet",
+       "beschreibung": "Sauce Hollandaise\nmit Spinat und Kartoffel",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Dessert",
+       "name": "Schokoladenpudding",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rote Grütze",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "ab 20 Personen",
+       "beschreibung": "",
+       "preis": "48,00"
+      },
+      {
+       "abschnitt": "Hauptgang",
+       "name": "Frikadellen",
+       "beschreibung": "mit Erbsen und Wurzel\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schnitzel",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit gestoftem Weißkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schweinebraten",
+       "beschreibung": "mit Champignonrahm-Sauce\nmit Rotkohl\n& Kartoffelgratin",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Schollenfilet",
+       "beschreibung": "Sauce Hollandaise\nmit Spinat und Kartoffel",
+       "preis": ""
+      },
+      {
+       "abschnitt": "Dessert",
+       "name": "Schokoladenpudding",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "Rote Grütze",
+       "beschreibung": "mit Vanillesauce",
+       "preis": ""
+      },
+      {
+       "abschnitt": "",
+       "name": "ab 20 Personen",
+       "beschreibung": "",
+       "preis": "48,00"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu5",
+    "slug": "burger-weekend",
+    "status": "published",
+    "data": {
+     "title": "Burger Weekend",
+     "untertitel": "Bongsieler\nBurger Weekend",
+     "hauptkarte": false,
+     "reihenfolge": 8,
+     "gerichte": [
+      {
+       "abschnitt": "Zum Start",
+       "name": "\"Cheesburger Salat\"",
+       "beschreibung": "...mit geröstetem Mini-Brioche",
+       "preis": "6,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Burger Salat",
+       "beschreibung": "im Glas",
+       "preis": "6,90"
+      },
+      {
+       "abschnitt": "Burgerkarte",
+       "name": "Veggie Burger (vegetarisch)",
+       "beschreibung": "Veggi-Patty + Salatblatt, Tomate, Fetakäse & Kräutersauce",
+       "preis": "8,50 | 15,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Vegan Burger (vegan)",
+       "beschreibung": "Veganes Hack Patty + Wildsalat, gegrillte Zucchini, Tomatensauce & karamellisierte Zwiebeln",
+       "preis": "9,50 | 18,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Smash Cheesburger (Manu)",
+       "beschreibung": "Rinder-Patty + Käse, karamellisierten roten Zwiebeln, Salat und mit einer raffinierten Käsesoße überzogen\nOption: mit Bacon + 1,00 EUR",
+       "preis": "9,50 | 18,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Hamburger *",
+       "beschreibung": "Rinder-Patty** + Salatblatt, Tomaten, Burgersauce",
+       "preis": "8,50 | 15,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Roastbeef Burger",
+       "beschreibung": "… mit Remoulade, Röstzwiebeln, Salat und Tomate",
+       "preis": "9,50 | 17,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Pfefferheini",
+       "beschreibung": "Rinder-Patty, Käse, geschmorten Champions und Zwiebeln, feurige Pfeffersosse",
+       "preis": "9,50 | 17,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "BBQ Double-Bacon Cheeseburger (Roswitha)",
+       "beschreibung": "Rinder-Patty** + mit gegrilltem Bacon, Gurken, Zwiebeln, doppelt Käse und BBQ-Sauce",
+       "preis": "9,50 | 18,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Lachs Burger (Vicky)",
+       "beschreibung": "… mit Salatblatt, Tomate, roten Zwiebeln, Essiggurke und Honig-Dijon Sauce",
+       "preis": "9,50 | 19,20"
+      },
+      {
+       "abschnitt": "",
+       "name": "Pulled Beef Burger",
+       "beschreibung": "… mit zartem Rindfleisch, Spitzkohlsalat & Spezial-Sauce",
+       "preis": "9,30 | 18,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Pulled Pork Burger (Christina)",
+       "beschreibung": "… mit zartem Schweinefleisch, Krautsalat, Honig, Chili & BBQ-Sauce",
+       "preis": "8,90 | 16,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Spargel-Tarzan Burger (Kerrin)",
+       "beschreibung": "Rinder-Patty + Salatblatt, frischer Spargel, Bacon, Soße Hollandaise",
+       "preis": "9,30 | 18,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Bunter Burger (Diana)",
+       "beschreibung": "Rinder-Patty + gebratene Champignons mit Zwiebeln, Salatblatt, Mais und würzige Knoblauchsauce",
+       "preis": "8,90 | 16,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Cheeseburger *",
+       "beschreibung": "Rinder-Patty** + Käse, Salatblatt, Tomaten, Burgersauce",
+       "preis": "9,30 | 17,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Roggen Burger (Ela)",
+       "beschreibung": "Rinder-Patty** + Bacon, Spiegelei, Käse, Gurke, Zwiebeln & einem „Klecks“ Mayo und Ketchup",
+       "preis": "9,50 | 17,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Crispy-Kikok Burger (Cevin)",
+       "beschreibung": "… mit Coleslaw, Tomaten, Zwiebeln, Burgersauce\nOption: mit Käse + 1,00 EUR",
+       "preis": "9,80 | 18,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Bongsieler-Trio aus dem Meer (Martin)",
+       "beschreibung": "(3 kleine Brioche Brötchen)\n... Räucherlachs, Avocado, Salatblatt, Zwiebelringe & Honig-Senf Dressing\n… gegrillter Lachs & gebratener Spargel, Salatblatt & Soße Hollandaise\n… gegrillte Riesengarnele, Rucola, gebratene Lauchzwiebeln\nOption: Knoblauch",
+       "preis": "23,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Bongsieler Feuer-Burger",
+       "beschreibung": "Rinder-Patty** + Cheddarkäse, Salatblatt, Grillgemüse, Chilischote & Honig-Peperoni Sauce",
+       "preis": "9,90 | 18,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Surf & Turf Burger (Lars)",
+       "beschreibung": "...lass Dich überraschen",
+       "preis": "11,50 | 21,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Oldschool Bongsiel Dunkler Burger",
+       "beschreibung": "Frischer Räucheraal, Stücke vom Brataal, etwas Rührei, Schnittlauch\n& KEINE Sauce",
+       "preis": "12,00 | 22,50"
+      },
+      {
+       "abschnitt": "Im Ziel",
+       "name": "Beeren Burger",
+       "beschreibung": "… mit süßem Brioche, Quarksahne & Beeren",
+       "preis": "8,90"
+      },
+      {
+       "abschnitt": "",
+       "name": "Hochstapler Burger",
+       "beschreibung": "… Pfannkuchen mit Nuß-Nougatfüllung & einer Kugel Schokoladeneis ***",
+       "preis": "6,50"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu6",
+    "slug": "spargelkarte",
+    "status": "published",
+    "data": {
+     "title": "Spargelkarte",
+     "untertitel": "Spargel auf Bongsiel 2026",
+     "hauptkarte": false,
+     "reihenfolge": 7,
+     "gerichte": [
+      {
+       "abschnitt": "Vorspeisen",
+       "name": "Spargelcremesüppchen",
+       "beschreibung": "mit Fleischklößchen - (klein | groß)",
+       "preis": "4,80 | 6,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "Babyspargelsalat",
+       "beschreibung": "mit gehobeltem Süßländer Schinken",
+       "preis": "8,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Babyspargelsalat",
+       "beschreibung": "mit frischen Erdbeeren & Pfeffer",
+       "preis": "8,50"
+      },
+      {
+       "abschnitt": "Hauptspeisen",
+       "name": "Frischer Spargel vom Desmercieres Hof",
+       "beschreibung": "ca. 350g oder 500g\nmit Drillingen, Sauce Hollandaise oder zerlassener Butte",
+       "preis": "15,80 | 19,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & Holsteiner Katenschinken",
+       "beschreibung": "(Süßländer )",
+       "preis": "22,80 | 26,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & Räucherlachs",
+       "beschreibung": "",
+       "preis": "22,80 | 26,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & Schnitzel „Wienerart“",
+       "beschreibung": "",
+       "preis": "20,80 | 24,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & Kikok-Brüstchen",
+       "beschreibung": "",
+       "preis": "22,80 | 26,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & gebratenes Lachsfilet",
+       "beschreibung": "",
+       "preis": "24,80 | 28,80"
+      },
+      {
+       "abschnitt": "",
+       "name": "… Spargel & Hüftsteak",
+       "beschreibung": "(200g)",
+       "preis": "25,80 | 29,80"
+      },
+      {
+       "abschnitt": "Nachspeisen",
+       "name": "Karamellisierter weißer & grüner Spargel",
+       "beschreibung": "mit frischen Erdbeeren und Vanilleeis",
+       "preis": "8,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Frische Erdbeeren",
+       "beschreibung": "mit Vanilleeis und Sahne",
+       "preis": "6,80"
+      },
+      {
+       "abschnitt": "Unser Spargelmenü",
+       "name": "Hauptspeise lt. Angebotspreis s.o",
+       "beschreibung": "… dazu eine Vorspeise + Dessert nach Wahl, zzgl. nur:",
+       "preis": "10,00"
+      }
+     ]
+    }
+   },
+   {
+    "id": "menu7",
+    "slug": "wildkarte",
+    "status": "published",
+    "data": {
+     "title": "Wildkarte",
+     "untertitel": "",
+     "hauptkarte": false,
+     "reihenfolge": 6,
+     "gerichte": [
+      {
+       "abschnitt": "zum Jahreswechsel",
+       "name": "Hasenkeule",
+       "beschreibung": "",
+       "preis": "24,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Hasenrücken",
+       "beschreibung": "",
+       "preis": "29,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Dammwild-Rücken",
+       "beschreibung": "",
+       "preis": "38,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Frischlings-Keule",
+       "beschreibung": "",
+       "preis": "29,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Rehkeule",
+       "beschreibung": "",
+       "preis": "35,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Wildgansbrust",
+       "beschreibung": "",
+       "preis": "29,50"
+      },
+      {
+       "abschnitt": "",
+       "name": "Ganzer Räucheraal, nach Gewicht",
+       "beschreibung": "mit Friesenbrot, Butter und Jubiläumsaquavit / Bommerlunder",
+       "preis": "7,90"
+      }
+     ]
+    }
+   }
+  ],
+  "neuigkeiten": [
+   {
+    "id": "news1",
+    "status": "published",
+    "data": {
+     "title": "Moin, wir sind wieder da!",
+     "text": [
+      {
+       "_type": "block",
+       "_key": "kn",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ko",
+         "text": "Seit dem 01. November steht Boris Schulte in den Bäumen bei uns am Herd. Boris hat über 20 Jahre im „Waldstübchen Hof Berg“ seine Gäste verwöhnt und war anschließend sehr erfolgreich in Dagebüll tätig. Ab sofort könnt ihr bei uns seine frisch gekochte regionale Küche genießen! Hier geht es zu unserer neuen Speisekarte",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kp",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "kq",
+         "text": "Wir haben noch Termine für eure Weihnachtsfeier frei! Freut euch in den kommenden Wochen auf folgende Veranstaltungen und winterliche Spezialitäten:\nAm 15. November: Überraschungs-Brunch – alle Getränke gehen aufs Haus\nAm 29. November: Advents-Brunch\nSilvester laden wir zum festlichen Silvester-Buffet ein!",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kr",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ks",
+         "text": "Neue Öffnungszeiten: Donnerstag bis Samstag von 17 bis 22 Uhr (Küche bis 20:30 Uhr), Sonntag von 11 bis 14 Uhr und von 17 bis 22 Uhr (Küche bis 13:30 bzw. 20:30 Uhr)",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kt",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ku",
+         "text": "Für eure nächste Feier könnt ihr unseren Saal (bis 120 Personen), das gemütliche Kaminzimmer und ab sofort auch unser gemütliches Partyfass (bis 12 Personen) buchen! Unser Küchenchef steht euch gerne mit kreativen Vorschlägen für eure nächste Veranstaltung zur Verfügung: kontakt@mein-ziel-bongsiel.de",
+         "marks": []
+        }
+       ]
+      }
+     ],
+     "bild": {
+      "$media": {
+       "url": "https://mein-ziel-bongsiel.de/wp-content/uploads/2026/11/kuechenchef-boris-schulte-in-den-baeumen.jpg",
+       "alt": "Küchenchef Boris Schulte in den Bäumen"
+      }
+     },
+     "button_text": "Zur Speisekarte",
+     "button_link": "/speisen/",
+     "gruss": "Euer Team Bongsiel",
+     "startseite": true
+    }
+   }
+  ],
+  "schliesstage": [
+   {
+    "id": "c1",
+    "status": "published",
+    "data": {
+     "title": "Adventsbrunch – Tische nur abends",
+     "von": "2026-11-28T23:00:00.000Z",
+     "art": "Sonderzeiten",
+     "zeiten": [
+      {
+       "von": "17:00",
+       "bis": "22:00",
+       "letzte": "20:00"
+      }
+     ],
+     "hinweis_gaeste": "Mittags Adventsbrunch (Anmeldung)"
+    }
+   },
+   {
+    "id": "c2",
+    "status": "published",
+    "data": {
+     "title": "1. Weihnachtstag",
+     "von": "2026-12-24T23:00:00.000Z",
+     "art": "Geschlossen",
+     "hinweis_gaeste": "Weihnachten geschlossen"
+    }
+   },
+   {
+    "id": "c3",
+    "status": "published",
+    "data": {
+     "title": "Silvester",
+     "von": "2026-12-30T23:00:00.000Z",
+     "art": "Geschlossen",
+     "hinweis_gaeste": "Silvester-Buffet (Anmeldung)"
+    }
+   },
+   {
+    "id": "c4",
+    "status": "published",
+    "data": {
+     "title": "Neujahr",
+     "von": "2026-12-31T23:00:00.000Z",
+     "art": "Geschlossen",
+     "hinweis_gaeste": "Neujahr geschlossen"
+    }
+   }
+  ],
+  "zimmer": [
+   {
+    "id": "r1",
+    "status": "published",
+    "data": {
+     "title": "Doppelzimmer „Fiete“",
+     "kurztext": "In den neu erstellten „Hotelzimmern“ kann man es sich gut gehen lassen und auch Annehmlichkeiten wie die Sauna auf der Dachterrasse genießen.",
+     "personen": 2,
+     "preis": "€ 89,90 / Nacht",
+     "ausstattung": "Doppelbett oder Einzelbetten\nSauna auf der Dachterrasse",
+     "reihenfolge": 1
+    }
+   },
+   {
+    "id": "r2",
+    "status": "published",
+    "data": {
+     "title": "Ferienwohnungen Bongsiel",
+     "kurztext": "Angeschlossen zum Haupthaus haben wir auch noch 2 Gästehäuser mit traditionell nordischem Reetdach. Idyllisch zwischen Kanal und Fischteichen gelegen, bietet ein großzügiges Grundstück für Erholung und Freizeit.",
+     "ausstattung": "Reetdach-Gästehaus\nSpielgeräte im Garten\nStand-up-Paddleboard zum Ausleihen",
+     "link": "https://www.booking.com/hotel/de/reetdachhaus-bongsiel.de.html",
+     "reihenfolge": 2
+    }
+   },
+   {
+    "id": "r3",
+    "status": "published",
+    "data": {
+     "title": "Ferienwohnungen Dagebüll",
+     "kurztext": "Unser Partner „Mein Ziel Dagebüll“ in nur gerade mal ~ 15km Entfernung und direkter Lage am Meer bietet ebenfalls noch zahlreiche Ferienwohnungen an.",
+     "reihenfolge": 3
+    }
+   }
+  ],
+  "seiten": [
+   {
+    "id": "p1",
+    "slug": "gaststaette",
+    "status": "published",
+    "data": {
+     "title": "Traditionsgaststätte „Dat swarte Peerd“",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "kv",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "kw",
+         "text": "Das Restaurant Dat swarte Peerd in Bongsiel war über viele Jahrzehnte ein beliebter Treffpunkt für Reisende und Einheimische gleichermaßen. Gegründet vor über 120 Jahren, lag es in unmittelbarer Nähe eines alten Fähranlegers, der eine wichtige Verbindung zu den Halligen darstellte. Diese zentrale Lage machte das Gasthaus zu einem beliebten Ort für gesellige Abende und war für seine herzliche, friesische Atmosphäre bekannt.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kx",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "ky",
+         "text": "Der Wirt Laurits Thamsen führte die Gaststätte Anfang des 20. Jahrhunderts und erfreute seine Gäste regelmäßig mit der humorvollen plattdeutschen Lügengeschichte über ein schwarzes Pferd. Zahlreiche Maler wie Emil Nolde waren zu Gast und 1979 kehrte sogar der damalige Bundeskanzler Helmut Schmidt ein.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "kz",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k10",
+         "text": "Leider erlitt das historische Gebäude 2016 einen schweren Brand, und das Restaurant ist seitdem geschlossen. Dennoch bleibt Dat swarte Peerd durch seine reiche Geschichte und die Erinnerungen der vielen berühmten und weniger bekannten Gäste, die hier ein Stück friesischer Kultur erlebten, unvergessen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k11",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k12",
+         "text": "2024 wird das Restaurant neu eröffnet und mit Koch Lars Wilhelm Thamsen die Familientradition fortgeführt.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k13",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k14",
+         "text": "Kommen Sie gerne vorbei und lassen Sie sich im Gaststättenbereich im traditionellen Style kulinarisch verwöhnen.",
+         "marks": []
+        }
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "p2",
+    "slug": "eventlocation",
+    "status": "published",
+    "data": {
+     "title": "Feiern in Bongsiel",
+     "einleitung": "Ein großer Veranstaltungsraum von 160 m² bietet für nahezu jeden Wunsch die perfekten Räumlichkeiten.",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "k15",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k16",
+         "text": "Für eure nächste Feier könnt ihr unseren Saal (bis 120 Personen), das gemütliche Kaminzimmer und ab sofort auch unser gemütliches Partyfass (bis 12 Personen) buchen! Unser Küchenchef steht euch gerne mit kreativen Vorschlägen für eure nächste Veranstaltung zur Verfügung.",
+         "marks": []
+        }
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "p3",
+    "slug": "uebernachten",
+    "status": "published",
+    "data": {
+     "title": "Übernachten in Bongsiel",
+     "einleitung": "Neben Tradition bieten wir in Bongsiel auch noch ein modernes Leben an."
+    }
+   },
+   {
+    "id": "p4",
+    "slug": "impressum",
+    "status": "published",
+    "data": {
+     "title": "Impressum",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "k17",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k18",
+         "text": "Angaben gemäß § 5 TMG",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k19",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1a",
+         "text": "De Molen Koopmann Gaststätte Bongsiel",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1b",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1c",
+         "text": "Martin Blindow",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1d",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1e",
+         "text": "Nordsestraße 12",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1g",
+         "text": "25899 Dagebüll-Hafen",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1h",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1i",
+         "text": "Kontakt",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1k",
+         "text": "Telefon: 04667 – 9511066",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1l",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1m",
+         "text": "E-Mail: kontakt@mein-ziel-bongsiel.de",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1o",
+         "text": "Umsatzsteuer-Identifikationsnummer gemäß §27 a Umsatzsteuergesetz:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1q",
+         "text": "Ust-ID: 25 012 05755",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1r",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1s",
+         "text": "Webdesign und Umsetzung: Alture",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1t",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1u",
+         "text": "Streitschlichtung",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1v",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1w",
+         "text": "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://ec.europa.eu/consumers/odr.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1x",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k1y",
+         "text": "Unsere E-Mail-Adresse finden Sie oben im Impressum.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k1z",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k20",
+         "text": "Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k21",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k22",
+         "text": "Haftung für Inhalte",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k23",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k24",
+         "text": "Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k25",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k26",
+         "text": "Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k27",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k28",
+         "text": "Haftung für Links",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k29",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2a",
+         "text": "Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2b",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2c",
+         "text": "Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2d",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2e",
+         "text": "Urheberrecht",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2g",
+         "text": "Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2h",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2i",
+         "text": "Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.",
+         "marks": []
+        }
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "p5",
+    "slug": "datenschutz",
+    "status": "published",
+    "data": {
+     "title": "Datenschutzerklärung",
+     "inhalt": [
+      {
+       "_type": "block",
+       "_key": "k2j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2k",
+         "text": "Hiermit informieren wir Sie über die Verarbeitung personenbezogener Daten (Art. 4 DSGVO), die beim Besuch unserer Webseiten ganz oder teilweise automatisiert oder auch nicht automatisiert erfolgt. Die nachfolgend verwendeten Begriffe entsprechen denjenigen der Datenschutz- Grundverordnung (DSGVO).",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2l",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2m",
+         "text": "1. Name und Kontaktdaten des für die Verarbeitung Verantwortlichen sowie des betrieblichen Datenschutzbeauftragten:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2o",
+         "text": "Diese Datenschutz-Information gilt für die Datenverarbeitung durch den Verantwortlichen:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2q",
+         "text": "Martin Blindow",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2r",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2s",
+         "text": "Nordsestraße 12",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2t",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2u",
+         "text": "25899 Dagebüll-Hafen",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2v",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2w",
+         "text": "Deutschland",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2x",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k2y",
+         "text": "Email: kontakt@mein-ziel-bongsiel.de",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k2z",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k30",
+         "text": "Telefon:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k31",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k32",
+         "text": "Der/die betriebliche Datenschutzbeauftragte ist unter der o.g. Anschrift erreichbar.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k33",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k34",
+         "text": "2. Erhebung und Speicherung personenbezogener Daten sowie Art und Zweck von deren Verwendung",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k35",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k36",
+         "text": "2.1. Beim Besuch der Website",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k37",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k38",
+         "text": "Beim Aufrufen unserer Website https://mein-ziel-bongsiel.de werden durch den auf Ihrem Endgerät zum Einsatz kommenden Browser automatisch Informationen an den Server unserer Website gesendet. Diese Informationen werden temporär in einer Protokolldatei (sog. Logfile) gespeichert. Folgende Informationen werden dabei ohne Ihr Zutun erfasst und bis zur automatisierten Löschung gespeichert:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k39",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3a",
+         "text": "- IP-Adresse des anfragenden Rechners,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3b",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3c",
+         "text": "- Datum und Uhrzeit des Zugriffs,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3d",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3e",
+         "text": "- Name und URL der abgerufenen Datei/Seite,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3g",
+         "text": "- verwendeter Browser und das Betriebssystem Ihres Rechners.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3h",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3i",
+         "text": "Die Verarbeitung der vorgenannten personenbezogenen Daten erfolgt zu folgenden Zwecken:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3k",
+         "text": "- Gewährleistung eines reibungslosen und zügigen Verbindungsaufbaus der Website,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3l",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3m",
+         "text": "- Gewährleistung einer komfortablen Nutzung unserer Website,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3o",
+         "text": "- Auswertung der Systemsicherheit und -stabilität sowie",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3q",
+         "text": "- zu weiteren administrativen Zwecken.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3r",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3s",
+         "text": "Die Rechtsgrundlage für die Datenverarbeitung ist Art. 6 Abs. 1 S. 1 lit. f DSGVO. Unser berechtigtes Interesse folgt aus oben aufgelisteten Zwecken zur Datenerhebung. In keinem Fall verwenden wir die erhobenen Daten zu dem Zweck, Rückschlüsse auf Ihre Person zu ziehen. Darüber hinaus setzen wir beim Besuch unserer Website Cookies ein. Nähere Erläuterungen dazu erhalten Sie unter den Ziff. 4 dieser Datenschutzerklärung.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3t",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3u",
+         "text": "3. Weitergabe von Daten",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3v",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3w",
+         "text": "Eine Übermittlung Ihrer persönlichen Daten an Dritte zu anderen als den im Folgenden aufgeführten Zwecken findet nicht statt. Wir geben Ihre persönlichen Daten nur an Dritte weiter, wenn:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3x",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k3y",
+         "text": "- Sie Ihre nach Art. 6 Abs. 1 S. 1 lit. a DSGVO ausdrückliche Einwilligung dazu erteilt haben,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k3z",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k40",
+         "text": "- die Weitergabe nach Art. 6 Abs. 1 S. 1 lit. f DSGVO zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen erforderlich ist und kein Grund zur Annahme besteht, dass Sie ein überwiegendes schutzwürdiges Interesse an der Nichtweitergabe Ihrer Daten haben,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k41",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k42",
+         "text": "- für den Fall, dass für die Weitergabe nach Art. 6 Abs. 1 S. 1 lit. c DSGVO eine gesetzliche Verpflichtung besteht, sowie",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k43",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k44",
+         "text": "- dies gesetzlich zulässig und nach Art. 6 Abs. 1 S. 1 lit. b DSGVO für die Abwicklung von Vertragsverhältnissen mit Ihnen erforderlich ist.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k45",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k46",
+         "text": "4. Cookies",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k47",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k48",
+         "text": "Wir setzen auf unserer Seite Cookies ein. Hierbei handelt es sich um kleine Dateien, die Ihr Browser automatisch erstellt und die auf Ihrem Endgerät (Laptop, Tablet, Smartphone o.ä.) gespeichert werden, wenn Sie unsere Seite besuchen. Cookies richten auf Ihrem Endgerät keinen Schaden an, enthalten keine Viren, Trojaner oder sonstige Schadsoftware. In dem Cookie werden Informationen abgelegt, die sich jeweils im Zusammenhang mit dem spezifisch eingesetzten Endgerät ergeben. Dies bedeutet jedoch nicht, dass wir dadurch unmittelbar Kenntnis von Ihrer Identität erhalten. Der Einsatz von Cookies dient einerseits dazu, die Nutzung unseres Angebots für Sie angenehmer zu gestalten. So setzen wir sogenannte Session-Cookies ein, um zu erkennen, dass Sie einzelne Seiten unserer Website bereits besucht haben. Diese werden nach Verlassen unserer Seite automatisch gelöscht. Darüber hinaus setzen wir ebenfalls zur Optimierung der Benutzerfreundlichkeit temporäre Cookies ein, die für einen bestimmten festgelegten Zeitraum auf Ihrem Endgerät gespeichert werden. Besuchen Sie unsere Seite erneut, um unsere Dienste in Anspruch zu nehmen, wird automatisch erkannt, dass Sie bereits bei uns waren und welche Eingaben und Einstellungen sie getätigt haben, um diese nicht noch einmal eingeben zu müssen. Zum anderen setzten wir Cookies ein, um die Nutzung unserer Website statistisch zu erfassen und zum Zwecke der Optimierung unseres Angebotes für Sie. Diese Cookies ermöglichen es uns, bei einem erneuten Besuch unserer Seite automatisch zu erkennen, dass Sie bereits bei uns waren. Diese Cookies werden nach einer jeweils definierten Zeit automatisch gelöscht. Die durch Cookies verarbeiteten Daten sind für die genannten Zwecke zur Wahrung unserer berechtigten Interessen sowie der Dritter nach Art. 6 Abs. 1 S. 1 lit. f DSGVO erforderlich. Die meisten Browser akzeptieren Cookies automatisch. Sie können Ihren Browser jedoch so konfigurieren, dass keine Cookies auf Ihrem Computer gespeichert werden oder stets ein Hinweis erscheint, bevor ein neuer Cookie angelegt wird. Die vollständige Deaktivierung von Cookies kann jedoch dazu führen, dass Sie nicht alle Funktionen unserer Webseite nutzen können.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k49",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4a",
+         "text": "5. Betroffenenrechte",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4b",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4c",
+         "text": "5.1. Auskunft: Art. 15 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4d",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4e",
+         "text": "Sie können von uns Auskunft über Ihre von uns verarbeiteten personenbezogenen Daten verlangen. Kein Auskunftsrecht besteht, wenn die Erteilung der begehrten Informationen gegen die Verschwiegenheitspflicht gem. § 83 StBerG bzw. § 43a BRAO verstoßen würde oder die Informationen aus sonstigen Gründen, insbesondere wegen eines überwiegenden berechtigt den Interesses eines Dritten, geheim gehalten werden müssen. Hiervon abweichend kann eine Pflicht zur Erteilung der Auskunft bestehen, wenn insbesondere unter Berücksichtigung drohender Schäden Ihre Interessen gegenüber dem Geheimhaltungsinteresse überwiegen. Das Auskunftsrecht ist ferner ausgeschlossen, wenn die Daten nur deshalb gespeichert sind, weil sie aufgrund gesetzlicher oder satzungsmäßiger Aufbewahrungsfristen nicht gelöscht werden dürfen oder ausschließlich Zwecken der Datensicherung oder der Datenschutzkontrolle dienen, sofern die Auskunftserteilung einen unverhältnismäßig hohen Aufwand erfordern würde und die Verarbeitung zu anderen Zwecken durch geeignete technische und organisatorische Maßnahmen ausgeschlossen ist. Sofern in Ihrem Fall das Auskunftsrecht nicht ausgeschlossen ist und Ihre personenbezogenen Daten von uns verarbeitet werden, können Sie von uns Auskunft über folgende Informationen verlangen:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4g",
+         "text": "- Zwecke der Verarbeitung,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4h",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4i",
+         "text": "- Kategorien der von Ihnen verarbeiteten personenbezogenen Daten,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4k",
+         "text": "- Empfänger oder Kategorien von Empfängern, gegenüber denen Ihre personenbezogenen Daten offen gelegt werden, insbesondere bei Empfängern in Drittländern,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4l",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4m",
+         "text": "- Falls möglich die geplante Dauer, für die Ihre personenbezogenen Daten gespeichert werden oder, falls dies nicht möglich ist, die Kriterien für die Festlegung der Speicherdauer,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4o",
+         "text": "- das Bestehen eines Rechts auf Berichtigung oder Löschung oder Einschränkung der Verarbeitung der Sie betreffenden personenbezogenen Daten oder eines Widerspruchsrechts gegen diese Verarbeitung,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4q",
+         "text": "- das Bestehen eines Beschwerderechts bei einer Aufsichtsbehörde für den Datenschutz,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4r",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4s",
+         "text": "- sofern die personenbezogenen Daten nicht bei Ihnen als betroffene Person erhoben worden sind, die verfügbaren Informationen über die Datenherkunft,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4t",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4u",
+         "text": "- ggf. das Bestehen einer automatisierten Entscheidungsfindung einschließlich Profiling und aussagekräftige Informationen über die involvierte Logik sowie die Tragweite und angestrebten Auswirkungen automatisierter Entscheidungsfindungen,",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4v",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4w",
+         "text": "- ggf. im Fall der Übermittlung an Empfänger in Drittländern, sofern kein Beschluss der EU-Kommission über die Angemessenheit des Schutzniveaus nach Art. 45 Abs. 3 DSGVO vorliegt, Informationen darüber, welche geeigneten Garantien gem. Art. 46 Abs. 2 DSGVO zum Schutze der personenbezogenen Daten vorgesehen sind.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4x",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k4y",
+         "text": "5.2. Berichtigung: Art. 16 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k4z",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k50",
+         "text": "Sofern Sie feststellen, dass uns unrichtige personenbezogene Daten von Ihnen vorliegen, können Sie von uns die unverzügliche Berichtigung dieser unrichtigen Daten verlangen. Bei unvollständigen Sie betreffenden personenbezogenen Daten können Sie die Vervollständigung verlangen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k51",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k52",
+         "text": "5.3. Löschung: Art. 17 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k53",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k54",
+         "text": "Sie haben ein Recht auf Löschung („ Recht auf Vergessenwerden“), sofern die Verarbeitung nicht zur Ausübung des Rechts auf freie Meinungsäußerung, des Rechts auf Information oder zur Erfüllung einer rechtlichen Verpflichtung oder zur Wahrnehmung einer Aufgabe, die im öffentlichen Interesse liegt, erforderlich ist und einer der nachstehenden Gründe zutrifft:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k55",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k56",
+         "text": "- Die personenbezogenen Daten sind für die Zwecke, für die sie verarbeitet wurden, nicht mehr notwendig;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k57",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k58",
+         "text": "- Die Rechtfertigungsgrundlage für die Verarbeitung war ausschließlich ihre Einwilligung, welche sie widerrufen haben;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k59",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5a",
+         "text": "- Sie haben Widerspruch gegen die Verarbeitung Ihrer personenbezogenen Daten eingelegt, die wir öffentlich gemacht haben;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5b",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5c",
+         "text": "- Sie haben Widerspruch gegen die Verarbeitung von uns nicht öffentlich gemachter personenbezogener Daten eingelegt und es liegen keine vorrangigen unberechtigten Gründe für die Verarbeitung vor;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5d",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5e",
+         "text": "- Ihre personenbezogenen Daten wurden unrechtmäßig verarbeitet;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5g",
+         "text": "- Die Löschung der personenbezogenen Daten ist zur Erfüllung einer gesetzlichen Verpflichtung, der wir unterliegen, erforderlich.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5h",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5i",
+         "text": "5.4. Einschränkung der Verarbeitung: Art. 18 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5k",
+         "text": "Sie können von uns die Einschränkung der Verarbeitung verlangen, wenn einer der nachstehenden Gründe zutrifft:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5l",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5m",
+         "text": "- Sie bestreiten die Richtigkeit der personenbezogenen Daten. Die Einschränkung kann in diesem Fall für die Dauer verlangt werden, die es uns ermöglicht, die Richtigkeit der Daten zu überprüfen;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5o",
+         "text": "- die Verarbeitung ist unrechtmäßig und Sie verlangen statt Löschung die Einschränkung der Nutzung Ihrer personenbezogenen Daten;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5q",
+         "text": "- Ihre personenbezogenen Daten werden von uns nicht länger für die Zwecke der Verarbeitung benötigt, die sie jedoch zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen benötigen;",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5r",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5s",
+         "text": "- Sie haben Widerspruch gemäß Art. 21 Abs. 1 DSGVO eingelegt. Die Einschränkung der Verarbeitung kann so lange verweigert werden, wie noch nicht feststeht, ob unsere berechtigten Gründe gegenüber ihren Gründen überwiegen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5t",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5u",
+         "text": "Einschränkung der Verarbeitung bedeutet, dass die personenbezogenen Daten nur mit Ihrer Einwilligung oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen oder zum Schutz der Rechte einer anderen natürlichen oder juristischen Person oder aus Gründen eines wichtigen öffentlichen Interesses verarbeitet werden. Bevor wir die Einschränkung aufheben, haben wir die Pflicht, sie darüber zu unterrichten.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5v",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5w",
+         "text": "5.5. Übertragbarkeit von Daten: Art. 20 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5x",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k5y",
+         "text": "Sie haben ein Recht auf Übertragbarkeit von personenbezogenen Daten, sofern die Verarbeitung auf Ihrer Einwilligung (Art. 6 Abs. 1, lit. a. oder Art. 9 Absatz 2. lit. a. DSGVO) oder auf einem Vertrag beruht, dessen Vertragspartei sie sind und die Verarbeitung mithilfe automatisierter Verfahren erfolgt. Das Recht auf Datenübertragbarkeit beinhaltet in diesem Fall folgende Rechte, sofern hierdurch nicht die Rechte und Freiheiten anderer Personen beeinträchtigt werden:",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k5z",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k60",
+         "text": "- Sie können von uns verlangen, die personenbezogenen Daten, die Sie uns bereitgestellt haben, in einem strukturierten, gängigen und maschinenlesbaren Format zu erhalten.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k61",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k62",
+         "text": "- Sie haben das Recht, diese Daten einem anderen Verantwortlichen ohne Behinderung unsererseits zu übermitteln.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k63",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k64",
+         "text": "- Soweit technisch machbar, können Sie von uns verlangen, dass wir Ihre personenbezogenen Daten direkt an einen anderen Verantwortlichen übermitteln.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k65",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k66",
+         "text": "5.6. Widerruf einer Einwilligung: Art. 7 Abs. 3 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k67",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k68",
+         "text": "Sie haben das Recht, eine erteilte Einwilligung jederzeit mit Wirkung für die Zukunft zu widerrufen. Der Widerruf der Einwilligung kann telefonisch, per E-Mail, per Telefax oder an unsere Postadresse formlos mitgeteilt werden. Durch den Widerruf über die Rechtmäßigkeit der Datenverarbeitung, die aufgrund der Einwilligung bis zum Eingang des Widerrufs erfolgt ist, nicht berührt. Nach Eingang des Widerrufs wird die Datenverarbeitung, die ausschließlich auf ihrer Einwilligung beruhte, eingestellt.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k69",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6a",
+         "text": "5.7. Beschwerde: Art. 77 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6b",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6c",
+         "text": "Wenn Sie der Ansicht sind, dass die Verarbeitung der Sie betreffenden personenbezogenen Daten rechtswidrig ist, können Sie Beschwerde bei einer Aufsichtsbehörde für den Datenschutz einlegen, die für den Ort Ihres Aufenthalts oder Arbeitsplatzes oder für den Ort des mutmaßlichen Verstoßes zuständig ist.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6d",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6e",
+         "text": "5.8. Widerspruchsrecht: Art. 21 DSGVO",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6f",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6g",
+         "text": "Sofern die Verarbeitung auf Art. 6 Abs. 1, lit. e. DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse oder in Ausübung öffentlicher Gewalt) oder auf Art. 6 Abs. 1, lit. f. DSGVO (berechtigtes Interesse des Verantwortlichen oder eines Dritten) beruht, haben Sie das Recht, aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit gegen die Verarbeitung der Sie betreffenden personenbezogenen Daten Widerspruch einzulegen. Dies gilt auch für ein auf Art. 6 Abs. 1 lit. e. oder lit. f GSGVO gestütztes Profiling. Nach Ausübung des Widerspruchsrechts verarbeiten wir Ihre personenbezogenen Daten nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe für die Verarbeitung nachweisen, die Ihre Interessen, Rechte und Freiheiten überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen. Sie können jederzeit Widerspruch gegen die Verarbeitung der Sie betreffenden personenbezogenen Daten zu Zwecken der Direktwerbung einlegen. Das gilt auch für ein Profiling, das mit einer solchen Direktwerbung in Verbindung steht. Nach Ausübung dieses Widerspruchsrechts werden wir die betreffenden personenbezogenen Daten nicht mehr für Zwecke der Direktwerbung verwenden. Sie haben die Möglichkeit, den Widerspruch telefonisch, per E-Mail, per Telefax oder an unsere zu Beginn dieser Datenschutzerklärung aufgeführte Postadresse unserer Kanzlei formlos mitzuteilen.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6h",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6i",
+         "text": "6. Datensicherheit",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6j",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6k",
+         "text": "Wir verwenden innerhalb des Website-Besuchs das verbreitete SSL-Verfahren (Secure Socket Layer) in Verbindung mit der jeweils höchsten Verschlüsselungsstufe, die von Ihrem Browser unterstützt wird. In der Regel handelt es sich dabei um eine 256 Bit Verschlüsselung. Falls Ihr Browser keine 256-Bit Verschlüsselung unterstützt, greifen wir stattdessen auf 128-Bit v3 Technologie zurück. Ob eine einzelne Seite unseres Internetauftrittes verschlüsselt übertragen wird, erkennen Sie an der geschlossenen Darstellung des Schüssel- beziehungsweise Schloss-Symbols in der unteren Statusleiste Ihres Browsers. Wir bedienen uns im Übrigen geeigneter technischer und organisatorischer Sicherheitsmaßnahmen, um Ihre Daten gegen zufällige oder vorsätzliche Manipulationen, teilweisen oder vollständigen Verlust, Zerstörung oder gegen den unbefugten Zugriff Dritter zu schützen. Unsere Sicherheitsmaßnahmen werden entsprechend der technologischen Entwicklung fortlaufend verbessert.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6l",
+       "style": "h3",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6m",
+         "text": "7. Aktualität und Änderung dieser Datenschutzerklärung",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6n",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6o",
+         "text": "Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Mai 2018. Durch die Weiterentwicklung unserer Website und Angebote darüber oder aufgrund geänderter gesetzlicher beziehungsweise behördlicher Vorgaben kann es notwendig werden, diese Datenschutzerklärung zu ändern. Die jeweils aktuelle Datenschutzerklärung kann jederzeit auf der Website unter Datenschutz von Ihnen abgerufen und ausgedruckt werden.",
+         "marks": []
+        }
+       ]
+      },
+      {
+       "_type": "block",
+       "_key": "k6p",
+       "style": "normal",
+       "markDefs": [],
+       "children": [
+        {
+         "_type": "span",
+         "_key": "k6q",
+         "text": "Datenschutzerklärung Stand Mai 2018",
+         "marks": []
+        }
+       ]
+      }
+     ]
+    }
+   }
+  ]
+ }
+}

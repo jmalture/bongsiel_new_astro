@@ -1,0 +1,243 @@
+---
+/**
+ * "Draußen → Drinnen": a sticky scroll story from the dike in daylight to the candle-lit Gaststube.
+ * Without JS or with reduced motion the four steps are simply stacked.
+ */
+import Photo from '../ui/Photo.astro';
+
+const steps = [
+  {
+    k: 'Abends',
+    t: 'Wenn die Sonne über dem Bongsieler Kanal sinkt …',
+    photo: 'kanal-abend',
+    alt: 'Sonnenuntergang über dem Bongsieler Kanal',
+    pos: '50% 50%',
+  },
+  {
+    k: 'Ankommen',
+    t: 'Licht im Fenster, das schwarze Pferd an der Tür.',
+    photo: 'eingang-nacht',
+    alt: 'Eingang der Gaststätte am Abend mit Tannengirlande und Pferdefigur',
+    pos: '55% 50%',
+  },
+  {
+    k: 'Drinnen',
+    t: 'Kachelwand, Kerzenschein und frisch Gekochtes aus der Küche.',
+    photo: 'gaststube-abend',
+    alt: 'Die Gaststube am Abend mit blauer Holzvertäfelung und gedeckten Tischen',
+    pos: '50% 50%',
+  },
+] as const;
+---
+
+<section class="bs-story" aria-label="Vom Deich in die Gaststube" data-progress data-story>
+  <div class="bs-story__stage">
+    <ol class="bs-story__steps">
+      {steps.map((s, i) => (
+        <li class:list={['bs-story__step', { 'is-on': i === 0 }]} data-step={i}>
+          <figure class="bs-story__ph">
+            <Photo name={s.photo} alt={s.alt} sizes="max(100vw, 160vh)" position={s.pos} />
+          </figure>
+          <div class="bs-story__txt bs-wrap">
+            <p class="bs-story__k">
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              {s.k}
+            </p>
+            <p class="bs-story__t">{s.t}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <div class="bs-story__ticks bs-wrap" aria-hidden="true">
+      {steps.map((_, i) => (
+        <i class:list={{ 'is-on': i === 0 }} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  if (root && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    root.classList.add('is-sticky');
+    // Hidden layers would never lazy-load: fetch all four photos once the story comes near.
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        root.querySelectorAll('img').forEach((img) => (img.loading = 'eager'));
+        io.disconnect();
+      },
+      { rootMargin: '120% 0px' },
+    );
+    io.observe(root);
+    const steps = [...root.querySelectorAll<HTMLElement>('.bs-story__step')];
+    const ticks = [...root.querySelectorAll<HTMLElement>('.bs-story__ticks i')];
+    let cur = 0;
+    root.addEventListener('progress', (e) => {
+      const p = (e as CustomEvent<number>).detail;
+      const i = Math.min(steps.length - 1, Math.floor(p * steps.length * 0.999));
+      if (i === cur) return;
+      cur = i;
+      steps.forEach((s, k) => s.classList.toggle('is-on', k === i));
+      ticks.forEach((t, k) => t.classList.toggle('is-on', k <= i));
+    });
+  }
+</script>
+
+<style is:global>
+  .bs-story {
+    position: relative;
+    background: var(--bs-peat);
+    color: var(--bs-cream);
+  }
+  .bs-story__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* Stacked fallback (no JS, reduced motion) */
+  .bs-story__step {
+    position: relative;
+    min-height: 70svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: clip;
+  }
+  .bs-story__ph {
+    position: absolute;
+    inset: 0;
+  }
+  .bs-story__ph img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bs-story__ph::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      0deg,
+      rgba(20, 23, 17, 0.86) 0%,
+      rgba(20, 23, 17, 0.25) 55%,
+      rgba(20, 23, 17, 0.1) 100%
+    );
+  }
+  .bs-story__step:nth-child(3) .bs-story__ph::after {
+    background: linear-gradient(0deg, rgba(40, 24, 8, 0.86) 0%, rgba(60, 34, 10, 0.3) 55%, rgba(60, 34, 10, 0.12) 100%);
+  }
+  .bs-story__txt {
+    position: relative;
+    padding-block: 48px clamp(72px, 10vh, 120px);
+  }
+  .bs-story__k {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bs-ember-l);
+    margin-bottom: 16px;
+  }
+  .bs-story__k span {
+    font-family: var(--bs-head);
+    letter-spacing: 0.04em;
+    color: var(--bs-cream);
+    opacity: 0.7;
+  }
+  .bs-story__t {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-size: clamp(2rem, 1.1rem + 3.8vw, 4.6rem);
+    line-height: 1.08;
+    max-width: 17em;
+    text-wrap: balance;
+  }
+  .bs-story__ticks {
+    display: none;
+  }
+
+  /* Sticky story */
+  .bs-story.is-sticky {
+    height: 340svh;
+  }
+  .bs-story.is-sticky .bs-story__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: clip;
+  }
+  .bs-story.is-sticky .bs-story__step {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    visibility: hidden;
+    transition: visibility 0s 1100ms;
+  }
+  .bs-story.is-sticky .bs-story__step.is-on {
+    visibility: visible;
+    transition: none;
+    z-index: 1;
+  }
+  .bs-story.is-sticky .bs-story__ph {
+    opacity: 0;
+    transform: scale(1.08);
+    transition:
+      opacity 1100ms var(--bs-ease),
+      transform 2400ms var(--bs-ease);
+  }
+  .bs-story.is-sticky .is-on .bs-story__ph {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .bs-story.is-sticky .bs-story__k,
+  .bs-story.is-sticky .bs-story__t {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 500ms var(--bs-ease),
+      transform 700ms var(--bs-ease);
+  }
+  .bs-story.is-sticky .is-on .bs-story__k {
+    opacity: 1;
+    transform: none;
+    transition-duration: 800ms, 1000ms;
+    transition-delay: 250ms;
+  }
+  .bs-story.is-sticky .is-on .bs-story__t {
+    opacity: 1;
+    transform: none;
+    transition-duration: 900ms, 1100ms;
+    transition-delay: 380ms;
+  }
+  .bs-story.is-sticky .bs-story__ticks {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 36px;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+  }
+  .bs-story__ticks i {
+    width: 44px;
+    height: 2px;
+    background: rgba(243, 243, 236, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .bs-story__ticks i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bs-ember-l);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms var(--bs-ease);
+  }
+  .bs-story__ticks i.is-on::after {
+    transform: scaleX(1);
+  }
+</style>

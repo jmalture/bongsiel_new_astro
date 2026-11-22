@@ -1,0 +1,4 @@
+---
+// Old WordPress URLs (/veranstaltung/<slug>/) → new event pages.
+return Astro.redirect(`/veranstaltungen/${Astro.params.slug}/`, 301);
+---

@@ -1,0 +1,330 @@
+---
+import logo from '../assets/logo.svg?raw';
+import { getBookingContext } from '../lib/cms';
+import { dayInfo, nowBerlin, statusLine, hoursSummary } from '../lib/booking';
+
+interface Props {
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+const ctx = await getBookingContext();
+const now = nowBerlin();
+const status = statusLine(dayInfo(now.date, ctx.site.week, ctx.exceptions, ctx.days), now);
+const hours = hoursSummary(ctx.site.week);
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/gaststaette/', label: 'Gaststätte' },
+  { href: '/speisen/', label: 'Speisekarte' },
+  { href: '/veranstaltungen/', label: 'Veranstaltungen' },
+  { href: '/eventlocation/', label: 'Feiern' },
+  { href: '/uebernachten/', label: 'Übernachten' },
+];
+const active = (href: string) => path === href || path.startsWith(href);
+---
+
+<header class:list={['bs-hd', { 'bs-hd--overlay': overlay }]} data-header>
+  <div class="bs-hd__bar bs-wrap">
+    <a href="/" class="bs-hd__logo" aria-label="Mein Ziel Bongsiel – Startseite" set:html={logo} />
+    <nav class="bs-hd__nav" aria-label="Hauptnavigation">
+      {nav.map((n) => (
+        <a href={n.href} class:list={['bs-hd__link', { 'is-active': active(n.href) }]}>
+          {n.label}
+        </a>
+      ))}
+    </nav>
+    <div class="bs-hd__end">
+      <span class:list={['bs-hd__status', { 'is-open': status.open }]}>
+        <i aria-hidden="true"></i>
+        {status.text}
+      </span>
+      <a href="/reservierung/" class="bs-btn bs-hd__cta">
+        Tisch reservieren
+      </a>
+      <button
+        class="bs-hd__burger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="bs-drawer"
+        aria-label="Menü öffnen"
+        data-burger
+      >
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+  <div class="bs-drawer" id="bs-drawer" data-drawer>
+    <nav class="bs-drawer__nav bs-wrap" aria-label="Mobile Navigation">
+      {nav.map((n, i) => (
+        <a href={n.href} style={`--i:${i}`}>
+          {n.label}
+        </a>
+      ))}
+      <a href="/reservierung/" style={`--i:${nav.length}`} class="bs-drawer__res">
+        Tisch reservieren
+      </a>
+    </nav>
+    <div class="bs-drawer__foot bs-wrap">
+      <span class:list={['bs-hd__status', { 'is-open': status.open }]}>
+        <i aria-hidden="true"></i>
+        {status.text}
+      </span>
+      <dl>
+        {hours.map((h) => (
+          <div>
+            <dt>{h.days}</dt>
+            <dd>{h.hours}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</header>
+
+<style is:global>
+  .bs-hd {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--bs-ink);
+    transition:
+      transform 520ms var(--bs-ease),
+      color 300ms var(--bs-ease);
+  }
+  .bs-hd::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bs-linen);
+    border-bottom: 1px solid var(--bs-line);
+    opacity: 0;
+    transition: opacity 300ms var(--bs-ease);
+  }
+  .bs-hd.is-scrolled::before {
+    opacity: 1;
+  }
+  .bs-hd.is-hidden {
+    transform: translateY(-100%);
+  }
+  .bs-hd--overlay:not(.is-scrolled):not(.is-open) {
+    color: var(--bs-cream);
+  }
+  .bs-hd__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: var(--bs-header-h);
+  }
+  .bs-hd__logo {
+    display: block;
+    width: clamp(150px, 16vw, 196px);
+    flex: none;
+    color: inherit;
+  }
+  .bs-hd__logo svg {
+    width: 100%;
+    height: auto;
+  }
+  .bs-hd__nav {
+    display: flex;
+    gap: clamp(14px, 2vw, 30px);
+    margin-inline: auto;
+  }
+  .bs-hd__link {
+    position: relative;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .bs-hd__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 420ms var(--bs-ease);
+  }
+  .bs-hd__link.is-active::after {
+    transform: scaleX(1);
+  }
+  @media (hover: hover) {
+    .bs-hd__link:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  }
+  .bs-hd__end {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .bs-hd__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0.86;
+  }
+  .bs-hd__status i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--bs-sea);
+  }
+  .bs-hd__status.is-open i {
+    background: #7fb05a;
+    box-shadow: 0 0 0 0 rgba(127, 176, 90, 0.6);
+    animation: bs-pulse 2.4s var(--bs-ease) infinite;
+  }
+  @keyframes bs-pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgba(127, 176, 90, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(127, 176, 90, 0);
+    }
+  }
+  .bs-hd__cta {
+    min-height: 44px;
+    padding: 0 20px;
+    font-size: 0.9rem;
+  }
+  .bs-hd__burger {
+    display: none;
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+  .bs-hd__burger span {
+    position: absolute;
+    left: 13px;
+    right: 13px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 420ms var(--bs-ease);
+  }
+  .bs-hd__burger span:first-child {
+    transform: translateY(-4px);
+  }
+  .bs-hd__burger span:last-child {
+    transform: translateY(4px);
+  }
+  .bs-hd.is-open .bs-hd__burger span:first-child {
+    transform: rotate(45deg);
+  }
+  .bs-hd.is-open .bs-hd__burger span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  .bs-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(var(--bs-header-h) + 24px) 0 32px;
+    background: var(--bs-peat);
+    color: var(--bs-cream);
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+    transition:
+      clip-path 640ms var(--bs-ease-io),
+      visibility 0s 640ms;
+  }
+  .bs-hd.is-open {
+    color: var(--bs-cream);
+  }
+  .bs-hd.is-open::before {
+    opacity: 0;
+  }
+  .bs-hd.is-open .bs-drawer {
+    clip-path: inset(0 0 0 0);
+    visibility: visible;
+    transition: clip-path 640ms var(--bs-ease-io);
+  }
+  .bs-drawer__nav {
+    display: grid;
+    gap: 4px;
+  }
+  .bs-drawer__nav a {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(1.4rem, 6.4vw, 2.4rem);
+    line-height: 1.5;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 500ms var(--bs-ease),
+      transform 700ms var(--bs-ease);
+  }
+  .bs-hd.is-open .bs-drawer__nav a {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(180ms + var(--i) * 60ms);
+  }
+  .bs-drawer__res {
+    color: var(--bs-ember-l);
+  }
+  .bs-drawer__foot {
+    display: grid;
+    gap: 14px;
+    font-size: 0.92rem;
+  }
+  .bs-drawer__foot dl {
+    margin: 0;
+    display: grid;
+    gap: 4px;
+  }
+  .bs-drawer__foot dl div {
+    display: flex;
+    gap: 12px;
+  }
+  .bs-drawer__foot dt {
+    min-width: 7.5em;
+    opacity: 0.7;
+  }
+  .bs-drawer__foot dd {
+    margin: 0;
+    white-space: pre-line;
+  }
+
+  @media (max-width: 1180px) {
+    .bs-hd__status {
+      display: none;
+    }
+    .bs-drawer .bs-hd__status {
+      display: inline-flex;
+    }
+  }
+  @media (max-width: 1080px) {
+    .bs-hd__nav {
+      display: none;
+    }
+    .bs-hd__end {
+      margin-left: auto;
+    }
+    .bs-hd__burger {
+      display: block;
+    }
+  }
+  @media (max-width: 560px) {
+    .bs-hd__cta {
+      display: none;
+    }
+  }
+</style>

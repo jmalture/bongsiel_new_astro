@@ -1,0 +1,76 @@
+---
+/** Horizontal photo strip that drifts slowly; pauses on hover and off screen. Photos are real, decorative alt kept. */
+import Photo from './Photo.astro';
+import photos from '../../data/photos.json';
+
+interface Props {
+  items: { name: keyof typeof photos; alt: string }[];
+}
+const { items } = Astro.props;
+---
+
+<div class="bs-gal" data-live aria-label="Einblicke" role="region">
+  <div class="bs-gal__track">
+    {[...items, ...items].map((p, i) => (
+      <figure class="bs-gal__item" aria-hidden={i >= items.length ? 'true' : undefined}>
+        <Photo name={p.name} alt={i >= items.length ? '' : p.alt} sizes="(max-width: 700px) 70vw, 420px" />
+      </figure>
+    ))}
+  </div>
+</div>
+
+<script>
+  // The doubled track sits outside the clipped strip, so its photos never lazy-load: load all when near.
+  document.querySelectorAll<HTMLElement>('.bs-gal').forEach((g) => {
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        g.querySelectorAll('img').forEach((img) => (img.loading = 'eager'));
+        io.disconnect();
+      },
+      { rootMargin: '100% 0px' },
+    );
+    io.observe(g);
+  });
+</script>
+
+<style is:global>
+  .bs-gal {
+    overflow: clip;
+    padding-block: 8px;
+  }
+  .bs-gal__track {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    animation: bs-marquee 70s linear infinite;
+  }
+  .bs-gal:hover .bs-gal__track,
+  .bs-gal.is-paused .bs-gal__track {
+    animation-play-state: paused;
+  }
+  @keyframes bs-marquee {
+    to {
+      transform: translateX(calc(-50% - 8px));
+    }
+  }
+  .bs-gal__item {
+    width: clamp(240px, 30vw, 420px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--bs-r);
+    overflow: clip;
+  }
+  .bs-gal__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bs-gal {
+      overflow-x: auto;
+    }
+    .bs-gal__track {
+      animation: none;
+    }
+  }
+</style>

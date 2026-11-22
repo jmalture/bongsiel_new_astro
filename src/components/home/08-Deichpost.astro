@@ -1,0 +1,116 @@
+---
+import horse from '../../assets/horse.svg?raw';
+---
+
+<section class="bs-post bs-section" id="deichpost" aria-labelledby="bs-post-h">
+  <span class="bs-post__horse" aria-hidden="true" set:html={horse} />
+  <div class="bs-post__grid bs-wrap">
+    <div>
+      <p class="bs-kicker" data-reveal>
+        Deichpost
+      </p>
+      <h2 id="bs-post-h" class="bs-h2 bs-lines">
+        <span class="bs-line" style="--l:0">
+          <span>Bleib immer</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span>
+            <span class="bs-hand">auf dem Laufenden!</span>
+          </span>
+        </span>
+      </h2>
+      <p class="bs-post__lead" data-reveal style="--i:2">
+        Unser Newsletter mit Neuigkeiten, Terminen und Spezialitäten aus Bongsiel – direkt in dein Postfach.
+      </p>
+    </div>
+    <form class="bs-post__form" data-api="/api/newsletter" data-reveal style="--i:3">
+      <div class="bs-post__row">
+        <label class="bs-field">
+          <span>Vorname</span>
+          <input class="bs-input" name="name" autocomplete="given-name" maxlength="80" />
+        </label>
+        <label class="bs-field">
+          <span>E-Mail *</span>
+          <input class="bs-input" name="email" type="email" required autocomplete="email" maxlength="160" />
+        </label>
+      </div>
+      <label class="bs-check">
+        <input type="checkbox" name="consent" required />
+        <span>
+          Ich möchte die Deichpost erhalten und habe die <a href="/datenschutz/">Datenschutzerklärung</a> gelesen.
+          Abmelden geht jederzeit.
+        </span>
+      </label>
+      <input class="bs-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button class="bs-btn bs-btn--light" type="submit">
+        Jetzt anmelden
+      </button>
+      <p data-msg hidden role="status"></p>
+    </form>
+  </div>
+</section>
+
+<style is:global>
+  .bs-post {
+    position: relative;
+    background: var(--bs-sage);
+    color: var(--bs-ink);
+    overflow: clip;
+  }
+  .bs-post .bs-kicker {
+    color: var(--bs-ink);
+  }
+  .bs-post__horse {
+    position: absolute;
+    right: -4%;
+    bottom: -12%;
+    width: min(46vw, 560px);
+    color: rgba(255, 255, 255, 0.16);
+    pointer-events: none;
+  }
+  .bs-post__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: center;
+  }
+  .bs-post__lead {
+    margin-top: 18px;
+    font-size: var(--bs-lead);
+    max-width: 30em;
+  }
+  .bs-post__form {
+    color: var(--bs-cream);
+    display: grid;
+    gap: 16px;
+    padding: clamp(22px, 3vw, 36px);
+    border-radius: var(--bs-r-lg);
+    background: var(--bs-olive);
+  }
+  .bs-post__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 12px;
+  }
+  .bs-post__form .bs-field > span,
+  .bs-post__form .bs-check {
+    color: rgba(243, 243, 236, 0.82);
+  }
+  .bs-post__form .bs-check a {
+    color: inherit;
+  }
+  .bs-post__form .bs-btn {
+    justify-self: start;
+  }
+  @media (max-width: 900px) {
+    .bs-post__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .bs-post__row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

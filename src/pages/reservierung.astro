@@ -1,0 +1,706 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/ui/Photo.astro';
+import PageHead from '../components/ui/PageHead.astro';
+import { getBookingContext } from '../lib/cms';
+import { ROOMS, addDays, dayInfo, hoursSummary, isDate, nowBerlin } from '../lib/booking';
+
+const ctx = await getBookingContext();
+const today = nowBerlin().date;
+const days = Array.from({ length: ctx.site.booking.daysAhead }, (_, i) => {
+  const d = dayInfo(addDays(today, i), ctx.site.week, ctx.exceptions, ctx.days);
+  return { date: d.date, open: d.open, type: d.type, note: d.note ?? '', events: d.events.map((e) => e.title) };
+});
+const pre = Astro.url.searchParams.get('datum');
+const preset = isDate(pre) && days.some((d) => d.date === pre && d.open) ? pre : '';
+const hours = hoursSummary(ctx.site.week);
+const max = ctx.site.booking.maxParty;
+---
+
+<Base
+  title="Tisch reservieren"
+  description="Tisch im Dat swarte Peerd in Bongsiel reservieren – online bis 10 Personen, sofort bestätigt."
+>
+  <PageHead kicker="Reservierung" title="Tisch" hand="reservieren" />
+  <section class="bs-res bs-wrap" data-res data-days={JSON.stringify(days)} data-preset={preset} data-max={max}>
+    <form class="bs-res__form" data-res-form novalidate>
+      <fieldset class="bs-res__step" data-reveal>
+        <legend>
+          <span>1</span>Wie viele seid ihr?
+        </legend>
+        <div class="bs-res__party" role="radiogroup" aria-label="Personen">
+          {Array.from({ length: max }, (_, i) => (
+            <label class="bs-chip">
+              <input type="radio" name="personen" value={i + 1} checked={i + 1 === 2} />
+              <span>{i + 1}</span>
+            </label>
+          ))}
+        </div>
+        <p class="bs-res__hint">
+          Mehr als {max} Personen? Ruft uns an: <a href={`tel:${ctx.site.phoneHref}`}>{ctx.site.phone}</a>
+        </p>
+      </fieldset>
+
+      <fieldset class="bs-res__step" data-reveal style="--i:1">
+        <legend>
+          <span>2</span>An welchem Tag?
+        </legend>
+        <div class="bs-cal" data-cal>
+          <div class="bs-cal__bar">
+            <button type="button" class="bs-cal__nav" data-cal-prev aria-label="Vorheriger Monat">
+              ‹
+            </button>
+            <p class="bs-cal__month" data-cal-month aria-live="polite"></p>
+            <button type="button" class="bs-cal__nav" data-cal-next aria-label="Nächster Monat">
+              ›
+            </button>
+          </div>
+          <div class="bs-cal__head" aria-hidden="true">
+            <span>Mo</span>
+            <span>Di</span>
+            <span>Mi</span>
+            <span>Do</span>
+            <span>Fr</span>
+            <span>Sa</span>
+            <span>So</span>
+          </div>
+          <div class="bs-cal__grid" data-cal-grid role="grid"></div>
+          <ul class="bs-cal__legend" aria-label="Legende">
+            <li>
+              <i class="is-open"></i>Geöffnet
+            </li>
+            <li>
+              <i class="is-event"></i>Veranstaltung
+            </li>
+            <li>
+              <i class="is-kein-ala-carte"></i>Nur Event-Menü
+            </li>
+            <li>
+              <i class="is-closed"></i>Geschlossen
+            </li>
+          </ul>
+        </div>
+        <p class="bs-res__day" data-day-info aria-live="polite"></p>
+        <input type="hidden" name="datum" data-date />
+      </fieldset>
+
+      <fieldset class="bs-res__step" data-reveal style="--i:2">
+        <legend>
+          <span>3</span>Um wie viel Uhr?
+        </legend>
+        <div class="bs-res__slots" data-slots aria-live="polite">
+          <p class="bs-res__hint">Bitte zuerst einen Tag wählen.</p>
+        </div>
+        <input type="hidden" name="zeit" data-time />
+      </fieldset>
+
+      <fieldset class="bs-res__step" data-reveal style="--i:3">
+        <legend>
+          <span>4</span>Eure Kontaktdaten
+        </legend>
+        <div class="bs-res__grid">
+          <label class="bs-field bs-res__wide">
+            <span>Name *</span>
+            <input class="bs-input" name="name" required autocomplete="name" maxlength="120" />
+          </label>
+          <label class="bs-field">
+            <span>Telefon *</span>
+            <input class="bs-input" name="telefon" required type="tel" autocomplete="tel" maxlength="40" />
+          </label>
+          <label class="bs-field">
+            <span>E-Mail *</span>
+            <input class="bs-input" name="email" required type="email" autocomplete="email" maxlength="160" />
+          </label>
+          <label class="bs-field bs-res__wide">
+            <span>Platzwunsch</span>
+            <select class="bs-input" name="raum">
+              {ROOMS.map((r) => (
+                <option value={r}>{r}</option>
+              ))}
+            </select>
+          </label>
+          <label class="bs-field bs-res__wide">
+            <span>Nachricht (Allergien, Anlass, Kinderstuhl …)</span>
+            <textarea class="bs-input" name="notiz" maxlength="1000" rows="3"></textarea>
+          </label>
+        </div>
+        <label class="bs-check">
+          <input type="checkbox" name="newsletter" />
+          <span>Ja, schickt mir die Deichpost (Newsletter).</span>
+        </label>
+        <input class="bs-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <p class="bs-res__small">
+          Sitzplatzwünsche werden bei freien Kapazitäten berücksichtigt. Der Tisch steht euch für 2 Stunden zur
+          Verfügung.
+        </p>
+        <button class="bs-btn bs-btn--ember bs-res__submit" type="submit" data-submit>
+          Verbindlich reservieren
+        </button>
+        <p data-msg hidden role="status"></p>
+      </fieldset>
+    </form>
+
+    <aside class="bs-res__side">
+      <div class="bs-res__card" data-reveal style="--i:2">
+        <figure class="bs-photo bs-res__photo">
+          <Photo
+            name="tisch-blume"
+            alt="Gedeckter Tisch mit Blume und Tischnummer in der Gaststube"
+            sizes="(max-width: 1000px) 92vw, 400px"
+          />
+        </figure>
+        <div class="bs-res__sum" data-summary>
+          <p class="bs-res__sum-k">Eure Reservierung</p>
+          <p class="bs-res__sum-v" data-sum>
+            2 Personen · Tag und Uhrzeit wählen
+          </p>
+        </div>
+        <dl class="bs-res__hours">
+          {hours.map((h) => (
+            <div>
+              <dt>{h.days}</dt>
+              <dd>{h.hours}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="bs-res__phone">
+          Telefonisch: <a href={`tel:${ctx.site.phoneHref}`}>{ctx.site.phone}</a>
+          <br />
+          <small>(Donnerstag bis Sonntag ab 16 Uhr persönlich)</small>
+        </p>
+        <p class="bs-res__noshow">{ctx.site.noShow}</p>
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<script>
+  type Day = { date: string; open: boolean; type: string; note: string; events: string[] };
+  const root = document.querySelector<HTMLElement>('[data-res]')!;
+  const days: Day[] = JSON.parse(root.dataset.days!);
+  const byDate = new Map(days.map((d) => [d.date, d]));
+  const form = root.querySelector<HTMLFormElement>('[data-res-form]')!;
+  const grid = root.querySelector<HTMLElement>('[data-cal-grid]')!;
+  const monthEl = root.querySelector<HTMLElement>('[data-cal-month]')!;
+  const prev = root.querySelector<HTMLButtonElement>('[data-cal-prev]')!;
+  const next = root.querySelector<HTMLButtonElement>('[data-cal-next]')!;
+  const dayInfoEl = root.querySelector<HTMLElement>('[data-day-info]')!;
+  const slotsEl = root.querySelector<HTMLElement>('[data-slots]')!;
+  const dateInput = root.querySelector<HTMLInputElement>('[data-date]')!;
+  const timeInput = root.querySelector<HTMLInputElement>('[data-time]')!;
+  const sum = root.querySelector<HTMLElement>('[data-sum]')!;
+  const msg = form.querySelector<HTMLElement>('[data-msg]')!;
+  const fmt = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' });
+  const monthFmt = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const first = days[0].date;
+  const last = days[days.length - 1].date;
+  let view = first.slice(0, 7);
+  let selected = '';
+  let reqId = 0;
+
+  const party = () => Number(new FormData(form).get('personen')) || 2;
+  const label = (d: Day) =>
+    !d.open
+      ? d.note || 'Geschlossen'
+      : d.type === 'kein-ala-carte'
+        ? 'Nur Event-Menü'
+        : d.type === 'eingeschraenkte-karte'
+          ? 'Kleine Karte'
+          : d.type === 'event'
+            ? 'Veranstaltung'
+            : 'Geöffnet';
+
+  function render() {
+    const [y, m] = view.split('-').map(Number);
+    const start = new Date(Date.UTC(y, m - 1, 1, 12));
+    monthEl.textContent = monthFmt.format(start);
+    const lead = (start.getUTCDay() + 6) % 7;
+    const count = new Date(Date.UTC(y, m, 0, 12)).getUTCDate();
+    const cells: string[] = [];
+    for (let i = 0; i < lead; i++) cells.push('<span class="bs-cal__pad"></span>');
+    for (let n = 1; n <= count; n++) {
+      const date = `${view}-${String(n).padStart(2, '0')}`;
+      const d = byDate.get(date);
+      if (!d) {
+        cells.push(`<span class="bs-cal__day is-out" aria-hidden="true">${n}</span>`);
+        continue;
+      }
+      const state = !d.open ? 'closed' : d.type === 'none' ? 'open' : d.type;
+      const name = `${fmt.format(new Date(date + 'T12:00:00Z'))}: ${label(d)}`;
+      cells.push(
+        `<button type="button" class="bs-cal__day is-${state}${date === selected ? ' is-sel' : ''}" data-d="${date}" ${d.open ? '' : 'disabled'} aria-label="${name}" aria-pressed="${date === selected}"><span>${n}</span></button>`,
+      );
+    }
+    grid.innerHTML = cells.join('');
+    prev.disabled = view <= first.slice(0, 7);
+    next.disabled = view >= last.slice(0, 7);
+  }
+  const shift = (k: number) => {
+    const [y, m] = view.split('-').map(Number);
+    const d = new Date(Date.UTC(y, m - 1 + k, 1));
+    view = d.toISOString().slice(0, 7);
+    render();
+  };
+  prev.addEventListener('click', () => shift(-1));
+  next.addEventListener('click', () => shift(1));
+  grid.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-d]');
+    if (b && !b.disabled) pick(b.dataset.d!);
+  });
+
+  function summary() {
+    const p = party();
+    const parts = [`${p} ${p === 1 ? 'Person' : 'Personen'}`];
+    parts.push(selected ? fmt.format(new Date(selected + 'T12:00:00Z')) : 'Tag wählen');
+    if (timeInput.value) parts.push(`${timeInput.value} Uhr`);
+    sum.textContent = parts.join(' · ');
+  }
+
+  async function pick(date: string) {
+    selected = date;
+    dateInput.value = date;
+    timeInput.value = '';
+    render();
+    const d = byDate.get(date)!;
+    dayInfoEl.textContent = d.events.length
+      ? `${label(d)}: ${d.events.join(', ')}${d.note ? ` · ${d.note}` : ''}`
+      : d.note || '';
+    summary();
+    const id = ++reqId;
+    slotsEl.classList.add('is-loading');
+    try {
+      const res = await fetch(`/api/slots?datum=${date}&personen=${party()}`);
+      const data = await res.json();
+      if (id !== reqId) return;
+      const free = (data.slots as { time: string; free: boolean }[]) ?? [];
+      slotsEl.innerHTML = free.length
+        ? free
+            .map(
+              (s, i) =>
+                `<button type="button" class="bs-chip bs-slot" data-t="${s.time}" ${s.free ? '' : 'disabled'} style="--i:${i}" aria-label="${s.time} Uhr${s.free ? '' : ' – ausgebucht'}"><span>${s.time}</span></button>`,
+            )
+            .join('')
+        : '<p class="bs-res__hint">An diesem Tag ist online nichts mehr frei – ruft uns gern an.</p>';
+    } catch {
+      slotsEl.innerHTML = '<p class="bs-res__hint">Zeiten konnten nicht geladen werden. Bitte erneut versuchen.</p>';
+    } finally {
+      slotsEl.classList.remove('is-loading');
+    }
+  }
+  slotsEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-t]');
+    if (!b || b.disabled) return;
+    slotsEl.querySelectorAll('.is-sel').forEach((x) => x.classList.remove('is-sel'));
+    b.classList.add('is-sel');
+    timeInput.value = b.dataset.t!;
+    summary();
+  });
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'personen') {
+      summary();
+      if (selected) pick(selected);
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const show = (ok: boolean, text: string) => {
+      msg.hidden = false;
+      msg.className = `bs-msg ${ok ? 'bs-msg--ok' : 'bs-msg--err'}`;
+      msg.textContent = text;
+    };
+    if (!dateInput.value || !timeInput.value) return show(false, 'Bitte Tag und Uhrzeit wählen.');
+    if (!form.reportValidity()) return;
+    const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/reservierung', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
+      });
+      const out = await res.json().catch(() => ({}));
+      show(res.ok, out.message || (res.ok ? 'Danke!' : 'Das hat leider nicht geklappt.'));
+      if (res.ok) {
+        form
+          .querySelectorAll<HTMLInputElement>('[name=name],[name=telefon],[name=email],[name=notiz]')
+          .forEach((i) => (i.value = ''));
+        pick(selected);
+      } else if (res.status === 409) pick(selected);
+    } catch {
+      show(false, 'Keine Verbindung. Bitte später erneut versuchen oder anrufen.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  render();
+  summary();
+  if (root.dataset.preset) {
+    view = root.dataset.preset.slice(0, 7);
+    pick(root.dataset.preset);
+  }
+</script>
+
+<style is:global>
+  .bs-res {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-res__form {
+    display: grid;
+    gap: 18px;
+  }
+  .bs-res__step {
+    margin: 0;
+    padding: clamp(22px, 3vw, 34px);
+    border: 1px solid var(--bs-line);
+    border-radius: var(--bs-r-lg);
+    background: #fff;
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+  .bs-res__step legend {
+    float: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    font-family: var(--bs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+  }
+  .bs-res__step legend span {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bs-cream);
+    color: var(--bs-sage-d);
+    font-size: 0.8rem;
+  }
+  .bs-res__party,
+  .bs-res__slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .bs-res__slots {
+    min-height: 52px;
+    transition: opacity 200ms var(--bs-ease);
+  }
+  .bs-res__slots.is-loading {
+    opacity: 0.4;
+  }
+  .bs-chip {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    min-width: 52px;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid var(--bs-line);
+    border-radius: var(--bs-pill);
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--bs-ease),
+      color 160ms var(--bs-ease),
+      border-color 160ms var(--bs-ease),
+      transform 160ms var(--bs-ease);
+  }
+  .bs-chip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .bs-chip:active {
+    transform: scale(0.95);
+  }
+  @media (hover: hover) {
+    .bs-chip:hover:not(:disabled) {
+      border-color: var(--bs-sage);
+    }
+  }
+  .bs-chip:has(input:checked),
+  .bs-chip.is-sel {
+    background: var(--bs-olive);
+    border-color: var(--bs-olive);
+    color: var(--bs-cream);
+  }
+  .bs-chip:has(input:focus-visible) {
+    outline: 2px solid var(--bs-ember);
+    outline-offset: 3px;
+  }
+  .bs-chip:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+  .bs-slot {
+    animation: bs-in 420ms var(--bs-ease) both;
+    animation-delay: calc(min(var(--i), 12) * 18ms);
+  }
+  @keyframes bs-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  .bs-res__hint a,
+  .bs-res__phone a {
+    display: inline-block;
+    padding-block: 7px;
+  }
+  .bs-res__hint,
+  .bs-res__small {
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+  }
+  .bs-res__day {
+    min-height: 1.6em;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--bs-brick);
+  }
+  .bs-cal {
+    display: grid;
+    gap: 10px;
+    max-width: 520px;
+  }
+  .bs-cal__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bs-cal__month {
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .bs-cal__nav {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--bs-line);
+    background: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background-color 160ms var(--bs-ease);
+  }
+  .bs-cal__nav:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .bs-cal__head,
+  .bs-cal__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .bs-cal__head span {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bs-grey);
+  }
+  .bs-cal__day {
+    position: relative;
+    aspect-ratio: 1;
+    min-height: 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: var(--bs-cream);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--bs-ease),
+      color 160ms var(--bs-ease),
+      border-color 160ms var(--bs-ease),
+      transform 160ms var(--bs-ease);
+  }
+  .bs-cal__day:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+  @media (hover: hover) {
+    .bs-cal__day:hover:not(:disabled) {
+      border-color: var(--bs-sage);
+    }
+  }
+  .bs-cal__day::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: transparent;
+  }
+  .bs-cal__day.is-open::after {
+    background: var(--bs-sage);
+  }
+  .bs-cal__day.is-event::after,
+  .bs-cal__day.is-eingeschraenkte-karte::after {
+    background: var(--bs-delft);
+  }
+  .bs-cal__day.is-kein-ala-carte::after {
+    background: var(--bs-ember);
+  }
+  .bs-cal__day.is-closed,
+  .bs-cal__day.is-out {
+    background: transparent;
+    color: rgba(20, 23, 17, 0.32);
+    cursor: default;
+  }
+  .bs-cal__day.is-sel {
+    background: var(--bs-olive);
+    color: var(--bs-cream);
+  }
+  .bs-cal__legend {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 0.82rem;
+    color: var(--bs-grey);
+  }
+  .bs-cal__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bs-cal__legend i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .bs-cal__legend .is-open {
+    background: var(--bs-sage);
+  }
+  .bs-cal__legend .is-event {
+    background: var(--bs-delft);
+  }
+  .bs-cal__legend .is-kein-ala-carte {
+    background: var(--bs-ember);
+  }
+  .bs-cal__legend .is-closed {
+    background: rgba(20, 23, 17, 0.2);
+  }
+  .bs-res__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .bs-res__wide {
+    grid-column: 1 / -1;
+  }
+  .bs-res__submit {
+    justify-self: start;
+  }
+  .bs-res__side {
+    position: sticky;
+    top: calc(var(--bs-header-h) + 20px);
+  }
+  .bs-res__card {
+    border-radius: var(--bs-r-lg);
+    background: var(--bs-peat);
+    color: var(--bs-cream);
+    overflow: clip;
+  }
+  .bs-res__photo {
+    aspect-ratio: 16 / 10;
+    border-radius: 0;
+  }
+  .bs-res__sum,
+  .bs-res__hours,
+  .bs-res__phone,
+  .bs-res__noshow {
+    margin: 0;
+    padding: 0 24px;
+  }
+  .bs-res__sum {
+    padding-top: 22px;
+  }
+  .bs-res__sum-k {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bs-sage-l);
+    font-weight: 600;
+  }
+  .bs-res__sum-v {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    margin-top: 6px;
+  }
+  .bs-res__hours {
+    display: grid;
+    gap: 6px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--bs-line-light);
+    font-size: 0.9rem;
+  }
+  .bs-res__hours div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .bs-res__hours dt {
+    opacity: 0.7;
+  }
+  .bs-res__hours dd {
+    margin: 0;
+    text-align: right;
+    white-space: pre-line;
+  }
+  .bs-res__phone {
+    margin-top: 16px;
+    font-size: 0.92rem;
+  }
+  .bs-res__phone small {
+    opacity: 0.7;
+  }
+  .bs-res__noshow {
+    margin-top: 16px;
+    padding-bottom: 24px;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: rgba(243, 243, 236, 0.7);
+  }
+  @media (max-width: 1000px) {
+    .bs-res {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-res__side {
+      position: static;
+    }
+    .bs-res__photo {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .bs-res__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-cal__day {
+      border-radius: 10px;
+      min-height: 36px;
+    }
+  }
+</style>

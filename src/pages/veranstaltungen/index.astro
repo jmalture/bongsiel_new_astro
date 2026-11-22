@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/ui/PageHead.astro';
+import EventCard from '../../components/events/EventCard.astro';
+import { getEvents, upcoming } from '../../lib/cms';
+
+const events = upcoming(await getEvents());
+const months = new Map<string, typeof events>();
+for (const e of events) {
+  const k = e.date.slice(0, 7);
+  months.set(k, [...(months.get(k) ?? []), e]);
+}
+const monthName = (k: string) =>
+  new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+    new Date(k + '-15T12:00:00Z'),
+  );
+---
+
+<Base
+  title="Veranstaltungen"
+  description="Brunch, Buffets und besondere Abende im Dat swarte Peerd in Bongsiel – alle Termine und Anmeldung."
+>
+  <PageHead
+    kicker="Veranstaltungen"
+    title="Was bei uns"
+    hand="los ist"
+    lead="Brunch, Buffets und besondere Abende. Wo die Plätze begrenzt sind, meldet ihr euch direkt hier an – bezahlt wird vor Ort."
+  />
+  <section class="bs-evl bs-wrap">
+    {events.length === 0 && (
+      <p class="bs-lead" data-reveal>
+        Gerade ist nichts geplant – die nächsten Termine stehen bald hier.{' '}
+        <a href="/reservierung/">Tisch reservieren</a>
+      </p>
+    )}
+    {[...months].map(([k, list]) => (
+      <div class="bs-evl__month">
+        <h2 class="bs-evl__m" data-reveal>
+          {monthName(k)}
+        </h2>
+        <div class="bs-hev__grid">
+          {list.map((e, i) => (
+            <EventCard event={e} i={i} />
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+</Base>
+
+<style is:global>
+  .bs-evl {
+    display: grid;
+    gap: clamp(40px, 6vw, 72px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-evl__m {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--bs-sage-d);
+  }
+  .bs-evl .bs-hev__grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+</style>

@@ -1,0 +1,424 @@
+---
+/** Service admin shell: short German labels, big tap targets, works on the tablet at the bar. */
+import '../styles/fonts.css';
+import horse from '../assets/horse.svg?raw';
+import { staff } from '../lib/auth';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const user = staff(Astro.locals)!;
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/admin/', label: 'Reservierungen', icon: 'M4 6h16M4 12h16M4 18h10' },
+  {
+    href: '/admin/anmeldungen/',
+    label: 'Anmeldungen',
+    icon: 'M8 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1',
+  },
+  { href: '/admin/anfragen/', label: 'Anfragen', icon: 'M4 5h16v12H8l-4 4z' },
+  { href: '/admin/deichpost/', label: 'Deichpost', icon: 'M3 6h18v12H3zM3 7l9 6 9-6' },
+];
+const content = [
+  { href: '/_emdash/admin/content/veranstaltungen', label: 'Veranstaltungen' },
+  { href: '/_emdash/admin/content/speisekarten', label: 'Speisekarten' },
+  { href: '/_emdash/admin/content/schliesstage', label: 'Schließtage' },
+  { href: '/_emdash/admin/content/einstellungen', label: 'Öffnungszeiten' },
+  { href: '/_emdash/admin/content/neuigkeiten', label: 'Neuigkeiten' },
+];
+const isActive = (h: string) => (h === '/admin/' ? path === '/admin/' || path === '/admin' : path.startsWith(h));
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Service Bongsiel</title>
+    <link rel="icon" href="/favicon-512.png" type="image/png" />
+  </head>
+  <body class="ad">
+    <aside class="ad-side">
+      <a class="ad-brand" href="/admin/">
+        <span set:html={horse} />
+        Service
+      </a>
+      <nav class="ad-nav" aria-label="Service">
+        {nav.map((n) => (
+          <a
+            href={n.href}
+            class:list={{ 'is-on': isActive(n.href) }}
+            aria-current={isActive(n.href) ? 'page' : undefined}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d={n.icon} />
+            </svg>
+            {n.label}
+          </a>
+        ))}
+      </nav>
+      <p class="ad-side__k">Inhalte bearbeiten</p>
+      <nav class="ad-nav ad-nav--sub" aria-label="Inhalte">
+        {content.map((c) => (
+          <a href={c.href}>{c.label}</a>
+        ))}
+      </nav>
+      <div class="ad-side__foot">
+        <a href="/" target="_blank" rel="noopener">
+          Website ansehen ↗
+        </a>
+        <span>{user.name || user.email}</span>
+      </div>
+    </aside>
+    <main class="ad-main">
+      <slot />
+    </main>
+    <div class="ad-toast" data-toast role="status" aria-live="polite"></div>
+    <script>
+      import '../scripts/admin.ts';
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --ad-ink: #141711;
+    --ad-grey: #63665a;
+    --ad-line: #e3e2d8;
+    --ad-bg: #f6f5ef;
+    --ad-card: #fff;
+    --ad-sage: #879760;
+    --ad-sage-d: #5f6d3c;
+    --ad-olive: #3a3c2f;
+    --ad-ember: #c9833f;
+    --ad-red: #b4441f;
+    --ad-blue: #2f5080;
+    --ad-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  * {
+    box-sizing: border-box;
+  }
+  /* EmDash's visual-editing toolbar is for the public pages, not the service screens. */
+  #emdash-toolbar {
+    display: none !important;
+  }
+  body.ad {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 100vh;
+    font-family: 'Onest', system-ui, sans-serif;
+    font-size: 15px;
+    color: var(--ad-ink);
+    background: var(--ad-bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .ad button,
+  .ad input,
+  .ad select,
+  .ad textarea {
+    font: inherit;
+    color: inherit;
+  }
+  .ad a {
+    color: inherit;
+  }
+  .ad-side {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 14px;
+    background: var(--ad-olive);
+    color: #f3f3ec;
+  }
+  .ad-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 8px 18px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+  }
+  .ad-brand span {
+    width: 28px;
+    color: #b8c39a;
+  }
+  .ad-nav {
+    display: grid;
+    gap: 2px;
+  }
+  .ad-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    opacity: 0.82;
+    transition:
+      background-color 150ms var(--ad-ease),
+      opacity 150ms var(--ad-ease);
+  }
+  .ad-nav a:hover {
+    opacity: 1;
+    background: rgba(243, 243, 236, 0.08);
+  }
+  .ad-nav a.is-on {
+    opacity: 1;
+    background: rgba(243, 243, 236, 0.14);
+  }
+  .ad-nav svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .ad-nav--sub a {
+    min-height: 36px;
+    font-size: 0.92rem;
+  }
+  .ad-side__k {
+    margin: 22px 12px 4px;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .ad-side__foot {
+    margin-top: auto;
+    display: grid;
+    gap: 6px;
+    padding: 12px;
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+  .ad-main {
+    padding: 28px clamp(16px, 3vw, 40px) 60px;
+    min-width: 0;
+  }
+  /* shared admin pieces */
+  .ad-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .ad-h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .ad-sub {
+    margin: 2px 0 0;
+    color: var(--ad-grey);
+  }
+  .ad-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .ad-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid var(--ad-line);
+    border-radius: 10px;
+    background: var(--ad-card);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 150ms var(--ad-ease),
+      border-color 150ms var(--ad-ease),
+      transform 150ms var(--ad-ease);
+  }
+  .ad-btn:hover {
+    border-color: #c8c7b9;
+  }
+  .ad-btn:active {
+    transform: scale(0.97);
+  }
+  .ad-btn--main {
+    background: var(--ad-olive);
+    border-color: var(--ad-olive);
+    color: #f3f3ec;
+  }
+  .ad-btn--main:hover {
+    background: #2a2c21;
+  }
+  .ad-btn--sm {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.85rem;
+  }
+  .ad-input {
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid var(--ad-line);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .ad-input:focus,
+  .ad-btn:focus-visible {
+    outline: 2px solid var(--ad-sage);
+    outline-offset: 1px;
+  }
+  .ad-card {
+    background: var(--ad-card);
+    border: 1px solid var(--ad-line);
+    border-radius: 14px;
+  }
+  .ad-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .ad-kpi {
+    padding: 16px 18px;
+  }
+  .ad-kpi b {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+  .ad-kpi span {
+    color: var(--ad-grey);
+    font-size: 0.88rem;
+  }
+  .ad-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ad-grey);
+  }
+  .ad-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 99px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: #eeede5;
+  }
+  .ad-pill--ok {
+    background: #e6efdc;
+    color: #3d5a26;
+  }
+  .ad-pill--warn {
+    background: #fbe9d8;
+    color: #8a4a12;
+  }
+  .ad-pill--off {
+    background: #f1e2dc;
+    color: #8a2f12;
+  }
+  .ad-pill--blue {
+    background: #e1e8f2;
+    color: #2f5080;
+  }
+  .ad-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 16px;
+  }
+  .ad-form label {
+    display: grid;
+    gap: 4px;
+    font-size: 0.82rem;
+    color: var(--ad-grey);
+  }
+  .ad-form .ad-wide {
+    grid-column: 1 / -1;
+  }
+  .ad-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    translate: -50% 0;
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: var(--ad-olive);
+    color: #f3f3ec;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition:
+      opacity 200ms var(--ad-ease),
+      transform 260ms var(--ad-ease);
+  }
+  .ad-toast.is-on {
+    opacity: 1;
+    transform: none;
+  }
+  .ad-toast.is-err {
+    background: var(--ad-red);
+  }
+  details.ad-card > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-weight: 600;
+  }
+  details.ad-card > summary::-webkit-details-marker {
+    display: none;
+  }
+  @media (max-width: 900px) {
+    body.ad {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ad-side {
+      position: sticky;
+      z-index: 10;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      overflow-x: auto;
+      padding: 8px 10px;
+    }
+    .ad-brand {
+      margin: 0 6px 0 0;
+    }
+    .ad-brand,
+    .ad-side__k,
+    .ad-nav--sub,
+    .ad-side__foot {
+      display: none;
+    }
+    .ad-nav {
+      display: flex;
+    }
+    .ad-nav a {
+      white-space: nowrap;
+    }
+  }
+  @media print {
+    .ad-side,
+    .ad-noprint {
+      display: none !important;
+    }
+    body.ad {
+      display: block;
+      background: #fff;
+    }
+  }
+</style>

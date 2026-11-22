@@ -1,0 +1,192 @@
+---
+import type { EventItem } from '../../lib/cms';
+import { seatsFree } from '../../lib/service';
+
+interface Props {
+  event: EventItem;
+  i?: number;
+}
+const { event: e, i = 0 } = Astro.props;
+const d = new Date(e.date + 'T12:00:00Z');
+const day = d.getUTCDate();
+const month = new Intl.DateTimeFormat('de-DE', { month: 'short', timeZone: 'UTC' }).format(d).replace('.', '');
+const weekday = new Intl.DateTimeFormat('de-DE', { weekday: 'long', timeZone: 'UTC' }).format(d);
+const free = e.seats ? seatsFree(e.seats, e.slug, e.date) : 0;
+const share = e.seats ? free / e.seats : 0;
+const href = `/veranstaltungen/${e.occurrenceOf ?? e.slug}/${e.occurrenceOf ? `?datum=${e.date}` : ''}`;
+---
+
+<a class="bs-ev" href={href} data-reveal style={`--i:${i}`}>
+  <span class="bs-ev__date" aria-hidden="true">
+    <span class="bs-ev__day">{day}</span>
+    <span class="bs-ev__mon">{month}</span>
+  </span>
+  <span class="bs-ev__body">
+    <span class="bs-ev__meta">
+      {weekday}
+      {e.start && ` · ${e.start} Uhr`}
+    </span>
+    <span class="bs-ev__title">{e.title}</span>
+    {e.teaser && <span class="bs-ev__teaser">{e.teaser}</span>}
+    {e.price && <span class="bs-ev__price">{e.price}</span>}
+  </span>
+  <span class="bs-ev__foot">
+    {e.seats > 0 ? (
+      <span class="bs-ev__seats" style={`--s:${share.toFixed(3)}`}>
+        <span class="bs-ev__bar" aria-hidden="true">
+          <i />
+        </span>
+        {free > 0 ? `${free} von ${e.seats} Plätzen frei` : 'Ausgebucht'}
+      </span>
+    ) : (
+      <span class="bs-ev__seats bs-ev__seats--plain">Ohne Anmeldung · Tisch reservieren</span>
+    )}
+    <span class="bs-ev__go" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </span>
+  </span>
+  <span class="sr-only">{`${weekday}, ${day}. ${month}`}</span>
+</a>
+
+<style is:global>
+  .bs-hev__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
+  }
+  .bs-ev {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 22px;
+    padding: 26px;
+    border-radius: var(--bs-r-lg);
+    background: #fff;
+    border: 1px solid var(--bs-line);
+    text-decoration: none;
+    transition:
+      transform 500ms var(--bs-ease),
+      box-shadow 500ms var(--bs-ease),
+      border-color 300ms var(--bs-ease);
+  }
+  @media (hover: hover) {
+    .bs-ev:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--bs-shadow);
+      border-color: transparent;
+    }
+    .bs-ev:hover .bs-ev__go {
+      background: var(--bs-ember);
+      color: #fff;
+      border-color: var(--bs-ember);
+    }
+    .bs-ev:hover .bs-ev__go svg {
+      transform: translateX(3px);
+    }
+  }
+  .bs-ev__date {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    color: var(--bs-delft);
+  }
+  .bs-ev__day {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    font-size: 3.2rem;
+    line-height: 1;
+  }
+  .bs-ev__mon {
+    font-family: var(--bs-head);
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+  }
+  .bs-ev__body {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+  }
+  .bs-ev__meta {
+    font-size: 0.85rem;
+    color: var(--bs-grey);
+  }
+  .bs-ev__title {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+  .bs-ev__teaser {
+    font-size: 0.95rem;
+    color: var(--bs-grey);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bs-ev__price {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .bs-ev__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 18px;
+    border-top: 1px solid var(--bs-line);
+  }
+  .bs-ev__seats {
+    display: grid;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bs-sage-d);
+  }
+  .bs-ev__seats--plain {
+    color: var(--bs-grey);
+    font-weight: 500;
+  }
+  .bs-ev__bar {
+    display: block;
+    width: 140px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--bs-cream);
+    overflow: hidden;
+  }
+  .bs-ev__bar i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--bs-sage);
+    transform-origin: left;
+    transform: scaleX(var(--s));
+    transition: transform 1400ms var(--bs-ease) 300ms;
+  }
+  .js .bs-ev[data-reveal]:not(.is-in) .bs-ev__bar i {
+    transform: scaleX(0);
+  }
+  .bs-ev__go {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--bs-line);
+    transition:
+      background-color 300ms var(--bs-ease),
+      color 300ms var(--bs-ease),
+      border-color 300ms var(--bs-ease);
+  }
+  .bs-ev__go svg {
+    width: 18px;
+    transition: transform 300ms var(--bs-ease);
+  }
+</style>

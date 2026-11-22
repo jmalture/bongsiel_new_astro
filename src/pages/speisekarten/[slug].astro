@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/ui/PageHead.astro';
+import MenuView from '../../components/menu/MenuView.astro';
+import { getMenus } from '../../lib/cms';
+
+const menus = await getMenus();
+const menu = menus.find((m) => m.slug === Astro.params.slug);
+if (!menu) return Astro.rewrite('/404');
+if (menu.main) return Astro.redirect('/speisen/', 301);
+---
+
+<Base title={menu.title} description={`${menu.title} – Dat swarte Peerd, Bongsiel.`}>
+  <PageHead
+    kicker="Speisekarten"
+    title={menu.title}
+    lead={[menu.subtitle, menu.valid].filter(Boolean).join(' · ') || undefined}
+  />
+  <MenuView menu={menu} />
+</Base>

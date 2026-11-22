@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/01-Hero.astro';
+import News from '../components/home/02-News.astro';
+import Story from '../components/home/03-Story.astro';
+import Events from '../components/home/04-Events.astro';
+import Menu from '../components/home/05-Menu.astro';
+import House from '../components/home/06-House.astro';
+import Book from '../components/home/07-Book.astro';
+import Deichpost from '../components/home/08-Deichpost.astro';
+import { getBookingContext, getMenus, getNews, upcoming } from '../lib/cms';
+
+const [ctx, news, menus] = await Promise.all([getBookingContext(), getNews(), getMenus()]);
+const next = upcoming(ctx.events).filter((e) => e.home);
+const main = menus.find((m) => m.main) ?? menus[0];
+---
+
+<Base
+  title="Dat swarte Peerd · Mein Ziel Bongsiel – Gaststätte am Deich in Ockholm"
+  description="Traditionsgaststätte Dat swarte Peerd in Bongsiel, Ockholm (Nordfriesland): regionale Küche, Veranstaltungen, Saal für Feiern, Zimmer und Ferienwohnungen. Jetzt Tisch reservieren."
+  overlay
+>
+  <Hero next={next[0]} />
+  <News news={news} />
+  <Story />
+  <Events events={next.slice(0, 3)} />
+  <Menu menu={main} />
+  <House />
+  <Book week={ctx.site.week} exceptions={ctx.exceptions} days={ctx.days} />
+  <Deichpost />
+</Base>

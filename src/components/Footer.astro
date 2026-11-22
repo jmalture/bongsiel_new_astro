@@ -1,0 +1,263 @@
+---
+import horse from '../assets/horse.svg?raw';
+import { getSite } from '../lib/cms';
+import { hoursSummary } from '../lib/booking';
+
+const site = await getSite();
+const hours = hoursSummary(site.week);
+const year = new Date().getFullYear();
+---
+
+<footer class="bs-ft">
+  <div class="bs-ft__top bs-wrap">
+    <div class="bs-ft__brand">
+      <span class="bs-ft__horse" set:html={horse} />
+      <p class="bs-ft__say bs-lines">
+        <span class="bs-line" style="--l:0">
+          <span>Bis bald</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span>am Deich.</span>
+        </span>
+      </p>
+      <a href="/reservierung/" class="bs-btn bs-btn--ember">
+        Tisch reservieren
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </a>
+    </div>
+    <div class="bs-ft__cols">
+      <div>
+        <h2 class="bs-ft__h">Öffnungszeiten</h2>
+        <dl class="bs-ft__hours">
+          {hours.map((h) => (
+            <div>
+              <dt>{h.days}</dt>
+              <dd>{h.hours}</dd>
+            </div>
+          ))}
+        </dl>
+        <a class="bs-link bs-ft__small" href="/reservierung/">
+          Sonderzeiten &amp; Schließtage →
+        </a>
+      </div>
+      <div>
+        <h2 class="bs-ft__h">Besuch</h2>
+        <address>
+          {site.address.map((l) => (
+            <span>{l}</span>
+          ))}
+        </address>
+        <a class="bs-link" href={site.mapsUrl} target="_blank" rel="noopener">
+          Route planen ↗
+        </a>
+      </div>
+      <div>
+        <h2 class="bs-ft__h">Kontakt</h2>
+        {site.phone !== 'PHONE_TBD' && (
+          <a class="bs-link" href={`tel:${site.phoneHref}`}>
+            {site.phone}
+          </a>
+        )}
+        <a class="bs-link" href={`mailto:${site.email}`}>
+          {site.email}
+        </a>
+        <a class="bs-link" href="/#deichpost">
+          Deichpost abonnieren
+        </a>
+      </div>
+      <nav aria-label="Footer">
+        <h2 class="bs-ft__h">Bongsiel</h2>
+        <a class="bs-link" href="/gaststaette/">
+          Gaststätte
+        </a>
+        <a class="bs-link" href="/speisekarten/">
+          Speisekarten
+        </a>
+        <a class="bs-link" href="/veranstaltungen/">
+          Veranstaltungen
+        </a>
+        <a class="bs-link" href="/eventlocation/">
+          Feiern
+        </a>
+        <a class="bs-link" href="/uebernachten/">
+          Übernachten
+        </a>
+        <a class="bs-link" href="https://de-molen-koopmann.de/" target="_blank" rel="noopener">
+          De Molen Koopmann ↗
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="bs-ft__house" aria-hidden="true" data-live>
+    <img src="/img/haus-nacht.webp" alt="" width="1870" height="758" loading="lazy" decoding="async" />
+    <img
+      class="bs-ft__glow"
+      src="/img/haus-nacht.webp"
+      alt=""
+      width="1870"
+      height="758"
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <div class="bs-ft__legal">
+    <div class="bs-wrap">
+      <span>© {year} Mein Ziel Bongsiel · Dat swarte Peerd</span>
+      <span>
+        <a href="/impressum/">Impressum</a>
+        <a href="/datenschutz/">Datenschutz</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .bs-ft {
+    position: relative;
+    background: var(--bs-peat);
+    color: var(--bs-cream);
+    padding-top: clamp(80px, 9vw, 140px);
+    overflow: clip;
+  }
+  .bs-ft__top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+    gap: clamp(40px, 6vw, 96px);
+    position: relative;
+    z-index: 1;
+  }
+  .bs-ft__horse {
+    display: block;
+    width: 56px;
+    color: var(--bs-sage-l);
+    margin-bottom: 28px;
+  }
+  .bs-ft__say {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-size: clamp(2.4rem, 1.6rem + 3vw, 4.4rem);
+    line-height: 1.05;
+    margin-bottom: 32px;
+  }
+  .bs-ft__cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+  }
+  .bs-ft__cols > * {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    font-size: 0.95rem;
+  }
+  .bs-ft__h {
+    font-family: var(--bs-body);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bs-sage-l);
+    margin-bottom: 8px;
+  }
+  .bs-ft__hours {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .bs-ft__hours div {
+    display: grid;
+  }
+  .bs-ft__hours dt {
+    opacity: 0.7;
+    font-size: 0.85rem;
+  }
+  .bs-ft__hours dd {
+    margin: 0;
+    white-space: pre-line;
+  }
+  .bs-ft__small {
+    font-size: 0.82rem;
+    opacity: 0.7;
+    margin-top: 6px;
+  }
+  .bs-ft address {
+    font-style: normal;
+    display: grid;
+  }
+  .bs-ft__house {
+    position: relative;
+    margin-top: clamp(40px, 6vw, 80px);
+    width: max(100%, 980px);
+    margin-left: 50%;
+    translate: -50% 0;
+  }
+  .bs-ft__house img {
+    width: 100%;
+    height: clamp(260px, 30vw, 440px);
+    object-fit: cover;
+    object-position: 50% 100%;
+  }
+  .bs-ft__glow {
+    position: absolute;
+    inset: 0;
+    filter: blur(10px) brightness(1.4);
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    animation: bs-lamp 6s ease-in-out infinite alternate;
+  }
+  .bs-ft__house.is-paused .bs-ft__glow {
+    animation-play-state: paused;
+  }
+  @keyframes bs-lamp {
+    0% {
+      opacity: 0.2;
+    }
+    45% {
+      opacity: 0.42;
+    }
+    100% {
+      opacity: 0.3;
+    }
+  }
+  .bs-ft__legal {
+    position: relative;
+    margin-top: -1px;
+    background: #0e0f0a;
+    font-size: 0.82rem;
+    color: rgba(243, 243, 236, 0.66);
+  }
+  .bs-ft__legal .bs-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 12px;
+    padding-block: 10px;
+  }
+  .bs-ft__legal a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    margin-left: 18px;
+    text-decoration: none;
+  }
+  .bs-ft__legal a:first-child {
+    margin-left: 0;
+  }
+  @media (max-width: 1080px) {
+    .bs-ft__top {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-ft__cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 480px) {
+    .bs-ft__cols {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

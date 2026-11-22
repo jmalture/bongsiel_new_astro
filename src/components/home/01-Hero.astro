@@ -1,0 +1,225 @@
+---
+import Photo from '../ui/Photo.astro';
+import { formatDate } from '../../lib/booking';
+import type { EventItem } from '../../lib/cms';
+
+interface Props {
+  next?: EventItem;
+}
+const { next } = Astro.props;
+---
+
+<section class="bs-hero" aria-labelledby="bs-hero-h">
+  <div class="bs-hero__media" data-live>
+    <Photo
+      name="deich-schafe"
+      alt="Schafe auf dem grünen Deich unter weitem Himmel"
+      eager
+      sizes="max(100vw, 140vh)"
+      position="50% 30%"
+    />
+  </div>
+  <div class="bs-hero__veil" aria-hidden="true"></div>
+  <div class="bs-hero__inner bs-wrap">
+    <p class="bs-hero__kicker" data-reveal style="--i:0">
+      Ockholm · Nordfriesland · am Bongsieler Kanal
+    </p>
+    <h1 id="bs-hero-h" class="bs-hero__h bs-lines">
+      <span class="bs-line" style="--l:0">
+        <span>Moin</span>
+      </span>
+      <span class="bs-line bs-hero__h2" style="--l:1">
+        <span class="bs-hand">aus Bongsiel.</span>
+      </span>
+    </h1>
+    <p class="bs-hero__lead" data-reveal style="--i:3">
+      Draußen Deich, Schafe und weiter Himmel. Drinnen Kachelstube, Kerzenlicht und regionale Küche im Dat swarte Peerd.
+    </p>
+    <div class="bs-hero__cta" data-reveal style="--i:4">
+      <a href="/reservierung/" class="bs-btn bs-btn--ember">
+        Tisch reservieren
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </a>
+      <a href="/veranstaltungen/" class="bs-btn bs-btn--ghost bs-hero__ghost">
+        Veranstaltungen
+      </a>
+    </div>
+  </div>
+  {next && (
+    <a class="bs-hero__next" href={`/veranstaltungen/${next.slug}/`} data-reveal style="--i:6">
+      <span class="bs-hero__next-k">Als Nächstes</span>
+      <span class="bs-hero__next-t">{next.title}</span>
+      <span class="bs-hero__next-d">
+        {formatDate(next.date, 'day')}
+        {next.start && ` · ${next.start} Uhr`}
+      </span>
+    </a>
+  )}
+  <svg class="bs-hero__dike bs-dike" data-draw viewBox="0 0 1440 24" preserveAspectRatio="none" aria-hidden="true">
+    <path pathLength="1" d="M0 18 C 220 18 320 6 520 6 S 860 16 1040 14 S 1300 8 1440 10"></path>
+  </svg>
+</section>
+
+<style is:global>
+  .bs-hero {
+    position: relative;
+    min-height: max(640px, 100svh);
+    display: flex;
+    align-items: flex-end;
+    color: var(--bs-cream);
+    background: var(--bs-peat);
+    overflow: clip;
+    isolation: isolate;
+  }
+  .bs-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .bs-hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform-origin: 60% 40%;
+    animation: bs-drift 28s var(--bs-ease-io) infinite alternate;
+  }
+  .bs-hero__media.is-paused img {
+    animation-play-state: paused;
+  }
+  @keyframes bs-drift {
+    from {
+      transform: scale(1.04) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1.12) translate3d(-1.5%, 1%, 0);
+    }
+  }
+  .bs-hero__veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(20, 23, 17, 0.55) 0%, rgba(20, 23, 17, 0) 24%),
+      linear-gradient(0deg, rgba(20, 23, 17, 0.88) 0%, rgba(20, 23, 17, 0.5) 38%, rgba(20, 23, 17, 0) 66%);
+  }
+  .bs-hero__inner {
+    padding-top: calc(var(--bs-header-h) + 40px);
+    padding-bottom: clamp(88px, 11vh, 140px);
+  }
+  .bs-hero__kicker {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: var(--bs-pill);
+    background: rgba(20, 23, 17, 0.62);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    opacity: 0.9;
+  }
+  .bs-hero__h {
+    font-size: clamp(3.6rem, 1.4rem + 11vw, 11.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+  }
+  .bs-hero__h2 {
+    font-size: clamp(2.2rem, 1rem + 5.4vw, 5.6rem);
+    line-height: 1.12;
+    margin-top: 0.05em;
+    padding-left: 0.12em;
+  }
+  .bs-hero__h2 .bs-hand {
+    color: var(--bs-ember-l);
+  }
+  .bs-hero__lead {
+    max-width: 34em;
+    margin-top: 28px;
+    font-size: var(--bs-lead);
+    color: rgba(243, 243, 236, 0.88);
+  }
+  .bs-hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .bs-hero__ghost::after {
+    background: rgba(243, 243, 236, 0.14);
+  }
+  .bs-hero__next {
+    position: absolute;
+    right: var(--bs-gutter);
+    bottom: clamp(88px, 11vh, 140px);
+    display: grid;
+    gap: 2px;
+    max-width: 300px;
+    padding: 18px 22px;
+    border-radius: var(--bs-r);
+    background: rgba(27, 29, 21, 0.72);
+    border: 1px solid var(--bs-line-light);
+    text-decoration: none;
+    transition: background-color 300ms var(--bs-ease);
+  }
+  @media (hover: hover) {
+    .bs-hero__next:hover {
+      background: rgba(27, 29, 21, 0.9);
+    }
+  }
+  .bs-hero__next-k {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bs-sage-l);
+    font-weight: 600;
+  }
+  .bs-hero__next-t {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .bs-hero__next-d {
+    font-size: 0.88rem;
+    opacity: 0.8;
+  }
+  .bs-hero__dike {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 40px;
+    color: rgba(233, 184, 119, 0.7);
+  }
+  @media (max-width: 900px) {
+    .bs-hero__next {
+      display: none;
+    }
+  }
+  @media (max-width: 700px) {
+    .bs-hero__veil {
+      background:
+        linear-gradient(180deg, rgba(20, 23, 17, 0.5) 0%, rgba(20, 23, 17, 0) 22%),
+        linear-gradient(
+          0deg,
+          rgba(20, 23, 17, 0.92) 0%,
+          rgba(20, 23, 17, 0.72) 48%,
+          rgba(20, 23, 17, 0.2) 72%,
+          rgba(20, 23, 17, 0) 85%
+        );
+    }
+  }
+  @media (max-width: 560px) {
+    .bs-hero__cta .bs-btn {
+      flex: 1 1 100%;
+    }
+    .bs-hero__inner {
+      padding-bottom: 80px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bs-hero__media img {
+      animation: none;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+import { PortableText } from 'emdash/ui';
+import CmsImage from '../ui/CmsImage.astro';
+import tile from '../../assets/tile.svg?raw';
+import { hasPT } from '../../lib/cms';
+
+interface Props {
+  news: {
+    title: string;
+    body: unknown;
+    image: unknown;
+    buttonText: string;
+    buttonLink: string;
+    sign: string;
+  } | null;
+}
+const { news } = Astro.props;
+---
+
+{news && (
+  <section class="bs-news bs-section bs-grain" aria-labelledby="bs-news-h">
+    <div class="bs-news__grid bs-wrap">
+      <div class="bs-news__media">
+        <figure class="bs-photo bs-news__photo" data-wipe style="--wipe: var(--bs-linen)">
+          <CmsImage image={news.image} fallback="koch-boris" alt="" sizes="(max-width: 900px) 80vw, 420px" />
+        </figure>
+        <span class="bs-tile bs-news__tile" data-draw set:html={tile} />
+      </div>
+      <div class="bs-news__text">
+        <p class="bs-kicker" data-reveal>
+          Neuigkeit aus Bongsiel
+        </p>
+        <h2 id="bs-news-h" class="bs-h2" data-reveal style="--i:1">
+          {news.title}
+        </h2>
+        {hasPT(news.body) && (
+          <div class="bs-news__body bs-prose" data-reveal style="--i:2">
+            <PortableText value={news.body as never} />
+          </div>
+        )}
+        {news.buttonText && news.buttonLink && (
+          <a class="bs-btn" href={news.buttonLink} data-reveal style="--i:3">
+            {news.buttonText}
+          </a>
+        )}
+        {news.sign && (
+          <p class="bs-news__sign bs-hand" data-reveal style="--i:4">
+            {news.sign}
+          </p>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+<style is:global>
+  .bs-news {
+    background: var(--bs-linen);
+  }
+  .bs-news__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(40px, 7vw, 120px);
+    align-items: center;
+  }
+  .bs-news__media {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 420px);
+  }
+  .bs-news__photo {
+    aspect-ratio: 3 / 4;
+    border-radius: 6px 6px 50% 50% / 6px 6px 34% 34%;
+    box-shadow: var(--bs-shadow-lg);
+  }
+  .bs-news__tile {
+    position: absolute;
+    right: -28px;
+    top: -28px;
+    width: 76px;
+    background: var(--bs-linen);
+    padding: 8px;
+  }
+  .bs-news__text {
+    display: grid;
+    justify-items: start;
+    gap: 22px;
+  }
+  .bs-news__text .bs-h2 {
+    margin-top: 0;
+  }
+  .bs-news__body {
+    color: var(--bs-grey);
+    max-width: 60ch;
+  }
+  .bs-prose p + p {
+    margin-top: 1em;
+  }
+  .bs-prose a {
+    color: var(--bs-sage-d);
+    text-underline-offset: 3px;
+  }
+  .bs-prose strong {
+    color: var(--bs-ink);
+  }
+  .bs-news__sign {
+    font-size: 1.7rem;
+    color: var(--bs-olive);
+  }
+  @media (max-width: 900px) {
+    .bs-news__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bs-news__media {
+      width: min(78%, 360px);
+    }
+    .bs-news__tile {
+      right: -18px;
+      top: -18px;
+      width: 60px;
+    }
+  }
+</style>

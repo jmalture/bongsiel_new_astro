@@ -1,0 +1,24 @@
+---
+/** Image from an EmDash image field, with a real photo as fallback when the field is empty. */
+import { Image } from 'emdash/ui';
+import Photo from './Photo.astro';
+import photos from '../../data/photos.json';
+
+interface Props {
+  image: unknown;
+  fallback: keyof typeof photos;
+  alt: string;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+}
+const { image, fallback, alt, sizes = '100vw', eager = false, class: cls } = Astro.props;
+const img = image as { src?: string; id?: string } | null | undefined;
+const has = !!(img && (img.src || img.id));
+---
+
+{has ? (
+  <Image image={img as never} alt={alt} sizes={sizes} class={cls} loading={eager ? 'eager' : 'lazy'} />
+) : (
+  <Photo name={fallback} alt={alt} sizes={sizes} eager={eager} class={cls} />
+)}

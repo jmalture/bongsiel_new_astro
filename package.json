@@ -1,0 +1,38 @@
+{
+  "name": "bongsiel-web",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "mein-ziel-bongsiel.de on Astro + EmDash: website, table reservations, event sign-ups, service admin",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "node ./dist/server/entry.mjs",
+    "start": "node ./dist/server/entry.mjs",
+    "format": "prettier --write src",
+    "check:format": "prettier --check src"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.14",
+    "@astrojs/react": "^7.1.9",
+    "@fontsource/fraunces": "^5.3.0",
+    "@fontsource/onest": "^5.3.1",
+    "@fontsource/syncopate": "^5.3.0",
+    "astro": "^7.4.13",
+    "emdash": "^1.5.0",
+    "nodemailer": "^10.6.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^19.3.0",
+    "playwright": "^1.65.1",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^1.1.2"
+  }
+}

@@ -1,0 +1,295 @@
+---
+import Photo from '../ui/Photo.astro';
+
+const tiles = [
+  {
+    cls: 'a',
+    photo: 'gaststube-panorama',
+    alt: 'Die Gaststube mit Delfter Kachelwand, Bilderwand und Stammtisch',
+    k: 'Gaststube',
+    t: 'Kachelwand, Stammtisch und Kerzenlicht',
+    href: '/gaststaette/',
+    pos: '40% 50%',
+  },
+  {
+    cls: 'b',
+    photo: 'saal-tafel',
+    alt: 'Festlich gedeckte lange Tafel im Saal',
+    k: 'Saal',
+    t: 'Feiern bis 120 Personen',
+    href: '/eventlocation/',
+    pos: '50% 60%',
+  },
+  {
+    cls: 'c',
+    photo: 'reetdachhaus',
+    alt: 'Reetgedecktes Gästehaus aus rotem Backstein',
+    k: 'Übernachten',
+    t: 'Zimmer und Reetdach-Gästehäuser',
+    href: '/uebernachten/',
+    pos: '50% 50%',
+  },
+  {
+    cls: 'd',
+    photo: 'teich-boot',
+    alt: 'Fischteich mit Sandstrand und grünem Ruderboot',
+    k: 'Draußen',
+    t: 'Zwischen Kanal und Fischteichen',
+    href: '/uebernachten/',
+    pos: '50% 60%',
+  },
+  {
+    cls: 'e',
+    photo: 'kaminecke',
+    alt: 'Gemütliche Eckbank mit Lederlehnen vor Delfter Kacheln',
+    k: 'Kaminzimmer',
+    t: 'Für kleine Runden und Familienfeiern',
+    href: '/eventlocation/',
+    pos: '50% 60%',
+  },
+] as const;
+---
+
+<section class="bs-house bs-section bs-cream" aria-labelledby="bs-house-h">
+  <div class="bs-wrap">
+    <div class="bs-head">
+      <div>
+        <p class="bs-kicker" data-reveal>
+          Das Haus
+        </p>
+        <h2 id="bs-house-h" class="bs-h2 bs-lines">
+          <span class="bs-line" style="--l:0">
+            <span>Ein Haus,</span>
+          </span>
+          <span class="bs-line" style="--l:1">
+            <span>
+              <span class="bs-hand">viele gute Plätze</span>
+            </span>
+          </span>
+        </h2>
+      </div>
+      <p class="bs-lead" data-reveal style="--i:2">
+        Über 120 Jahre Gaststätte am alten Fähranleger zu den Halligen – heute mit Saal, Kaminzimmer, Zimmern und viel
+        Platz draußen.
+      </p>
+    </div>
+    <div class="bs-house__grid">
+      {tiles.map((t, i) => (
+        <a class={`bs-house__tile bs-house__tile--${t.cls}`} href={t.href} data-reveal style={`--i:${i}`}>
+          <span class="bs-house__ph">
+            <Photo
+              name={t.photo}
+              alt={t.alt}
+              sizes={t.cls === 'a' ? '(max-width: 760px) 190vw, 125vw' : '(max-width: 760px) 100vw, 40vw'}
+              position={t.pos}
+            />
+          </span>
+          <span class="bs-house__cap">
+            <span class="bs-house__k">{t.k}</span>
+            <span class="bs-house__t">{t.t}</span>
+          </span>
+        </a>
+      ))}
+      <button class="bs-house__tile bs-house__tile--f bs-house__tour" type="button" data-tour data-reveal style="--i:5">
+        <span class="bs-house__ring" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52"></circle>
+            <path d="M60 8a52 52 0 0 1 52 52"></path>
+          </svg>
+          <b>360°</b>
+        </span>
+        <span class="bs-house__cap">
+          <span class="bs-house__k">Rundgang</span>
+          <span class="bs-house__t">Gaststube, Saal, Partyfass, Ferienwohnungen und Garten – rundum in 360°</span>
+        </span>
+      </button>
+    </div>
+  </div>
+  <dialog class="bs-tour" data-tour-dialog aria-label="360° Rundgang">
+    <button class="bs-tour__close" type="button" data-tour-close aria-label="Rundgang schließen">
+      ×
+    </button>
+    <div class="bs-tour__frame" data-tour-frame></div>
+  </dialog>
+</section>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-tour]');
+  const dlg = document.querySelector<HTMLDialogElement>('[data-tour-dialog]');
+  const frame = document.querySelector<HTMLElement>('[data-tour-frame]');
+  btn?.addEventListener('click', () => {
+    if (frame && !frame.firstChild) {
+      const f = document.createElement('iframe');
+      f.src = 'https://tourmkr.com/F1Dhi5B6nJ';
+      f.title = '360° Rundgang durch Mein Ziel Bongsiel';
+      f.allow = 'fullscreen; gyroscope; accelerometer';
+      frame.append(f);
+    }
+    dlg?.showModal();
+  });
+  document.querySelector('[data-tour-close]')?.addEventListener('click', () => dlg?.close());
+  dlg?.addEventListener('click', (e) => e.target === dlg && dlg.close());
+</script>
+
+<style is:global>
+  .bs-house__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: clamp(200px, 22vw, 300px);
+    gap: 16px;
+  }
+  .bs-house__tile {
+    position: relative;
+    display: block;
+    border-radius: var(--bs-r-lg);
+    overflow: clip;
+    color: var(--bs-cream);
+    text-decoration: none;
+    background: var(--bs-olive);
+    isolation: isolate;
+  }
+  .bs-house__tile--a {
+    grid-column: span 7;
+    grid-row: span 2;
+  }
+  .bs-house__tile--b,
+  .bs-house__tile--c {
+    grid-column: span 5;
+  }
+  .bs-house__tile--d,
+  .bs-house__tile--e,
+  .bs-house__tile--f {
+    grid-column: span 4;
+  }
+  .bs-house__ph {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .bs-house__ph img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1400ms var(--bs-ease);
+  }
+  .bs-house__ph::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(20, 23, 17, 0.82) 0%, rgba(20, 23, 17, 0.1) 60%);
+  }
+  @media (hover: hover) {
+    .bs-house__tile:hover .bs-house__ph img {
+      transform: scale(1.06);
+    }
+    .bs-house__tour:hover .bs-house__ring svg {
+      transform: rotate(180deg);
+    }
+  }
+  .bs-house__cap {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 22px;
+    display: grid;
+    gap: 4px;
+    text-align: left;
+  }
+  .bs-house__k {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.05rem;
+  }
+  .bs-house__t {
+    font-size: 0.92rem;
+    opacity: 0.86;
+  }
+  .bs-house__tour {
+    border: 0;
+    cursor: pointer;
+    background: var(--bs-delft);
+    font: inherit;
+  }
+  .bs-house__ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -70%;
+    width: 112px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+  .bs-house__ring svg {
+    position: absolute;
+    inset: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    transition: transform 1200ms var(--bs-ease);
+  }
+  .bs-house__ring circle {
+    opacity: 0.3;
+  }
+  .bs-house__ring b {
+    font-family: var(--bs-head);
+    font-size: 1.3rem;
+  }
+  .bs-tour {
+    width: min(1200px, 94vw);
+    height: min(760px, 86vh);
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-r-lg);
+    background: var(--bs-peat);
+    overflow: hidden;
+  }
+  .bs-tour::backdrop {
+    background: rgba(14, 15, 10, 0.78);
+  }
+  .bs-tour__frame,
+  .bs-tour__frame iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .bs-tour__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--bs-cream);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  @media (max-width: 1000px) {
+    .bs-house__tile--a {
+      grid-column: span 12;
+    }
+    .bs-house__tile--b,
+    .bs-house__tile--c {
+      grid-column: span 6;
+    }
+    .bs-house__tile--d,
+    .bs-house__tile--e,
+    .bs-house__tile--f {
+      grid-column: span 4;
+    }
+  }
+  @media (max-width: 760px) {
+    .bs-house__grid {
+      grid-auto-rows: 240px;
+    }
+    .bs-house__tile--a {
+      grid-row: span 1;
+    }
+    .bs-house__tile {
+      grid-column: span 12 !important;
+    }
+  }
+</style>

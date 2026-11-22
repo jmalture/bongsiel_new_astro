@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const base = 'http://127.0.0.1:4461';
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+const p = await ctx.newPage();
+const cdp = await ctx.newCDPSession(p);
+await cdp.send('WebAuthn.enable');
+await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } });
+await p.goto(base + '/_emdash/admin', { waitUntil: 'networkidle' });
+await p.waitForTimeout(2000);
+console.log(p.url());
+console.log(await p.evaluate(() => [...document.querySelectorAll('input,button,label,h1,h2')].map((e) => `${e.tagName} ${e.getAttribute('name') || ''} ${e.getAttribute('type') || ''} ${(e.textContent || '').trim().slice(0, 50)}`).join('\n')));
+await p.screenshot({ path: 'review/setup-0.png' });
+await b.close();

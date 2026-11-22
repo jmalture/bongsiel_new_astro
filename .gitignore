@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.data/
+.env
+review/
+raw/
+*.log
+.data-prod/
+.data-*/
+.emdash/

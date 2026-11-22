@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/ui/PageHead.astro';
+import MenuView from '../components/menu/MenuView.astro';
+import { getMenus } from '../lib/cms';
+
+const menus = await getMenus();
+const menu = menus.find((m) => m.main) ?? menus[0];
+---
+
+<Base
+  title="Speisekarte"
+  description="Die aktuelle Speisekarte im Dat swarte Peerd in Bongsiel: regionale Küche, frisch gekocht."
+>
+  <PageHead
+    kicker={menu?.subtitle || 'Speisekarte'}
+    title="Unsere"
+    hand="Speisekarte"
+    lead={menu?.valid ? `Gültig ${menu.valid}` : undefined}
+    photo="lammhaxe"
+    photoAlt="Geschmorte Lammhaxe mit grünen Bohnen"
+  />
+  {menu ? <MenuView menu={menu} /> : <p class="bs-wrap bs-lead">Die Karte wird gerade überarbeitet.</p>}
+</Base>

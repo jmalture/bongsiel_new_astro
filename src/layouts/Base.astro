@@ -1,0 +1,80 @@
+---
+import '../styles/fonts.css';
+import '../styles/site.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getSite } from '../lib/cms';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Header sits on a dark photo at the top (light logo until scrolled). */
+  overlay?: boolean;
+  ogImage?: string;
+  noindex?: boolean;
+}
+const { title, description, overlay = false, ogImage = '/img/og.jpg', noindex = false } = Astro.props;
+const site = await getSite();
+const fullTitle = title.includes('Bongsiel') ? title : `${title} · Dat swarte Peerd · Mein Ziel Bongsiel`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const robotsOff = noindex || process.env.SITE_NOINDEX === '1';
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: 'Dat swarte Peerd – Mein Ziel Bongsiel',
+  url: new URL('/', Astro.site).href,
+  image: new URL(ogImage, Astro.site).href,
+  servesCuisine: 'Regional, Norddeutsch',
+  acceptsReservations: true,
+  email: site.email,
+  ...(site.phone !== 'PHONE_TBD' ? { telephone: site.phone } : {}),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Am Kanal 2',
+    postalCode: '25842',
+    addressLocality: 'Ockholm',
+    addressCountry: 'DE',
+  },
+};
+---
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      document.documentElement.classList.replace('no-js', 'js');
+    </script>
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {robotsOff && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Mein Ziel Bongsiel" />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#1b1d15" />
+    <link rel="icon" href="/favicon-512.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon-512.png" />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#inhalt">
+      Zum Inhalt springen
+    </a>
+    <Header overlay={overlay} />
+    <main id="inhalt">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

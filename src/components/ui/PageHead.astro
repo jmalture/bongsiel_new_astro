@@ -1,0 +1,93 @@
+---
+/** Header block of inner pages: kicker, two-part title (second part hand-written), optional lead and photo. */
+import Photo from './Photo.astro';
+import photos from '../../data/photos.json';
+
+interface Props {
+  kicker: string;
+  title: string;
+  hand?: string;
+  lead?: string;
+  photo?: keyof typeof photos;
+  photoAlt?: string;
+  photoSizes?: string;
+}
+const {
+  kicker,
+  title,
+  hand,
+  lead,
+  photo,
+  photoAlt = '',
+  photoSizes = '(max-width: 700px) 130vw, (max-width: 1340px) 94vw, 1280px',
+} = Astro.props;
+---
+
+<header class:list={['bs-ph', { 'bs-ph--photo': photo }]}>
+  <div class="bs-ph__inner bs-wrap">
+    <p class="bs-kicker" data-reveal>
+      {kicker}
+    </p>
+    <h1 class="bs-ph__h bs-lines">
+      <span class="bs-line" style="--l:0">
+        <span>{title}</span>
+      </span>
+      {hand && (
+        <span class="bs-line" style="--l:1">
+          <span class="bs-hand">{hand}</span>
+        </span>
+      )}
+    </h1>
+    {lead && (
+      <p class="bs-lead bs-ph__lead" data-reveal style="--i:3">
+        {lead}
+      </p>
+    )}
+    <slot />
+  </div>
+  {photo && (
+    <figure class="bs-photo bs-ph__photo bs-wrap" data-wipe style="--wipe: var(--bs-linen)">
+      <Photo name={photo} alt={photoAlt} eager sizes={photoSizes} />
+    </figure>
+  )}
+  <svg class="bs-dike bs-ph__dike" data-draw viewBox="0 0 1440 24" preserveAspectRatio="none" aria-hidden="true">
+    <path pathLength="1" d="M0 14 C 260 14 380 6 600 6 S 980 16 1160 13 S 1340 9 1440 10"></path>
+  </svg>
+</header>
+
+<style is:global>
+  .bs-ph {
+    position: relative;
+    padding-top: calc(var(--bs-header-h) + clamp(48px, 8vw, 110px));
+    padding-bottom: clamp(40px, 6vw, 72px);
+  }
+  .bs-ph__h {
+    font-size: clamp(2.3rem, 1.2rem + 5vw, 5.6rem);
+    margin-top: 18px;
+  }
+  .bs-ph__h .bs-hand {
+    color: var(--bs-sage-d);
+    font-size: 0.86em;
+    line-height: 1.15;
+    padding-left: 0.08em;
+  }
+  .bs-ph__lead {
+    margin-top: 24px;
+  }
+  .bs-ph__photo {
+    margin-top: clamp(36px, 5vw, 64px);
+    aspect-ratio: 21 / 9;
+    border-radius: var(--bs-r-lg);
+    padding: 0;
+    max-width: calc(var(--bs-max));
+    width: calc(100% - 2 * var(--bs-gutter));
+  }
+  .bs-ph__dike {
+    margin-top: clamp(28px, 4vw, 48px);
+  }
+  @media (max-width: 700px) {
+    .bs-ph__photo {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

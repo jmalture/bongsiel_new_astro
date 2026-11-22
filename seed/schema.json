@@ -1,0 +1,202 @@
+{
+  "version": "1",
+  "defaultLocale": "de",
+  "meta": { "name": "Bongsiel", "description": "Dat swarte Peerd – Mein Ziel Bongsiel" },
+  "settings": { "title": "Dat swarte Peerd – Mein Ziel Bongsiel", "tagline": "Gaststätte am Deich in Ockholm", "timezone": "Europe/Berlin", "dateFormat": "dd.MM.yyyy" },
+  "collections": [
+    {
+      "slug": "veranstaltungen",
+      "label": "Veranstaltungen",
+      "labelSingular": "Veranstaltung",
+      "icon": "calendar-star",
+      "sortOrder": 1,
+      "urlPattern": "/veranstaltungen/{slug}/",
+      "supports": ["drafts", "revisions", "search", "seo"],
+      "dateField": "beginn",
+      "admin": { "listColumns": ["beginn", "auswirkung", "plaetze"] },
+      "fields": [
+        { "slug": "title", "label": "Titel", "type": "string", "required": true, "searchable": true },
+        { "slug": "beginn", "label": "Beginn", "type": "datetime", "required": true, "indexed": true },
+        { "slug": "ende", "label": "Ende", "type": "datetime" },
+        { "slug": "kurztext", "label": "Kurztext (Liste und Startseite)", "type": "text", "searchable": true },
+        { "slug": "inhalt", "label": "Beschreibung", "type": "portableText", "searchable": true },
+        { "slug": "preis", "label": "Preis", "type": "string" },
+        { "slug": "bild", "label": "Bild oder Plakat", "type": "image" },
+        { "slug": "plaetze", "label": "Plätze für Anmeldung (leer = keine)", "type": "integer", "validation": { "min": 0, "max": 500 } },
+        {
+          "slug": "auswirkung",
+          "label": "Reservierungen an dem Tag",
+          "type": "select",
+          "defaultValue": "Normal",
+          "validation": { "options": ["Normal", "Eingeschränkte Karte", "Kein à la carte", "Geschlossene Gesellschaft"] }
+        },
+        { "slug": "startseite", "label": "Auf der Startseite zeigen", "type": "boolean", "defaultValue": true },
+        { "slug": "privat", "label": "Nicht öffentlich (nur Kalender sperren)", "type": "boolean", "defaultValue": false },
+        {
+          "slug": "wiederholung",
+          "label": "Wiederholung",
+          "type": "select",
+          "defaultValue": "Keine",
+          "validation": { "options": ["Keine", "Wöchentlich", "Alle 2 Wochen", "Monatlich (gleicher Wochentag)"] }
+        },
+        { "slug": "wiederholung_bis", "label": "Wiederholen bis", "type": "datetime" }
+      ]
+    },
+    {
+      "slug": "speisekarten",
+      "label": "Speisekarten",
+      "labelSingular": "Speisekarte",
+      "icon": "fork-knife",
+      "sortOrder": 2,
+      "urlPattern": "/speisekarten/{slug}/",
+      "supports": ["drafts", "revisions", "search", "seo"],
+      "admin": { "listColumns": ["hauptkarte", "gueltig"] },
+      "fields": [
+        { "slug": "title", "label": "Titel", "type": "string", "required": true, "searchable": true },
+        { "slug": "untertitel", "label": "Untertitel", "type": "string" },
+        { "slug": "gueltig", "label": "Gültig (z. B. 27.11. – 04.01.)", "type": "string" },
+        { "slug": "hauptkarte", "label": "Aktuelle Speisekarte (/speisen/)", "type": "boolean", "defaultValue": false },
+        { "slug": "reihenfolge", "label": "Reihenfolge in der Übersicht", "type": "integer", "defaultValue": 10 },
+        { "slug": "bild", "label": "Bild", "type": "image" },
+        { "slug": "einleitung", "label": "Einleitung", "type": "text" },
+        {
+          "slug": "gerichte",
+          "label": "Gerichte (Abschnitt nur beim ersten Gericht eines Abschnitts)",
+          "type": "repeater",
+          "validation": {
+            "maxItems": 200,
+            "subFields": [
+              { "slug": "abschnitt", "label": "Abschnitt", "type": "string" },
+              { "slug": "name", "label": "Gericht", "type": "string", "required": true },
+              { "slug": "beschreibung", "label": "Beschreibung", "type": "text" },
+              { "slug": "preis", "label": "Preis", "type": "string" }
+            ]
+          }
+        },
+        { "slug": "hinweis", "label": "Hinweis unter der Karte", "type": "text" }
+      ]
+    },
+    {
+      "slug": "neuigkeiten",
+      "label": "Neuigkeiten",
+      "labelSingular": "Neuigkeit",
+      "icon": "megaphone",
+      "sortOrder": 3,
+      "routable": false,
+      "supports": ["drafts", "revisions"],
+      "admin": { "listColumns": ["startseite"] },
+      "fields": [
+        { "slug": "title", "label": "Überschrift", "type": "string", "required": true },
+        { "slug": "text", "label": "Text", "type": "portableText" },
+        { "slug": "bild", "label": "Bild", "type": "image" },
+        { "slug": "button_text", "label": "Button-Text", "type": "string" },
+        { "slug": "button_link", "label": "Button-Link", "type": "string" },
+        { "slug": "gruss", "label": "Gruß", "type": "string", "defaultValue": "Euer Team Bongsiel" },
+        { "slug": "startseite", "label": "Auf der Startseite zeigen", "type": "boolean", "defaultValue": true }
+      ]
+    },
+    {
+      "slug": "schliesstage",
+      "label": "Schließtage & Sonderzeiten",
+      "labelSingular": "Schließtag / Sonderzeit",
+      "icon": "calendar-x",
+      "sortOrder": 4,
+      "routable": false,
+      "supports": [],
+      "dateField": "von",
+      "admin": { "listColumns": ["von", "bis", "art"] },
+      "fields": [
+        { "slug": "title", "label": "Bezeichnung (z. B. Betriebsferien)", "type": "string", "required": true },
+        { "slug": "von", "label": "Von", "type": "datetime", "required": true, "indexed": true },
+        { "slug": "bis", "label": "Bis (leer = nur ein Tag)", "type": "datetime" },
+        { "slug": "art", "label": "Art", "type": "select", "defaultValue": "Geschlossen", "validation": { "options": ["Geschlossen", "Sonderzeiten"] } },
+        {
+          "slug": "zeiten",
+          "label": "Sonderzeiten (nur bei Art = Sonderzeiten)",
+          "type": "repeater",
+          "validation": {
+            "maxItems": 4,
+            "subFields": [
+              { "slug": "von", "label": "Öffnet (HH:MM)", "type": "string", "required": true },
+              { "slug": "bis", "label": "Schließt (HH:MM)", "type": "string", "required": true },
+              { "slug": "letzte", "label": "Letzte Reservierung (HH:MM)", "type": "string", "required": true }
+            ]
+          }
+        },
+        { "slug": "hinweis_gaeste", "label": "Hinweis für Gäste", "type": "string" }
+      ]
+    },
+    {
+      "slug": "zimmer",
+      "label": "Zimmer & Ferienwohnungen",
+      "labelSingular": "Zimmer",
+      "icon": "bed",
+      "sortOrder": 5,
+      "routable": false,
+      "supports": ["drafts"],
+      "fields": [
+        { "slug": "title", "label": "Name", "type": "string", "required": true },
+        { "slug": "kurztext", "label": "Kurztext", "type": "text" },
+        { "slug": "bild", "label": "Bild", "type": "image" },
+        { "slug": "personen", "label": "Personen", "type": "integer" },
+        { "slug": "preis", "label": "Preis (z. B. ab € 89 / Nacht)", "type": "string" },
+        { "slug": "ausstattung", "label": "Ausstattung (eine pro Zeile)", "type": "text" },
+        { "slug": "link", "label": "Externer Buchungslink (leer = Anfrage)", "type": "string" },
+        { "slug": "reihenfolge", "label": "Reihenfolge", "type": "integer", "defaultValue": 10 }
+      ]
+    },
+    {
+      "slug": "seiten",
+      "label": "Seitentexte",
+      "labelSingular": "Seitentext",
+      "icon": "article",
+      "sortOrder": 6,
+      "routable": false,
+      "supports": ["drafts", "revisions"],
+      "fields": [
+        { "slug": "title", "label": "Überschrift", "type": "string", "required": true },
+        { "slug": "einleitung", "label": "Einleitung", "type": "text" },
+        { "slug": "inhalt", "label": "Inhalt", "type": "portableText" },
+        { "slug": "bild", "label": "Bild", "type": "image" }
+      ]
+    },
+    {
+      "slug": "einstellungen",
+      "label": "Öffnungszeiten & Kontakt",
+      "labelSingular": "Einstellungen",
+      "icon": "clock",
+      "sortOrder": 7,
+      "routable": false,
+      "supports": ["revisions"],
+      "fields": [
+        { "slug": "title", "label": "Name", "type": "string", "required": true },
+        {
+          "slug": "oeffnungszeiten",
+          "label": "Öffnungszeiten (eine Zeile pro Tag und Schicht)",
+          "type": "repeater",
+          "validation": {
+            "maxItems": 21,
+            "subFields": [
+              { "slug": "tag", "label": "Tag", "type": "select", "required": true, "options": ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"] },
+              { "slug": "von", "label": "Öffnet (HH:MM)", "type": "string", "required": true },
+              { "slug": "bis", "label": "Schließt (HH:MM)", "type": "string", "required": true },
+              { "slug": "letzte", "label": "Letzte Reservierung (HH:MM)", "type": "string", "required": true }
+            ]
+          }
+        },
+        { "slug": "telefon", "label": "Telefon", "type": "string" },
+        { "slug": "email", "label": "E-Mail", "type": "string" },
+        { "slug": "adresse", "label": "Adresse", "type": "text" },
+        { "slug": "max_personen", "label": "Online max. Personen pro Reservierung", "type": "integer", "defaultValue": 10 },
+        { "slug": "max_gaeste", "label": "Max. Gäste gleichzeitig", "type": "integer", "defaultValue": 40 },
+        { "slug": "max_tische", "label": "Max. Reservierungen gleichzeitig", "type": "integer", "defaultValue": 13 },
+        { "slug": "dauer", "label": "Tischdauer in Minuten", "type": "integer", "defaultValue": 105 },
+        { "slug": "sofort_bis", "label": "Sofort bestätigt bis Personen", "type": "integer", "defaultValue": 6 },
+        { "slug": "storno_text", "label": "Storno- / No-Show-Hinweis", "type": "text" },
+        { "slug": "zahlung_text", "label": "Hinweis Anmeldung (Bezahlung)", "type": "string" },
+        { "slug": "instagram", "label": "Instagram-Link", "type": "string" },
+        { "slug": "facebook", "label": "Facebook-Link", "type": "string" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/ui/PageHead.astro';
+import CmsImage from '../../components/ui/CmsImage.astro';
+import { getMenus } from '../../lib/cms';
+
+const menus = await getMenus();
+const fallbacks = [
+  'lammhaxe',
+  'gaststube-abend',
+  'saal-tafel',
+  'bar',
+  'tisch-kerze',
+  'kaminecke',
+  'teich-boot',
+  'gaststube-tag',
+] as const;
+---
+
+<Base
+  title="Speisekarten"
+  description="Alle Speisekarten, Menüs und Buffet-Vorschläge vom Dat swarte Peerd in Bongsiel."
+>
+  <PageHead
+    kicker="Speisekarten"
+    title="Karten,"
+    hand="Menüs & Buffets"
+    lead="Die aktuelle Karte, saisonale Spezialitäten und Vorschläge für eure Feier."
+  />
+  <section class="bs-mlist bs-wrap">
+    {menus.map((m, i) => (
+      <a
+        class="bs-mlist__item"
+        href={m.main ? '/speisen/' : `/speisekarten/${m.slug}/`}
+        data-reveal
+        style={`--i:${i % 3}`}
+      >
+        <span class="bs-mlist__ph">
+          <CmsImage
+            image={m.image}
+            fallback={fallbacks[i % fallbacks.length]}
+            alt=""
+            sizes="(max-width: 700px) 92vw, 400px"
+          />
+        </span>
+        <span class="bs-mlist__body">
+          {m.main && <span class="bs-mlist__tag">Aktuell</span>}
+          <span class="bs-mlist__t">{m.title}</span>
+          {(m.subtitle || m.valid) && (
+            <span class="bs-mlist__s">{[m.subtitle, m.valid].filter(Boolean).join(' · ')}</span>
+          )}
+        </span>
+      </a>
+    ))}
+  </section>
+</Base>
+
+<style is:global>
+  .bs-mlist {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 20px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-mlist__item {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: var(--bs-r-lg);
+    overflow: clip;
+    background: #fff;
+    border: 1px solid var(--bs-line);
+    text-decoration: none;
+    transition:
+      transform 500ms var(--bs-ease),
+      box-shadow 500ms var(--bs-ease);
+  }
+  @media (hover: hover) {
+    .bs-mlist__item:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--bs-shadow);
+    }
+    .bs-mlist__item:hover img {
+      transform: scale(1.05);
+    }
+  }
+  .bs-mlist__ph {
+    aspect-ratio: 16 / 10;
+    overflow: clip;
+  }
+  .bs-mlist__ph img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1200ms var(--bs-ease);
+  }
+  .bs-mlist__body {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding: 20px 22px 24px;
+  }
+  .bs-mlist__tag {
+    justify-self: start;
+    padding: 3px 10px;
+    border-radius: var(--bs-pill);
+    background: var(--bs-sage);
+    color: var(--bs-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .bs-mlist__t {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.05rem;
+  }
+  .bs-mlist__s {
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+    white-space: pre-line;
+  }
+</style>

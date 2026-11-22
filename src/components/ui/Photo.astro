@@ -1,0 +1,32 @@
+---
+/** A real photo from public/img (made by tools/images.mjs), with a srcset of the widths that exist. */
+import photos from '../../data/photos.json';
+
+interface Props {
+  name: keyof typeof photos;
+  alt: string;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+  style?: string;
+  position?: string;
+}
+const { name, alt, sizes = '100vw', eager = false, class: cls, style, position } = Astro.props;
+const p = photos[name];
+const srcset = p.widths.map((w) => `/img/${name}-${w}.webp ${w}w`).join(', ');
+const mid = p.widths.find((w) => w >= 1024) ?? p.widths[p.widths.length - 1];
+---
+
+<img
+  src={`/img/${name}-${mid}.webp`}
+  srcset={srcset}
+  sizes={sizes}
+  width={p.w}
+  height={p.h}
+  alt={alt}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : undefined}
+  decoding="async"
+  class={cls}
+  style={[position ? `object-position:${position}` : '', style ?? ''].filter(Boolean).join(';') || undefined}
+/>

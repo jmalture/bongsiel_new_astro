@@ -1,0 +1,133 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { loginUrl, staff } from '../../lib/auth';
+import { getDb } from '../../lib/db';
+import { formatDate, isDate } from '../../lib/booking';
+
+if (!staff(Astro.locals)) return Astro.redirect(loginUrl('/admin/anfragen/'));
+type Row = {
+  id: number;
+  kind: string;
+  name: string;
+  phone: string;
+  email: string;
+  date_from: string;
+  date_to: string;
+  persons: number;
+  topic: string;
+  message: string;
+  status: string;
+  created_at: string;
+};
+const rows = getDb()
+  .prepare(`SELECT * FROM enquiries ORDER BY status = 'erledigt', created_at DESC LIMIT 200`)
+  .all() as unknown as Row[];
+const act = (o: object) => JSON.stringify(o);
+const d = (s: string) => (isDate(s) ? formatDate(s, 'day') : s);
+---
+
+<Admin title="Anfragen">
+  <div class="ad-top">
+    <div>
+      <h1 class="ad-h1">Anfragen</h1>
+      <p class="ad-sub">Feiern und Zimmer. Antwortet per Telefon oder E-Mail, dann „Erledigt“.</p>
+    </div>
+  </div>
+  <div data-live-list="enq">
+    {rows.length === 0 ? (
+      <div class="ad-card ad-empty">Keine Anfragen.</div>
+    ) : (
+      <div class="ad-enq">
+        {rows.map((r) => (
+          <article class:list={['ad-card ad-enq__item', { 'is-done': r.status === 'erledigt' }]}>
+            <header>
+              <span class={`ad-pill ${r.kind === 'zimmer' ? 'ad-pill--blue' : 'ad-pill--warn'}`}>
+                {r.kind === 'zimmer' ? 'Zimmer' : 'Feier'}
+              </span>
+              <b>{r.name}</b>
+              <span class="ad-small">
+                eingegangen {r.created_at.slice(8, 10)}.{r.created_at.slice(5, 7)}.
+              </span>
+            </header>
+            <p class="ad-enq__facts">
+              {r.kind === 'zimmer' ? `${d(r.date_from)} – ${d(r.date_to)}` : d(r.date_from)}
+              {r.persons ? ` · ${r.persons} Personen` : ''}
+              {r.topic ? ` · ${r.topic}` : ''}
+            </p>
+            {r.message && <p class="ad-enq__msg">{r.message}</p>}
+            <footer>
+              <a class="ad-btn ad-btn--sm" href={`mailto:${r.email}`}>
+                E-Mail
+              </a>
+              {r.phone && (
+                <a class="ad-btn ad-btn--sm" href={`tel:${r.phone}`}>
+                  {r.phone}
+                </a>
+              )}
+              {r.status === 'erledigt' ? (
+                <button
+                  class="ad-btn ad-btn--sm"
+                  data-act={act({ action: 'enq.status', id: r.id, status: 'neu' })}
+                  data-done="Wieder offen"
+                >
+                  Wieder öffnen
+                </button>
+              ) : (
+                <button
+                  class="ad-btn ad-btn--sm ad-btn--main"
+                  data-act={act({ action: 'enq.status', id: r.id, status: 'erledigt' })}
+                  data-done="Erledigt"
+                >
+                  Erledigt
+                </button>
+              )}
+            </footer>
+          </article>
+        ))}
+      </div>
+    )}
+  </div>
+</Admin>
+
+<style is:global>
+  .ad-enq {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+  .ad-enq__item {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+  }
+  .ad-enq__item.is-done {
+    opacity: 0.55;
+  }
+  .ad-enq__item header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .ad-enq__facts {
+    margin: 0;
+    font-weight: 500;
+  }
+  .ad-enq__msg {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--ad-bg);
+    font-size: 0.92rem;
+    white-space: pre-line;
+  }
+  .ad-enq__item footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .ad-small {
+    font-size: 0.85rem;
+    color: var(--ad-grey);
+  }
+</style>

@@ -1,0 +1,599 @@
+/*
+ * Bongsiel 2026 design system: tokens, base, shared components.
+ * Brand from the mein-ziel-bongsiel.de Elementor kit (sage, olive, cream, Syncopate + Onest, pill buttons).
+ * New: peat (evening), ember (fire light), linen paper, Fraunces italic for warm hand-written accents.
+ * Section CSS lives in each component; class prefix "bs-". See docs/BRAND.md.
+ */
+
+:root {
+  --bs-sage: #879760;
+  --bs-sage-d: #6b7a47;
+  --bs-sage-l: #b8c39a;
+  --bs-olive: #3a3c2f;
+  --bs-peat: #1b1d15;
+  --bs-peat-2: #25281d;
+  --bs-ink: #141711;
+  --bs-grey: #5d6052;
+  --bs-cream: #f3f3ec;
+  --bs-linen: #faf8f2;
+  --bs-white: #fff;
+  --bs-ember: #c9833f;
+  --bs-ember-l: #e9b877;
+  --bs-sea: #8d9c9b;
+  --bs-delft: #2f5080; /* Delft tiles of the Gaststube */
+  --bs-delft-l: #c9d5e6;
+  --bs-brick: #9a4a35; /* the red-brick facade */
+  --bs-line: rgba(20, 23, 17, 0.12);
+  --bs-line-light: rgba(243, 243, 236, 0.16);
+  --bs-ok: #4f7a3a;
+  --bs-warn: #b4531f;
+
+  --bs-head: 'Syncopate', 'Onest', system-ui, sans-serif;
+  --bs-body: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bs-hand: 'Fraunces', Georgia, serif;
+
+  --bs-h1: clamp(2.4rem, 1.2rem + 6.2vw, 7.2rem);
+  --bs-h2: clamp(1.35rem, 0.95rem + 2.4vw, 3.1rem);
+  --bs-h3: clamp(1.05rem, 0.95rem + 0.5vw, 1.35rem);
+  --bs-lead: clamp(1.06rem, 1rem + 0.35vw, 1.3rem);
+
+  --bs-r-sm: 8px;
+  --bs-r: 16px;
+  --bs-r-lg: 26px;
+  --bs-pill: 50px;
+  --bs-shadow: 0 18px 40px -18px rgba(27, 29, 21, 0.28);
+  --bs-shadow-lg: 0 40px 80px -30px rgba(27, 29, 21, 0.45);
+
+  --bs-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --bs-ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --bs-fast: 200ms;
+  --bs-med: 560ms;
+  --bs-slow: 1000ms;
+
+  --bs-max: 1280px;
+  --bs-gutter: clamp(18px, 4vw, 44px);
+  --bs-header-h: 78px;
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--bs-header-h) + 12px);
+}
+body {
+  margin: 0;
+  font-family: var(--bs-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--bs-ink);
+  background: var(--bs-linen);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+  overflow-wrap: break-word;
+}
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+a {
+  color: inherit;
+}
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--bs-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.08;
+  text-wrap: balance;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+p {
+  text-wrap: pretty;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--bs-ember);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+::selection {
+  background: rgba(135, 151, 96, 0.3);
+}
+.sr-only {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  white-space: nowrap;
+}
+.skip-link {
+  position: fixed;
+  left: 8px;
+  top: 8px;
+  z-index: 1000;
+  padding: 12px 16px;
+  min-height: 44px;
+  background: #fff;
+  border-radius: 8px;
+  transform: translateY(-200%);
+  transition: transform 200ms var(--bs-ease);
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- Layout ---------- */
+.bs-wrap {
+  width: 100%;
+  max-width: calc(var(--bs-max) + 2 * var(--bs-gutter));
+  margin-inline: auto;
+  padding-inline: var(--bs-gutter);
+}
+.bs-section {
+  position: relative;
+  padding-block: clamp(80px, 10vw, 160px);
+}
+.bs-dark {
+  background: var(--bs-peat);
+  color: var(--bs-cream);
+}
+.bs-cream {
+  background: var(--bs-cream);
+}
+
+/* ---------- Type helpers ---------- */
+.bs-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--bs-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bs-sage-d);
+}
+.bs-kicker::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+}
+.bs-dark .bs-kicker {
+  color: var(--bs-sage-l);
+}
+.bs-h2 {
+  font-size: var(--bs-h2);
+  margin-top: 16px;
+}
+.bs-hand {
+  font-family: var(--bs-hand);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.bs-lead {
+  font-size: var(--bs-lead);
+  color: var(--bs-grey);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+.bs-dark .bs-lead {
+  color: rgba(243, 243, 236, 0.74);
+}
+.bs-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px 48px;
+  margin-bottom: clamp(36px, 5vw, 64px);
+}
+.bs-head > div {
+  max-width: 760px;
+}
+
+/* ---------- Buttons ---------- */
+.bs-btn {
+  --bg: var(--bs-sage);
+  --fg: #fff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 26px;
+  border: 1px solid transparent;
+  border-radius: var(--bs-pill);
+  background: var(--bg);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 0.98rem;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform var(--bs-fast) var(--bs-ease),
+    background-color var(--bs-fast) var(--bs-ease),
+    color var(--bs-fast) var(--bs-ease),
+    border-color var(--bs-fast) var(--bs-ease);
+}
+.bs-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bs-olive);
+  transform: translateY(101%);
+  transition: transform 420ms var(--bs-ease);
+}
+.bs-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 320ms var(--bs-ease);
+}
+@media (hover: hover) {
+  .bs-btn:hover::after {
+    transform: translateY(0);
+  }
+  .bs-btn:hover svg {
+    transform: translateX(4px);
+  }
+}
+.bs-btn:active {
+  transform: scale(0.97);
+}
+.bs-btn--ember {
+  --bg: var(--bs-ember);
+}
+.bs-btn--ember::after {
+  background: #a8682c;
+}
+.bs-btn--ghost {
+  --bg: transparent;
+  --fg: currentColor;
+  border-color: currentColor;
+}
+.bs-btn--ghost::after {
+  background: rgba(135, 151, 96, 0.16);
+}
+.bs-btn--light {
+  --bg: var(--bs-cream);
+  --fg: var(--bs-ink);
+}
+.bs-btn--light::after {
+  background: #fff;
+}
+.bs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  min-height: 36px;
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 6px) / 0 1px no-repeat;
+  transition: background-size 420ms var(--bs-ease);
+}
+@media (hover: hover) {
+  .bs-link:hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* ---------- Dike line (signature divider) ---------- */
+.bs-dike {
+  display: block;
+  width: 100%;
+  height: 24px;
+  color: var(--bs-sage);
+  overflow: visible;
+}
+.bs-dike path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.js .bs-dike[data-draw] path {
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1800ms var(--bs-ease-io);
+}
+.js .bs-dike[data-draw].is-drawn path {
+  stroke-dashoffset: 0;
+}
+
+/* ---------- Reveal ---------- */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 900ms var(--bs-ease),
+    transform 1100ms var(--bs-ease);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+.js [data-reveal='fade'] {
+  transform: none;
+}
+.js [data-reveal='left'] {
+  transform: translateX(-32px);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+/* Line masks: <span class="bs-line"><span>text</span></span>, revealed by the parent's .is-in */
+.bs-lines .bs-line {
+  display: block;
+  overflow: clip;
+  padding-block: 0.14em 0.08em;
+  margin-block: -0.14em -0.08em;
+}
+.bs-lines .bs-line > span {
+  display: block;
+}
+.js .bs-lines .bs-line > span {
+  transform: translateY(112%);
+  transition: transform 1100ms var(--bs-ease);
+  transition-delay: calc(var(--l, 0) * 110ms + var(--d, 0ms));
+}
+.js .bs-lines.is-in .bs-line > span {
+  transform: none;
+}
+/* Photo wipe: frame observed, image inside revealed */
+.bs-photo {
+  position: relative;
+  overflow: clip;
+  border-radius: var(--bs-r);
+  background: var(--bs-cream);
+}
+.bs-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The photo itself is never clipped (Chrome would not lazy-load it); a cover panel slides away instead. */
+.bs-photo[data-wipe]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--wipe, var(--bs-cream));
+  transform-origin: 50% 0;
+  transform: scaleY(0);
+  pointer-events: none;
+}
+.js .bs-photo[data-wipe]::after {
+  transform: scaleY(1);
+  transition: transform 1300ms var(--bs-ease-io);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.js .bs-photo[data-wipe] img {
+  transform: scale(1.14);
+  transition: transform 2000ms var(--bs-ease);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.js .bs-photo[data-wipe].is-in::after {
+  transform: scaleY(0);
+}
+.js .bs-photo[data-wipe].is-in img {
+  transform: scale(1);
+}
+
+/* ---------- Grain (paper feel) ---------- */
+.bs-grain {
+  position: relative;
+}
+.bs-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('/img/grain.svg');
+  background-size: 220px;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+.bs-dark.bs-grain::before {
+  mix-blend-mode: overlay;
+  opacity: 0.25;
+}
+
+/* ---------- Form fields (shared by reservation, sign-up, enquiries, admin) ---------- */
+.bs-field {
+  display: grid;
+  gap: 6px;
+}
+.bs-field > span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bs-grey);
+}
+.bs-input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px;
+  border: 1px solid var(--bs-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--bs-ink);
+  transition:
+    border-color var(--bs-fast) var(--bs-ease),
+    box-shadow var(--bs-fast) var(--bs-ease);
+}
+textarea.bs-input {
+  min-height: 110px;
+  resize: vertical;
+}
+.bs-input:focus {
+  outline: none;
+  border-color: var(--bs-sage);
+  box-shadow: 0 0 0 4px rgba(135, 151, 96, 0.18);
+}
+.bs-check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.92rem;
+  color: var(--bs-grey);
+}
+.bs-check {
+  align-items: center;
+}
+.bs-check input {
+  appearance: none;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border: 1px solid currentColor;
+  border-radius: 9px;
+  background: #fff center / 18px no-repeat;
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--bs-ease),
+    border-color 160ms var(--bs-ease);
+}
+.bs-check input:checked {
+  border-color: var(--bs-sage);
+  background-color: var(--bs-sage);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23141711' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E");
+}
+.bs-check input:focus-visible {
+  outline: 2px solid var(--bs-ember);
+  outline-offset: 2px;
+}
+.bs-check a,
+.bs-prose a,
+.bs-inline-link {
+  padding-block: 7px;
+}
+.bs-hp {
+  position: absolute !important;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.bs-msg {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+.bs-msg--ok {
+  background: rgba(79, 122, 58, 0.12);
+  color: #2f5520;
+}
+.bs-msg--err {
+  background: rgba(180, 83, 31, 0.12);
+  color: #8a3a12;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .js [data-reveal],
+  .js .bs-lines .bs-line > span,
+  .js .bs-photo[data-wipe] img {
+    opacity: 1;
+    transform: none;
+  }
+  .js .bs-photo[data-wipe]::after {
+    transform: scaleY(0);
+  }
+}
+
+/* ---------- Delft tile ornament: draws stroke by stroke when revealed ---------- */
+.bs-tile {
+  display: block;
+  width: 56px;
+  aspect-ratio: 1;
+  color: var(--bs-delft);
+}
+.bs-tile svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.bs-tile path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.js .bs-tile[data-draw] path {
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1400ms var(--bs-ease-io);
+}
+.js .bs-tile[data-draw] path:nth-child(2) {
+  transition-delay: 220ms;
+}
+.js .bs-tile[data-draw] path:nth-child(3) {
+  transition-delay: 380ms;
+}
+.js .bs-tile[data-draw] path:nth-child(4) {
+  transition-delay: 520ms;
+}
+.js .bs-tile[data-draw] path:nth-child(5) {
+  transition-delay: 680ms;
+}
+.js .bs-tile[data-draw] path:nth-child(6) {
+  transition-delay: 820ms;
+}
+.js .bs-tile[data-draw].is-drawn path {
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .bs-tile[data-draw] path,
+  .js .bs-dike[data-draw] path {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Client texts keep their single line breaks (lists like "Am 29. November: …"). */
+.bs-prose p {
+  white-space: pre-line;
+}

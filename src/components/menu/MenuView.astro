@@ -1,0 +1,196 @@
+---
+/** One menu card: section chips, dish rows with dotted leaders, print-friendly. */
+import type { MenuCard } from '../../lib/cms';
+
+interface Props {
+  menu: MenuCard;
+}
+const { menu } = Astro.props;
+const id = (i: number) => `abschnitt-${i + 1}`;
+const price = (p: string) => (!p ? '' : /€|eur/i.test(p) ? p : `${p} €`);
+const named = menu.sections.filter((s) => s.title).length;
+---
+
+<div class="bs-mv bs-wrap">
+  {named > 1 && (
+    <nav class="bs-mv__nav" aria-label="Abschnitte">
+      {menu.sections.map((s, i) => s.title && <a href={`#${id(i)}`}>{s.title}</a>)}
+      <button type="button" class="bs-mv__print" data-print>
+        Drucken
+      </button>
+    </nav>
+  )}
+  {menu.intro && <p class="bs-lead bs-mv__intro">{menu.intro}</p>}
+  <div class="bs-mv__cols">
+    {menu.sections.map((s, i) => (
+      <section class="bs-mv__sec" id={id(i)} data-reveal style={`--i:${i % 3}`}>
+        {s.title && <h2 class="bs-mv__h">{s.title}</h2>}
+        <ul>
+          {s.dishes.map((d) => (
+            <li class:list={['bs-mv__dish', { 'is-note': !d.price && !d.text && d.name.length > 48 }]}>
+              <span class="bs-mv__name">{d.name}</span>
+              {d.price && <span class="bs-mv__dots" aria-hidden="true" />}
+              {d.price && <span class="bs-mv__price">{price(d.price)}</span>}
+              {d.text && <span class="bs-mv__desc">{d.text}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+  {menu.note && <p class="bs-mv__note">{menu.note}</p>}
+  <p class="bs-mv__legal">
+    Informationen zu Allergenen und Zusatzstoffen (Buchstaben und Ziffern hinter den Gerichten) erhaltet ihr bei unserem
+    Service.
+  </p>
+</div>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
+<style is:global>
+  .bs-mv {
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-mv__nav {
+    position: sticky;
+    top: 12px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    margin-bottom: 40px;
+    border-radius: var(--bs-r);
+    background: rgba(250, 248, 242, 0.97);
+    border: 1px solid var(--bs-line);
+  }
+  .bs-mv__nav a,
+  .bs-mv__print {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 14px;
+    border-radius: var(--bs-pill);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color 160ms var(--bs-ease),
+      border-color 160ms var(--bs-ease);
+  }
+  @media (hover: hover) {
+    .bs-mv__nav a:hover,
+    .bs-mv__print:hover {
+      background: var(--bs-cream);
+    }
+  }
+  .bs-mv__print {
+    margin-left: auto;
+    border-color: var(--bs-line);
+  }
+  .bs-mv__intro {
+    margin-bottom: 40px;
+  }
+  .bs-mv__cols {
+    columns: 2 420px;
+    column-gap: clamp(40px, 6vw, 96px);
+  }
+  .bs-mv__sec {
+    break-inside: avoid;
+    margin-bottom: 48px;
+    scroll-margin-top: calc(var(--bs-header-h) + 80px);
+  }
+  .bs-mv__h {
+    font-size: 1.05rem;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--bs-olive);
+    color: var(--bs-olive);
+    white-space: pre-line;
+  }
+  .bs-mv__sec ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .bs-mv__dish {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(12px, 1fr) auto;
+    align-items: baseline;
+    gap: 2px 10px;
+  }
+  .bs-mv__name {
+    font-weight: 600;
+  }
+  .bs-mv__dish.is-note .bs-mv__name {
+    grid-column: 1 / -1;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--bs-grey);
+    font-size: 0.92rem;
+  }
+  .bs-mv__dots {
+    border-bottom: 1px dotted rgba(20, 23, 17, 0.35);
+    transform: translateY(-4px);
+  }
+  .bs-mv__price {
+    font-weight: 600;
+    color: var(--bs-sage-d);
+    white-space: nowrap;
+  }
+  .bs-mv__desc {
+    grid-column: 1 / -1;
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+  }
+  .bs-mv__note,
+  .bs-mv__legal {
+    margin-top: 24px;
+    font-size: 0.88rem;
+    color: var(--bs-grey);
+    white-space: pre-line;
+  }
+  @media (max-width: 520px) {
+    .bs-mv__dish {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .bs-mv__dots {
+      display: none;
+    }
+    .bs-mv__nav {
+      position: static;
+    }
+  }
+  @media print {
+    .bs-hd,
+    .bs-ft,
+    .bs-mv__nav,
+    .bs-ph__dike,
+    .bs-ph__photo,
+    .skip-link {
+      display: none !important;
+    }
+    body {
+      background: #fff;
+      font-size: 11pt;
+    }
+    .bs-ph {
+      padding: 0 0 12pt;
+    }
+    .js [data-reveal],
+    .js .bs-lines .bs-line > span {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .bs-mv__sec {
+      margin-bottom: 18pt;
+    }
+  }
+</style>
