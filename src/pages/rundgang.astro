@@ -1,0 +1,151 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/ui/PageHead.astro';
+import MoreLinks from '../components/ui/MoreLinks.astro';
+import Photo from '../components/ui/Photo.astro';
+
+const TOUR = 'https://tourmkr.com/F1Dhi5B6nJ';
+---
+
+<Base
+  title="360°-Rundgang"
+  description="Gaststube, Saal, Partyfass, Ferienwohnungen und Garten im 360°-Rundgang: Mein Ziel Bongsiel virtuell erkunden."
+>
+  <PageHead
+    kicker="360°-Rundgang"
+    title="Schaut euch"
+    hand="schon mal um"
+    lead="Gaststube, Saal, Partyfass, Ferienwohnungen und Garten – klickt euch durchs Haus, bevor ihr kommt."
+  />
+  <section class="bs-rg bs-wrap">
+    <div class="bs-rg__stage" data-tour-stage data-reveal>
+      <Photo name="haus-tag" alt="" sizes="(max-width: 1340px) 94vw, 1280px" class="bs-rg__poster" />
+      <button class="bs-rg__play" type="button" data-tour-start>
+        <span class="bs-rg__ring" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"></path>
+          </svg>
+        </span>
+        <span class="bs-rg__label">Rundgang starten</span>
+        <span class="bs-rg__hint">360° · mit Maus oder Finger umschauen</span>
+      </button>
+    </div>
+    <div class="bs-rg__cta" data-reveal style="--i:1">
+      <a class="bs-btn" href={TOUR} target="_blank" rel="noopener">
+        Im Vollbild öffnen ↗
+      </a>
+      <a class="bs-btn bs-btn--ghost" href="/reservierung/">
+        Tisch reservieren
+      </a>
+    </div>
+  </section>
+  <MoreLinks current="/rundgang/" />
+</Base>
+
+<script>
+  // The tour is a heavy third-party page: it loads only after a click.
+  const stage = document.querySelector<HTMLElement>('[data-tour-stage]');
+  stage?.querySelector('[data-tour-start]')?.addEventListener('click', () => {
+    if (stage.querySelector('iframe')) return;
+    const f = document.createElement('iframe');
+    f.src = 'https://tourmkr.com/F1Dhi5B6nJ';
+    f.title = '360° Rundgang durch Mein Ziel Bongsiel';
+    f.allow = 'fullscreen; gyroscope; accelerometer';
+    f.className = 'bs-rg__frame';
+    stage.classList.add('is-live');
+    stage.append(f);
+  });
+</script>
+
+<style is:global>
+  .bs-rg {
+    display: grid;
+    gap: 24px;
+    padding-bottom: clamp(64px, 8vw, 110px);
+  }
+  .bs-rg__stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--bs-r-lg);
+    overflow: hidden;
+    background: var(--bs-peat);
+    box-shadow: var(--bs-shadow-lg);
+  }
+  .bs-rg__poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.9) brightness(0.72);
+  }
+  .bs-rg__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 10px;
+    border: 0;
+    background: none;
+    color: var(--bs-cream);
+    cursor: pointer;
+  }
+  .bs-rg__ring {
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background: var(--bs-sage);
+    box-shadow:
+      0 0 0 3px var(--bs-cream),
+      0 18px 36px -14px rgba(0, 0, 0, 0.6);
+    transition: transform 400ms var(--bs-ease);
+  }
+  .bs-rg__ring svg {
+    width: 38px;
+    height: 38px;
+    margin-left: 5px;
+  }
+  .bs-rg__label {
+    font-family: var(--bs-head);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: 1.05rem;
+  }
+  .bs-rg__hint {
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+  @media (hover: hover) {
+    .bs-rg__play:hover .bs-rg__ring {
+      transform: scale(1.1) rotate(-6deg);
+    }
+  }
+  .bs-rg__play:focus-visible {
+    outline: 3px solid var(--bs-ember-l);
+    outline-offset: -8px;
+    border-radius: var(--bs-r-lg);
+  }
+  .bs-rg__stage.is-live .bs-rg__play,
+  .bs-rg__stage.is-live .bs-rg__poster {
+    display: none;
+  }
+  .bs-rg__frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .bs-rg__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  @media (max-width: 700px) {
+    .bs-rg__stage {
+      aspect-ratio: 4 / 5;
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+/** "Mehr entdecken": links to the other pages about the surroundings, minus the current one. */
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+const all = [
+  { href: '/erlebniswelt/', t: 'Erlebniswelt', d: 'Boule, Schach, Billard, Darts und Tischkicker direkt am Haus' },
+  { href: '/aktivitaeten/', t: 'Aktivitäten', d: 'Deich, Watt, Radtouren und Ausflugstipps in der Umgebung' },
+  { href: '/rundgang/', t: '360°-Rundgang', d: 'Gaststube, Saal, Garten und Zimmer virtuell erkunden' },
+  { href: '/uebernachten/', t: 'Übernachten', d: 'Zimmer und Reetdach-Ferienhäuser' },
+].filter((x) => x.href !== current);
+---
+
+<aside class="bs-more bs-wrap" aria-labelledby="bs-more-h">
+  <h2 id="bs-more-h" class="bs-more__h">
+    Mehr entdecken
+  </h2>
+  <div class="bs-more__grid">
+    {all.map((x, i) => (
+      <a class="bs-more__a" href={x.href} data-reveal style={`--i:${i}`}>
+        <b>{x.t}</b>
+        <span>{x.d}</span>
+        <i aria-hidden="true">→</i>
+      </a>
+    ))}
+  </div>
+</aside>
+
+<style is:global>
+  .bs-more {
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .bs-more__h {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem);
+    color: var(--bs-sage-d);
+    margin: 0 0 18px;
+  }
+  .bs-more__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 14px;
+  }
+  .bs-more__a {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding: 22px 52px 22px 22px;
+    border-radius: var(--bs-r);
+    background: var(--bs-cream);
+    border: 1px solid var(--bs-line);
+    text-decoration: none;
+    transition:
+      background-color 300ms var(--bs-ease),
+      transform 400ms var(--bs-ease);
+  }
+  .bs-more__a b {
+    font-family: var(--bs-head);
+    text-transform: uppercase;
+    font-size: 0.92rem;
+  }
+  .bs-more__a span {
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+  }
+  .bs-more__a i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    translate: 0 -50%;
+    font-style: normal;
+    font-size: 1.3rem;
+    color: var(--bs-sage-d);
+    transition: translate 300ms var(--bs-ease);
+  }
+  @media (hover: hover) {
+    .bs-more__a:hover {
+      background: #fff;
+      transform: translateY(-3px);
+    }
+    .bs-more__a:hover i {
+      translate: 4px -50%;
+    }
+  }
+</style>

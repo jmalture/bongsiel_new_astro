@@ -2,7 +2,9 @@
 
 Astro 7 + EmDash 1.5 rebuild of mein-ziel-bongsiel.de. Runs locally; not deployed. German only.
 
-## Done (round 1)
+## Done (round 1, extended 2026-11-22)
+- 2026-11-22: hero carousel (6 slides, first = daylight facade from the 360 tour) and stitched "Als Nächstes" event stamp; event type icons/labels/colours on cards and detail page (optional EmDash field rt, otherwise guessed from title/teaser; add it to live databases with 
+px emdash schema add-field); event facts redesigned (icon tiles, price pills, seats bar); new pages Aktivitäten, Erlebniswelt, 360°-Rundgang (tour loads on click) with nav "Erleben" and footer links.
 - Pages: Home, Gaststätte, Speisekarte (`/speisen/`), Speisekarten overview + each card (print view), Veranstaltungen
   list + detail with sign-up, Reservierung, Feiern (`/eventlocation/`), Übernachten, Impressum, Datenschutz, 404.
 - Booking engine (`src/lib/booking.ts`): weekly hours with last reservation time, closed days / special hours,
@@ -32,6 +34,7 @@ Astro 7 + EmDash 1.5 rebuild of mein-ziel-bongsiel.de. Runs locally; not deploye
 - Eventlocation: "Platz für eure Feier", room captions ("Für kleinere Runden"), "Erzählt uns von eurer Feier".
 
 ## To confirm with the client
+- Facade photo for hero slide 1 is a still from the client's Tourmkr 360 tour (the only daylight shot); a real daylight photo would be sharper. Google Street View image of the inn was NOT used (rights).
 - Burger Weekend card: "Rinder-Patty**" – the ** footnote has no explanation on the old page either.
 - Homepage news (Deichpost text of 06.11.): still lists "Am 15. November: Überraschungs-Brunch" (past). Update or remove in Neuigkeiten; the client decides the new wording.
 - Last reservation times: evenings 20:00 (Five Star), Sunday lunch **13:00** (Five Star allowed 11–14, kitchen to 13:30).
@@ -56,6 +59,6 @@ Astro 7 + EmDash 1.5 rebuild of mein-ziel-bongsiel.de. Runs locally; not deploye
 ## Open (next rounds)
 - Deploy (Hostinger Node app, DATA_DIR outside the app, SMTP, first admin login + invites for staff).
 - Import from WordPress: future Five Star reservations, REBB sign-ups, ~448 newsletter subscribers.
-- Seasonal pages not rebuilt yet: Aktivitäten, Erlebniswelt, /xmas, Rundgang page (tour is a dialog on Home).
+- Not rebuilt yet: /xmas (seasonal thank-you page). Aktivitäten, Erlebniswelt and Rundgang are done (copy taken from the old pages; links per item mapped by order, please check).
 - Link to the service admin from inside the EmDash admin (needs a small plugin).
 - EN/DA, domain switch + 301s from old URLs (/veranstaltung/<slug>/ → /veranstaltungen/<slug>/).

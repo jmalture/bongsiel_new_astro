@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/ui/PageHead.astro';
+import ActCards from '../components/ui/ActCards.astro';
+import MoreLinks from '../components/ui/MoreLinks.astro';
+import Photo from '../components/ui/Photo.astro';
+import type { ActItem } from '../components/ui/ActCards.astro';
+
+const outdoor: ActItem[] = [
+  { t: 'Schach', icon: 'M4 4h16v16H4zM4 12h16M12 4v16' },
+  { t: 'Boule', icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 9h.01M15 8h.01M12 14h.01' },
+  {
+    t: 'Streichelzoo',
+    soon: true,
+    icon: 'M12 20c-3 0-5-1.5-5-3.5S9.5 13 12 13s5 1.5 5 3.5-2 3.5-5 3.5zM6 11h.01M10 7h.01M14 7h.01M18 11h.01',
+  },
+];
+const indoor: ActItem[] = [
+  { t: 'Souvenirshop', icon: 'M5 8h14l-1 12H6L5 8zM9 8V6a3 3 0 0 1 6 0v2' },
+  { t: 'Billard*', icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 14a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z' },
+  {
+    t: 'Darts*',
+    icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM12 12l7-7',
+  },
+  { t: 'Tischkicker*', icon: 'M3 8h18v8H3zM8 8v8M12 8v8M16 8v8M6 5v3M18 16v3' },
+];
+---
+
+<Base
+  title="Erlebniswelt"
+  description="Boule, Schach, Billard, Darts und Tischkicker direkt am Haus: die Erlebniswelt der Gaststätte Dat swarte Peerd in Bongsiel."
+>
+  <PageHead
+    kicker="Erlebniswelt"
+    title="Spielen, staunen,"
+    hand="Zeit haben"
+    lead="Draußen im Garten und drinnen im Haus gibt es einiges zu entdecken – für Kinder, Familien und alle, die nach dem Essen noch bleiben wollen."
+    photo="garten-boule"
+    photoAlt="Garten mit Bouleplatz, Birken und Gartenhaus"
+  />
+  <div class="bs-erl bs-wrap">
+    <section aria-labelledby="h-out">
+      <h2 id="h-out" class="bs-h2 bs-lines">
+        <span class="bs-line">
+          <span>Outdoor</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span class="bs-hand">im Garten</span>
+        </span>
+      </h2>
+      <ActCards items={outdoor} />
+    </section>
+    <section aria-labelledby="h-in">
+      <h2 id="h-in" class="bs-h2 bs-lines">
+        <span class="bs-line">
+          <span>Indoor</span>
+        </span>
+        <span class="bs-line" style="--l:1">
+          <span class="bs-hand">im Haus</span>
+        </span>
+      </h2>
+      <ActCards items={indoor} />
+      <p class="bs-erl__fee" data-reveal>
+        * gegen Gebühr
+      </p>
+    </section>
+    <figure class="bs-photo bs-erl__ph" data-wipe style="--wipe: var(--bs-linen)">
+      <Photo name="teich-lounge" alt="Sitzgruppe am Fischteich mit Sandstrand" sizes="(max-width: 900px) 92vw, 600px" />
+    </figure>
+  </div>
+  <MoreLinks current="/erlebniswelt/" />
+</Base>
+
+<style is:global>
+  .bs-erl {
+    display: grid;
+    gap: clamp(56px, 8vw, 104px);
+    padding-bottom: clamp(72px, 9vw, 120px);
+  }
+  .bs-erl .bs-h2 {
+    margin-bottom: 28px;
+  }
+  .bs-erl__fee {
+    margin: 14px 4px 0;
+    font-size: 0.9rem;
+    color: var(--bs-grey);
+  }
+  .bs-erl__ph {
+    max-width: 520px;
+    justify-self: center;
+    border-radius: var(--bs-r-lg);
+    overflow: hidden;
+  }
+</style>

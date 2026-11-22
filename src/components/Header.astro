@@ -18,8 +18,10 @@ const nav = [
   { href: '/veranstaltungen/', label: 'Veranstaltungen' },
   { href: '/eventlocation/', label: 'Feiern' },
   { href: '/uebernachten/', label: 'Übernachten' },
+  { href: '/erlebniswelt/', label: 'Erleben', also: ['/aktivitaeten/', '/rundgang/'] },
 ];
-const active = (href: string) => path === href || path.startsWith(href);
+const active = (n: { href: string; also?: string[] }) =>
+  [n.href, ...(n.also ?? [])].some((h) => path === h || path.startsWith(h));
 ---
 
 <header class:list={['bs-hd', { 'bs-hd--overlay': overlay }]} data-header>
@@ -27,7 +29,7 @@ const active = (href: string) => path === href || path.startsWith(href);
     <a href="/" class="bs-hd__logo" aria-label="Mein Ziel Bongsiel – Startseite" set:html={logo} />
     <nav class="bs-hd__nav" aria-label="Hauptnavigation">
       {nav.map((n) => (
-        <a href={n.href} class:list={['bs-hd__link', { 'is-active': active(n.href) }]}>
+        <a href={n.href} class:list={['bs-hd__link', { 'is-active': active(n) }]}>
           {n.label}
         </a>
       ))}
