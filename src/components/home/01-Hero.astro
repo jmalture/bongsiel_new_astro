@@ -7,17 +7,64 @@ interface Props {
   next?: EventItem;
 }
 const { next } = Astro.props;
+
+// Slide 1 is the house; then the landscape around it, then inside.
+const slides = [
+  {
+    name: 'eingang-nacht',
+    pos: '50% 55%',
+    o: '40% 60%',
+    cap: 'Das Haus am Deich',
+    alt: 'Das Gasthaus am Abend, Eingang mit Lichterkette und Pferd',
+  },
+  {
+    name: 'deich-schafe',
+    pos: '50% 30%',
+    o: '62% 38%',
+    cap: 'Deich und weiter Himmel',
+    alt: 'Schafe auf dem grünen Deich unter weitem Himmel',
+  },
+  {
+    name: 'kanal-abend',
+    pos: '50% 60%',
+    o: '50% 70%',
+    cap: 'Abendlicht am Kanal',
+    alt: 'Sonnenuntergang über dem Bongsieler Kanal',
+  },
+  {
+    name: 'gaststube-abend',
+    pos: '50% 50%',
+    o: '30% 50%',
+    cap: 'Kachelstube und Kerzenlicht',
+    alt: 'Die Gaststube am Abend mit blauer Holzvertäfelung und Kerzenlicht',
+  },
+  {
+    name: 'teich-boot',
+    pos: '50% 55%',
+    o: '60% 50%',
+    cap: 'Garten mit Teich',
+    alt: 'Fischteich mit Sandstrand und grünem Ruderboot',
+  },
+] as const;
 ---
 
-<section class="bs-hero" aria-labelledby="bs-hero-h">
-  <div class="bs-hero__media" data-live>
-    <Photo
-      name="deich-schafe"
-      alt="Schafe auf dem grünen Deich unter weitem Himmel"
-      eager
-      sizes="max(100vw, 140vh)"
-      position="50% 30%"
-    />
+<section
+  class="bs-hero"
+  aria-labelledby="bs-hero-h"
+  aria-roledescription="carousel"
+  aria-label="Bilder vom Haus und der Umgebung"
+>
+  <div class="bs-hero__media" data-live data-hero-slides>
+    {slides.map((s, i) => (
+      <div
+        class={`bs-hero__slide${i === 0 ? ' is-active' : ''}`}
+        data-cap={s.cap}
+        style={`--o:${s.o}`}
+        aria-hidden={i === 0 ? undefined : 'true'}
+      >
+        <Photo name={s.name} alt={s.alt} eager={i === 0} sizes="max(100vw, 140vh)" position={s.pos} />
+      </div>
+    ))}
   </div>
   <div class="bs-hero__veil" aria-hidden="true"></div>
   <div class="bs-hero__inner bs-wrap">
@@ -47,13 +94,49 @@ const { next } = Astro.props;
       </a>
     </div>
   </div>
+
+  <div class="bs-hero__ctrl bs-wrap" data-hero-ctrl>
+    <div class="bs-hero__dots" role="group" aria-label="Bild wählen">
+      {slides.map((s, i) => (
+        <button
+          type="button"
+          class={`bs-hero__dot${i === 0 ? ' is-active' : ''}`}
+          aria-label={`Bild ${i + 1}: ${s.cap}`}
+          aria-current={i === 0 ? 'true' : undefined}
+          data-dot={i}
+        >
+          <i></i>
+        </button>
+      ))}
+    </div>
+    <p class="bs-hero__cap" aria-live="polite" data-hero-cap>
+      {slides[0].cap}
+    </p>
+  </div>
+
   {next && (
-    <a class="bs-hero__next" href={`/veranstaltungen/${next.slug}/`} data-reveal style="--i:6">
-      <span class="bs-hero__next-k">Als Nächstes</span>
-      <span class="bs-hero__next-t">{next.title}</span>
-      <span class="bs-hero__next-d">
-        {formatDate(next.date, 'day')}
-        {next.start && ` · ${next.start} Uhr`}
+    <a class="bs-hero__stamp" href={`/veranstaltungen/${next.slug}/`} data-reveal style="--i:6" data-live>
+      <span class="bs-hero__stamp-in">
+        <svg
+          class="bs-hero__stamp-ic"
+          viewBox="0 0 32 32"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="3" y="7" width="26" height="18" rx="2.5"></rect>
+          <path d="M3.5 8.5 16 18l12.5-9.5M3.5 24l9-8M28.5 24l-9-8"></path>
+        </svg>
+        <span class="bs-hero__stamp-k">Als Nächstes</span>
+        <span class="bs-hero__stamp-t">{next.title}</span>
+        <span class="bs-hero__stamp-d">
+          {formatDate(next.date, 'day')}
+          {next.start && ` · ${next.start} Uhr`}
+        </span>
+        <span class="bs-hero__stamp-b">{next.seats > 0 ? 'Jetzt anmelden' : 'Mehr erfahren'}</span>
       </span>
     </a>
   )}
@@ -61,6 +144,68 @@ const { next } = Astro.props;
     <path pathLength="1" d="M0 18 C 220 18 320 6 520 6 S 860 16 1040 14 S 1300 8 1440 10"></path>
   </svg>
 </section>
+
+<script>
+  // Hero carousel: crossfade + slow zoom, dots, swipe, pause on hover/focus/off-screen, none for reduced motion.
+  const root = document.querySelector<HTMLElement>('[data-hero-slides]');
+  if (root) {
+    const slides = [...root.querySelectorAll<HTMLElement>('.bs-hero__slide')];
+    const dots = [...document.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const cap = document.querySelector<HTMLElement>('[data-hero-cap]');
+    const hero = root.closest<HTMLElement>('.bs-hero')!;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DELAY = 6500;
+    let cur = 0;
+    let timer = 0;
+    let hold = false;
+
+    // Hidden layers never lazy-load: fetch the rest once the page is idle.
+    const preload = () => slides.forEach((s) => s.querySelector('img')?.setAttribute('loading', 'eager'));
+    if (document.readyState === 'complete') preload();
+    else addEventListener('load', preload, { once: true });
+
+    const show = (n: number) => {
+      cur = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => {
+        s.classList.toggle('is-active', i === cur);
+        s.setAttribute('aria-hidden', i === cur ? 'false' : 'true');
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === cur);
+        i === cur ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current');
+      });
+      if (cap) cap.textContent = slides[cur].dataset.cap ?? '';
+      queue();
+    };
+    const queue = () => {
+      clearTimeout(timer);
+      if (still || hold) return;
+      timer = window.setTimeout(() => show(cur + 1), DELAY);
+    };
+    const setHold = (v: boolean) => {
+      hold = v;
+      hero.classList.toggle('is-held', v);
+      queue();
+    };
+
+    dots.forEach((d, i) => d.addEventListener('click', () => show(i)));
+    hero.addEventListener('mouseenter', () => setHold(true));
+    hero.addEventListener('mouseleave', () => setHold(false));
+    hero.addEventListener('focusin', () => setHold(true));
+    hero.addEventListener('focusout', () => setHold(false));
+    new IntersectionObserver((e) => setHold(!e[0].isIntersecting), { threshold: 0.25 }).observe(hero);
+    document.addEventListener('visibilitychange', () => setHold(document.hidden));
+
+    let x0 = 0;
+    hero.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+    hero.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+    });
+    hero.style.setProperty('--hero-delay', DELAY + 'ms');
+    queue();
+  }
+</script>
 
 <style is:global>
   .bs-hero {
@@ -78,22 +223,36 @@ const { next } = Astro.props;
     inset: 0;
     z-index: -2;
   }
-  .bs-hero__media img {
+  .bs-hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1400ms var(--bs-ease-io);
+  }
+  .bs-hero__slide.is-active {
+    opacity: 1;
+    z-index: 1;
+  }
+  .bs-hero__slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform-origin: 60% 40%;
-    animation: bs-drift 28s var(--bs-ease-io) infinite alternate;
+    transform-origin: var(--o, 60% 40%);
+    transform: scale(1.04);
   }
-  .bs-hero__media.is-paused img {
+  .bs-hero__slide.is-active img {
+    animation: bs-drift 9s var(--bs-ease-io) forwards;
+  }
+  .bs-hero__media.is-paused .bs-hero__slide.is-active img,
+  .bs-hero.is-held .bs-hero__slide.is-active img {
     animation-play-state: paused;
   }
   @keyframes bs-drift {
     from {
-      transform: scale(1.04) translate3d(0, 0, 0);
+      transform: scale(1.04);
     }
     to {
-      transform: scale(1.12) translate3d(-1.5%, 1%, 0);
+      transform: scale(1.13);
     }
   }
   .bs-hero__veil {
@@ -149,41 +308,170 @@ const { next } = Astro.props;
   .bs-hero__ghost::after {
     background: rgba(243, 243, 236, 0.14);
   }
-  .bs-hero__next {
+
+  /* carousel controls */
+  .bs-hero__ctrl {
+    z-index: 2;
     position: absolute;
-    right: var(--bs-gutter);
-    bottom: clamp(88px, 11vh, 140px);
-    display: grid;
-    gap: 2px;
-    max-width: 300px;
-    padding: 18px 22px;
-    border-radius: var(--bs-r);
-    background: rgba(27, 29, 21, 0.72);
-    border: 1px solid var(--bs-line-light);
-    text-decoration: none;
-    transition: background-color 300ms var(--bs-ease);
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    pointer-events: none;
   }
-  @media (hover: hover) {
-    .bs-hero__next:hover {
-      background: rgba(27, 29, 21, 0.9);
+  .bs-hero__dots {
+    display: flex;
+    gap: 4px;
+    pointer-events: auto;
+  }
+  .bs-hero__dot {
+    width: 40px;
+    height: 24px;
+    display: grid;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .bs-hero__dot i {
+    display: block;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(243, 243, 236, 0.38);
+    overflow: hidden;
+    position: relative;
+  }
+  .bs-hero__dot i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--bs-ember-l);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .bs-hero__dot.is-active i::after {
+    animation: bs-fill var(--hero-delay, 6500ms) linear forwards;
+  }
+  .bs-hero.is-held .bs-hero__dot.is-active i::after {
+    animation-play-state: paused;
+  }
+  @keyframes bs-fill {
+    to {
+      transform: scaleX(1);
     }
   }
-  .bs-hero__next-k {
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
+  .bs-hero__dot:focus-visible {
+    outline: 2px solid var(--bs-ember-l);
+    outline-offset: 2px;
+  }
+  .bs-hero__cap {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(243, 243, 236, 0.9);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  }
+
+  /* stitched "Als Nächstes" stamp, like the old Deichpost badge */
+  .bs-hero__stamp {
+    position: absolute;
+    right: calc(var(--bs-gutter) + 8px);
+    bottom: clamp(96px, 13vh, 160px);
+    width: clamp(250px, 21vw, 310px);
+    aspect-ratio: 1 / 0.92;
+    display: grid;
+    place-items: center;
+    color: var(--bs-cream);
+    text-decoration: none;
+    text-align: center;
+    background: var(--bs-sage);
+    border-radius: 58% 42% 53% 47% / 46% 57% 43% 54%;
+    box-shadow:
+      0 0 0 3px var(--bs-cream),
+      0 26px 46px -18px rgba(0, 0, 0, 0.6);
+    transform: rotate(-7deg);
+    animation: bs-stamp 7s var(--bs-ease-io) infinite alternate;
+    transition:
+      transform 400ms var(--bs-ease),
+      background-color 300ms var(--bs-ease);
+  }
+  .bs-hero__stamp::before {
+    content: '';
+    position: absolute;
+    inset: 11px;
+    border: 2px dashed rgba(243, 243, 236, 0.9);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .bs-hero__stamp.is-paused {
+    animation-play-state: paused;
+  }
+  @keyframes bs-stamp {
+    from {
+      transform: rotate(-8deg) translateY(0);
+    }
+    to {
+      transform: rotate(-5deg) translateY(-6px);
+    }
+  }
+  @media (hover: hover) {
+    .bs-hero__stamp:hover {
+      animation-play-state: paused;
+      transform: rotate(-2deg) scale(1.05);
+      background: var(--bs-sage-d);
+    }
+  }
+  .bs-hero__stamp:focus-visible {
+    outline: 3px solid var(--bs-ember-l);
+    outline-offset: 6px;
+  }
+  .bs-hero__stamp-in {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    padding: 22px 34px;
+  }
+  .bs-hero__stamp-ic {
+    width: 30px;
+    height: 30px;
+    opacity: 0.95;
+  }
+  .bs-hero__stamp-k {
+    font-family: var(--bs-hand);
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .bs-hero__stamp-t {
+    font-family: var(--bs-head);
+    font-weight: 700;
+    font-size: clamp(0.92rem, 0.8rem + 0.35vw, 1.12rem);
+    line-height: 1.15;
     text-transform: uppercase;
-    color: var(--bs-sage-l);
-    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
   }
-  .bs-hero__next-t {
+  .bs-hero__stamp-d {
+    font-size: 0.85rem;
     font-weight: 600;
-    font-size: 1.05rem;
+    padding: 4px 12px;
+    border-radius: var(--bs-pill);
+    background: rgba(201, 131, 63, 0.9);
+    color: var(--bs-ink);
   }
-  .bs-hero__next-d {
-    font-size: 0.88rem;
-    opacity: 0.8;
+  .bs-hero__stamp-b {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: var(--bs-pill);
+    border: 1.5px solid rgba(243, 243, 236, 0.85);
+    background: rgba(27, 29, 21, 0.35);
   }
   .bs-hero__dike {
+    pointer-events: none;
     position: absolute;
     left: 0;
     right: 0;
@@ -191,8 +479,26 @@ const { next } = Astro.props;
     color: rgba(233, 184, 119, 0.7);
   }
   @media (max-width: 900px) {
-    .bs-hero__next {
+    .bs-hero__stamp {
+      width: 190px;
+      right: 12px;
+      top: calc(var(--bs-header-h) + 14px);
+      bottom: auto;
+    }
+    .bs-hero__stamp-in {
+      padding: 14px 22px;
+      gap: 3px;
+    }
+    .bs-hero__stamp-ic,
+    .bs-hero__stamp-k,
+    .bs-hero__stamp-b {
       display: none;
+    }
+    .bs-hero__stamp-t {
+      font-size: 0.78rem;
+    }
+    .bs-hero__stamp-d {
+      font-size: 0.74rem;
     }
   }
   @media (max-width: 700px) {
@@ -207,6 +513,9 @@ const { next } = Astro.props;
           rgba(20, 23, 17, 0) 85%
         );
     }
+    .bs-hero__cap {
+      display: none;
+    }
   }
   @media (max-width: 560px) {
     .bs-hero__cta .bs-btn {
@@ -215,11 +524,25 @@ const { next } = Astro.props;
     .bs-hero__inner {
       padding-bottom: 80px;
     }
+    .bs-hero__stamp {
+      top: calc(var(--bs-header-h) + 52px);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .bs-hero__media img {
-      animation: none;
+    .bs-hero__slide {
+      transition: none;
+    }
+    .bs-hero__slide img,
+    .bs-hero__stamp {
+      animation: none !important;
       transform: none;
+    }
+    .bs-hero__stamp {
+      transform: rotate(-6deg);
+    }
+    .bs-hero__dot.is-active i::after {
+      animation: none;
+      transform: scaleX(1);
     }
   }
 </style>
