@@ -42,6 +42,15 @@ then `DATA_DIR=$PWD/.data-prod node tools/seed.mjs`.
 - Photos: `tools/images.mjs` → `public/img/<name>-<w>.webp` + `src/data/photos.json`; `<Photo name>` builds the
   srcset; `<CmsImage>` shows an EmDash image or a real photo as fallback.
 
+- Hero (`home/01-Hero.astro`): 5-slide carousel (crossfade + zoom, dots, arrows, swipe, keys; first slide = `haus-tag`, a still
+  cropped from the client's Tourmkr 360 tour) and the stitched "Als Nächstes" stamp (next event). Slides are a `slides` array.
+- Event kinds (`src/lib/eventKind.ts`): icon, label and colour per event, from the optional EmDash select `art`, otherwise guessed
+  from title/teaser keywords. Used by `EventCard`, the event detail header and the facts tiles (`.bs-fact*`).
+- Pages for the surroundings: `aktivitaeten`, `erlebniswelt` (cards via `ui/ActCards.astro`, hand-drawn animated icons in
+  `ui/ActIcon.astro`), `rundgang` (Tourmkr iframe loads on click). `ui/MoreLinks.astro` cross-links them.
+- Header (`Header.astro`): mega menu (groups Gaststätte / Veranstaltungen / Erleben, direct link Übernachten). Edit the `nav` array;
+  icons are SVG path data. Mobile drawer lists the same items flat.
+- Forms: success shows a big thank-you card (`thanks()` in `scripts/site.ts`, also exposed as `window.bsThanks`; CSS `.bs-thanks`).
 ## Env (production)
 `DATA_DIR` (absolute, outside the app – a Hostinger build wipes the app folder), `EMDASH_SITE_URL`,
 `EMDASH_ENCRYPTION_KEY` (`npx emdash secrets generate`), `SMTP_HOST/PORT/USER/PASS`, `MAIL_FROM`,
@@ -61,3 +70,11 @@ Passkeys need a hostname, so build and run the preview with `EMDASH_SITE_URL=htt
 Admin on the built server: `node tools/prod-login.mjs http://localhost:4461` (finishes setup with a virtual passkey, saves `review/session.json`; local preview only), then `node tools/flows.mjs http://localhost:4461 review/session.json` (reservation error/success, sign-up, admin screens → `review/flows/`).
 `npm run build`, `npm run check:format`, preview, then the verify-loop capture (profile astro-site):
 `MSYS_NO_PATHCONV=1 node "$USERPROFILE/.claude/skills/verify-loop/scripts/capture.mjs" http://127.0.0.1:4461 /,/reservierung/,/veranstaltungen/,/veranstaltungen/adventsbrunch-29-11/,/speisen/,/speisekarten/,/gaststaette/,/eventlocation/,/uebernachten/,/impressum/ review/round-N --full-routes /`
+
+## Deploy (Hostinger preview, not done yet)
+1. New Node.js site (Node 22), `SITE_NOINDEX=1` for a preview. Env before the first build: `DATA_DIR` (absolute, outside the app),
+   `EMDASH_SITE_URL` (the preview URL), `EMDASH_ENCRYPTION_KEY`, SMTP vars.
+2. Upload `git archive HEAD` as `app.zip`, wait for the upload to finish, then start the build (framework astro, output `dist`, entry `server/entry.mjs`).
+3. Finish the EmDash setup at once (open to anyone until done), then `node tools/seed.mjs` against the live URL and invite staff.
+4. Check with `tools/flows.mjs` ideas on a copy, never `tools/prod-login.mjs` (virtual passkey) on a real site.
+Full notes: skill `astro-emdash-site`.
